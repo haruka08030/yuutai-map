@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_stock/screens/map_screen.dart';
-import '../../models/shareholder_benefit.dart';
+import '../models/shareholder_benefit.dart';
+import '../models/company.dart'; // Companyモデルをインポート
 import 'add_benefit_screen.dart';
+import 'map_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // 企業情報をキャッシュするためのマップ
+  final Map<String, String> _companyNames = {};
+
+  Future<String> _fetchCompanyName(String companyId) async {
+    // キャッシュにあればそれを返す
+    if (_companyNames.containsKey(companyId)) {
+      return _companyNames[companyId]!;
+    }
+
+    // Firestoreから企業名を取得
+    final doc = await FirebaseFirestore.instance
+        .collection('companies')
+        .doc(companyId)
+        .get();
+    final company = Company.fromFirestore(doc);
+
+    // キャッシュに保存
+    _companyNames[companyId] = company.name;
+    return company.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +71,21 @@ class HomeScreen extends StatelessWidget {
             itemCount: benefits.length,
             itemBuilder: (context, index) {
               final benefit = benefits[index];
-              return ListTile(
-                title: Text(benefit.benefitDetails),
-                subtitle: Text('ID: ${benefit.companyId}'), // 仮表示
-                trailing: Text(
-                  'Expires: ${benefit.expirationDate.toIso8601String().substring(0, 10)}',
-                ),
+              return FutureBuilder<String>(
+                future: _fetchCompanyName(benefit.companyId),
+                builder: (context, companyNameSnapshot) {
+                  return ListTile(
+                    title: Text(
+                      companyNameSnapshot.data ?? 'Loading...',
+                    ), // 企業名を表示
+                    subtitle: Text(
+                      benefit.benefitDetails,
+                    ), // benefit_detailsを表示
+                    trailing: Text(
+                      'Expires: ${benefit.expirationDate.toIso8601String().substring(0, 10)}',
+                    ),
+                  );
+                },
               );
             },
           );
