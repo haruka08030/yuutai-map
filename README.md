@@ -1,21 +1,16 @@
-# Shareholder Benefit Map (yuutai-map)
+# flutter_stock
 
-株主優待情報を登録し、地図上で優待店舗を確認できる Flutter アプリです。
+A new Flutter project.
 
-## 主な機能
-- 株主優待の登録・編集
-- Google マップを用いた優待スポットの表示
-- 現在地の取得による近隣検索
+## Getting Started
 
-## セットアップ
-1. Flutter 3.8.1 以降をインストールします。
-2. このリポジトリをクローンし、ディレクトリに移動します。
-3. `.env` に Firebase や Google Maps の API キーを設定します。
-4. 依存関係を取得します。
-   ```bash
-   flutter pub get
-   ```
-5. アプリを起動します。
-   ```bash
-   flutter run
-   ```
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
