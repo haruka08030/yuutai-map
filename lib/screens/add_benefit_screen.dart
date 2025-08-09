@@ -14,6 +14,22 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
+  Future<void> _pickExpirationDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      final formatted =
+          '${pickedDate.year.toString().padLeft(4, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
+      setState(() {
+        _dateController.text = formatted;
+      });
+    }
+  }
+
   Future<void> _saveBenefit() async {
     if (_selectedCompanyId == null ||
         _detailsController.text.isEmpty ||
@@ -89,7 +105,8 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
               decoration: const InputDecoration(
                 labelText: 'Expiration Date (YYYY-MM-DD)',
               ),
-              keyboardType: TextInputType.datetime,
+              readOnly: true,
+              onTap: _pickExpirationDate,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
