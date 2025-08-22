@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/company.dart';
+import '../models/company.dart';
 
 class AddBenefitScreen extends StatefulWidget {
   const AddBenefitScreen({super.key});
@@ -13,6 +13,22 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
   String? _selectedCompanyId;
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
+  Future<void> _pickExpirationDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      final formatted =
+          '${pickedDate.year.toString().padLeft(4, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
+      setState(() {
+        _dateController.text = formatted;
+      });
+    }
+  }
 
   Future<void> _saveBenefit() async {
     if (_selectedCompanyId == null ||
@@ -38,6 +54,13 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
     if (mounted) {
       Navigator.pop(context);
     }
+  }
+
+  @override
+  void dispose() {
+    _detailsController.dispose();
+    _dateController.dispose();
+    super.dispose();
   }
 
   @override
@@ -89,7 +112,8 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
               decoration: const InputDecoration(
                 labelText: 'Expiration Date (YYYY-MM-DD)',
               ),
-              keyboardType: TextInputType.datetime,
+              readOnly: true,
+              onTap: _pickExpirationDate,
             ),
             const SizedBox(height: 16),
             ElevatedButton(

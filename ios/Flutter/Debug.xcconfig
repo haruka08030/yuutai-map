@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+# In the .env file, we defined Maps_API_KEY.
+# Xcode cannot read .env directly, so we need to bridge it through the build process.
+Maps_API_KEY = $(inherited)
