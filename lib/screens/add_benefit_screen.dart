@@ -10,7 +10,7 @@ class AddBenefitScreen extends StatefulWidget {
 }
 
 class _AddBenefitScreenState extends State<AddBenefitScreen> {
-  String? _selectedCompanyId;
+  String? _selectedCompanyId; // ← 参照はStringに寄せる
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
@@ -18,70 +18,74 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
     if (_selectedCompanyId == null ||
         _detailsController.text.isEmpty ||
         _dateController.text.isEmpty) {
-      // バリデーションエラー処理
+      // TODO: 簡易バリデーション表示
       return;
     }
 
     final expirationDate = DateTime.tryParse(_dateController.text);
     if (expirationDate == null) {
-      // 日付フォーマットエラー処理
+      // TODO: 日付フォーマットエラー表示
       return;
     }
 
     await FirebaseFirestore.instance.collection('shareholder_benefits').add({
-      'company_id': _selectedCompanyId,
+      'company_id': _selectedCompanyId, // Stringで保存（応急）
       'benefit_details': _detailsController.text,
       'expiration_date': Timestamp.fromDate(expirationDate),
       'is_used': false,
     });
 
-    if (mounted) {
-      Navigator.pop(context);
-    }
+    if (mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add New Benefit')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
             // 会社選択ドロップダウン
-            StreamBuilder<QuerySnapshot>(
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: FirebaseFirestore.instance
                   .collection('companies')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 56,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
                 }
-                final companies = snapshot.data!.docs
-                    .map((doc) => Company.fromFirestore(doc))
-                    .toList();
+                if (snapshot.hasError) {
+                  return Text('Failed to load companies: ${snapshot.error}');
+                }
+                final companies =
+                    snapshot.data?.docs
+                        .map((doc) => Company.fromFirestore(doc))
+                        .toList() ??
+                    [];
 
                 return DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Company'),
                   value: _selectedCompanyId,
                   items: companies.map((company) {
-                    return DropdownMenuItem(
-                      value: company.id,
+                    return DropdownMenuItem<String>(
+                      value: company.id, // ← String
                       child: Text(company.name),
                     );
                   }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedCompanyId = value;
-                    });
-                  },
+                  onChanged: (value) =>
+                      setState(() => _selectedCompanyId = value),
                 );
               },
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _detailsController,
-              decoration: const InputDecoration(labelText: 'Benefit Details'),
+              decoration: const InputDecoration(labelText: '概要'),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -91,10 +95,13 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
               ),
               keyboardType: TextInputType.datetime,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _saveBenefit,
-              child: const Text('Save Benefit'),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveBenefit,
+                child: const Text('優待を保存する'),
+              ),
             ),
           ],
         ),
