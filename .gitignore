@@ -42,4 +42,4 @@ app.*.map.json
 # .env file
 /.env
 lib/firebase_options.dart
-data_importer/
+data_importer/lib/firebase_options.dart
