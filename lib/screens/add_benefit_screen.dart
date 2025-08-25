@@ -10,7 +10,7 @@ class AddBenefitScreen extends StatefulWidget {
 }
 
 class _AddBenefitScreenState extends State<AddBenefitScreen> {
-  String? _selectedCompanyId; // ← 参照はStringに寄せる
+  String? _selectedCompanyId;
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
