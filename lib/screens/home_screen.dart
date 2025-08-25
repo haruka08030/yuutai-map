@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/shareholder_benefit.dart';
-import '../models/company.dart'; // Companyモデルをインポート
+import '../models/company.dart';
 import 'add_benefit_screen.dart';
 import 'map_screen.dart';
 
