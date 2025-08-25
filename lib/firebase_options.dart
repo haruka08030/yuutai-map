@@ -37,7 +37,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCqkwMNQNtJmIgu5C_J8Zfgao7SYsMwoAY',
+    apiKey: 'AIzaSyB2KexePPqOjFi3x_88tRTKrANTuJka0ok',
     appId: '1:863948634021:web:bdbff46180a14f49f91a4c',
     messagingSenderId: '863948634021',
     projectId: 'flutter-stock-e2b0e',
@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCMZFm4TQv1aqoIwpyJLVkFQWa7OkTrGbQ',
+    apiKey: 'AIzaSyCPGYnGRgI533Iwj38NjjIKPTail6Qdo6o',
     appId: '1:863948634021:android:45f6356f8e3d717ef91a4c',
     messagingSenderId: '863948634021',
     projectId: 'flutter-stock-e2b0e',
@@ -55,11 +55,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBYveNSHy4H_W7k5jv5bSzlO8I67cAsgZ4',
-    appId: '1:863948634021:ios:67900226dd60cd82f91a4c',
+    apiKey: 'AIzaSyDQ7SMX_sbh3VrwOU9BfnFQ9TMIw09qD8M',
+    appId: '1:863948634021:ios:b3260d7d3641faaaf91a4c',
     messagingSenderId: '863948634021',
     projectId: 'flutter-stock-e2b0e',
     storageBucket: 'flutter-stock-e2b0e.firebasestorage.app',
-    iosBundleId: 'com.example.flutterStock',
+    iosBundleId: 'com.haruka.stockApp',
   );
+
 }
