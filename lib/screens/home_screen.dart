@@ -22,16 +22,26 @@ class _HomeScreenState extends State<HomeScreen> {
       return _companyNames[companyId]!;
     }
 
-    // Firestoreから企業名を取得
-    final doc = await FirebaseFirestore.instance
-        .collection('companies')
-        .doc(companyId)
-        .get();
-    final company = Company.fromFirestore(doc);
+    try {
+      // Firestoreから企業名を取得
+      final doc = await FirebaseFirestore.instance
+          .collection('companies')
+          .doc(companyId)
+          .get();
 
-    // キャッシュに保存
-    _companyNames[companyId] = company.name;
-    return company.name;
+      if (!doc.exists) {
+        return 'Unknown company';
+      }
+
+      final company = Company.fromFirestore(doc);
+
+      // キャッシュに保存
+      _companyNames[companyId] = company.name;
+      return company.name;
+    } catch (_) {
+      // 取得に失敗した場合はプレースホルダーを返す
+      return 'Unknown company';
+    }
   }
 
   @override
@@ -74,16 +84,33 @@ class _HomeScreenState extends State<HomeScreen> {
               return FutureBuilder<String>(
                 future: _fetchCompanyName(benefit.companyId),
                 builder: (context, companyNameSnapshot) {
+                  final subtitle = Text(benefit.benefitDetails);
+                  final trailing = Text(
+                    'Expires: ${benefit.expirationDate.toIso8601String().substring(0, 10)}',
+                  );
+
+                  if (companyNameSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return ListTile(
+                      title: const Text('Loading...'),
+                      subtitle: subtitle,
+                      trailing: trailing,
+                    );
+                  }
+
+                  if (companyNameSnapshot.hasError ||
+                      !companyNameSnapshot.hasData) {
+                    return ListTile(
+                      title: const Text('Unknown company'),
+                      subtitle: subtitle,
+                      trailing: trailing,
+                    );
+                  }
+
                   return ListTile(
-                    title: Text(
-                      companyNameSnapshot.data ?? 'Loading...',
-                    ), // 企業名を表示
-                    subtitle: Text(
-                      benefit.benefitDetails,
-                    ), // benefit_detailsを表示
-                    trailing: Text(
-                      'Expires: ${benefit.expirationDate.toIso8601String().substring(0, 10)}',
-                    ),
+                    title: Text(companyNameSnapshot.data!),
+                    subtitle: subtitle,
+                    trailing: trailing,
                   );
                 },
               );
