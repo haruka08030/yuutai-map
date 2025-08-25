@@ -45,3 +45,6 @@ data_importer/lib/firebase_options.dart
 
 # Firebase auto-generated config
 lib/firebase_options.dart
+
+# secrets
+data_importer/serviceAccountKey.json
