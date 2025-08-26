@@ -1,28 +1,35 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ShareholderBenefit {
   final String id;
-  final String companyId;
+  final String? companyId;
   final String benefitDetails;
   final DateTime expirationDate;
   final bool isUsed;
+  final String? memo;
 
   ShareholderBenefit({
     required this.id,
-    required this.companyId,
+    this.companyId,
     required this.benefitDetails,
     required this.expirationDate,
     required this.isUsed,
+    this.memo,
   });
 
-  factory ShareholderBenefit.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  ShareholderBenefit copyWith({
+    String? id,
+    String? companyId,
+    String? benefitDetails,
+    DateTime? expirationDate,
+    bool? isUsed,
+    String? memo,
+  }) {
     return ShareholderBenefit(
-      id: doc.id,
-      companyId: data['company_id'],
-      benefitDetails: data['benefit_details'],
-      expirationDate: (data['expiration_date'] as Timestamp).toDate(),
-      isUsed: data['is_used'] ?? false,
+      id: id ?? this.id,
+      companyId: companyId ?? this.companyId,
+      benefitDetails: benefitDetails ?? this.benefitDetails,
+      expirationDate: expirationDate ?? this.expirationDate,
+      isUsed: isUsed ?? this.isUsed,
+      memo: memo ?? this.memo,
     );
   }
 }
