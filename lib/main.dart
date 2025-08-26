@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'app/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
     url: const String.fromEnvironment('SUPABASE_URL'),
     anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
-    authFlowType: AuthFlowType.pkce, // Google/Apple連携を見据えてPKCE
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: YuutaiApp()));
 }
-
-final supabase = Supabase.instance.client;

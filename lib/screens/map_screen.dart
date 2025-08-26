@@ -47,7 +47,7 @@ class _MapScreenState extends State<MapScreen> {
   LatLngBounds _approxBounds(LatLng center, double zoom) {
     // 緯度経度 1度あたりの距離は緯度で変わるが簡易に計算
     // ここでは zoom 12 で ~20km 四方になる程度の係数で概算
-    final latDelta = 0.25; // 適宜調整
+    const latDelta = 0.25; // 適宜調整
     final lngDelta = 0.25 / cos(center.latitude * pi / 180.0);
     return LatLngBounds(
       southwest: LatLng(
