@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_stock/screens/map_screen.dart';
 import '../models/shareholder_benefit.dart';
 import 'add_benefit_screen.dart';
@@ -65,10 +64,25 @@ class HomeScreen extends StatelessWidget {
                       b.companyId.toString(); // フォールバック
 
                   return ListTile(
-                    title: Text(companyName),
-                    subtitle: Text(
-                      (b.benefitDetails.isEmpty) ? '—' : b.benefitDetails,
+                    leading: Checkbox(
+                      value: b.isUsed,
+                      onChanged: (val) {
+                        FirebaseFirestore.instance
+                            .collection('shareholder_benefits')
+                            .doc(b.id)
+                            .update({'is_used': val ?? false});
+                      },
                     ),
+                    title: Text(companyName),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (b.benefitDetails.isNotEmpty) Text(b.benefitDetails),
+                        Text(fmtDate(b.expirationDate)),
+                      ],
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -77,21 +91,6 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Expires: ${fmtDate(b.expirationDate)}'),
-                        Checkbox(
-                          value: b.isUsed,
-                          onChanged: (val) {
-                            FirebaseFirestore.instance
-                                .collection('shareholder_benefits')
-                                .doc(b.id)
-                                .update({'is_used': val ?? false});
-                          },
-                        ),
-                      ],
-                    ),
                   );
                 },
               );
