@@ -14,16 +14,3 @@ Future<void> main() async {
 }
 
 final supabase = Supabase.instance.client;
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Shareholder Benefit App',
-//       theme: ThemeData(primarySwatch: Colors.blue),
-//       home: const HomeScreen(),
-//     );
-//   }
-// }
