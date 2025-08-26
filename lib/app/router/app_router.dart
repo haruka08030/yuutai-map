@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-StatefulShellBranch(routes: [GoRoute(path: AppRoutes.map, builder: (c, s) => const MapScreen())]),
-StatefulShellBranch(routes: [GoRoute(path: AppRoutes.settings, builder: (c, s) => const SettingsScreen())]),
+void StatefulShellBranch(routes = [GoRoute(path: AppRoutes.map, builder: (c, s) => const MapScreen())]),
+void StatefulShellBranch(routes = [GoRoute(path: AppRoutes.settings, builder: (c, s) => const SettingsScreen())]),
 ],
 ),
 ],

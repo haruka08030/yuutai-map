@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../data/benefit_repository.dart';
-import '../models/shareholder_benefit.dart';
-import 'add_benefit_screen.dart';
-import 'map_screen.dart';
+import 'package:flutter_stock/data/benefit_repository.dart';
+import 'package:flutter_stock/models/shareholder_benefit.dart';
+import 'package:flutter_stock/screens/add_benefit_screen.dart';
+import 'package:flutter_stock/screens/map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

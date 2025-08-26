@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../../domain/user_benefit.dart';
-import 'due_badge.dart';
+import 'package:flutter_stock/features/benefits/domain/user_benefit.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/due_badge.dart';
 
 class BenefitListItem extends StatelessWidget {
   const BenefitListItem({

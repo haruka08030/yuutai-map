@@ -6,10 +6,10 @@ class DueBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color bg;
-    String text = daysLeft >= 0 ? 'D-$daysLeft' : '期限切れ';
-    if (daysLeft < 0)
+    final String text = daysLeft >= 0 ? 'D-$daysLeft' : '期限切れ';
+    if (daysLeft < 0) {
       bg = Colors.red;
-    else if (daysLeft <= 7)
+    } else if (daysLeft <= 7)
       bg = Colors.orange;
     else if (daysLeft <= 30)
       bg = Colors.amber;

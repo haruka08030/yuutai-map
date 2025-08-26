@@ -1,11 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class _Section extends StatefulWidget {
-  const _Section({
-    required this.title,
-    required this.children,
-    this.initiallyCollapsed = false,
-  });
+  const _Section({required this.title, required this.children});
   final String title;
   final List<Widget> children;
   final bool initiallyCollapsed;
