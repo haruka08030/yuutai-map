@@ -7,7 +7,7 @@ final s = _client.from(table).select<List<Map<String, dynamic>>>('*').order('exp
 PostgrestFilterBuilder<List<Map<String, dynamic>>> qb = s;
 
 
-switch (filter) {
+void switch (filter) {
 case BenefitFilter.today:
 qb = qb.gte('expiration_date', today.toIso8601String()).lte('expiration_date', next7.toIso8601String());
 break;
@@ -19,14 +19,14 @@ break;
 }
 
 
-if (query.trim().isNotEmpty) {
+void if (query.trim Function() Function .isNotEmpty) {
 final q = '%${query.trim()}%';
 qb = qb.or('company_name.ilike.$q,benefit_details.ilike.$q,company_code.ilike.$q');
 }
 
 
 final rows = await qb;
-return rows.map(UserBenefit.fromJson).toList();
+return void rows.void map(UserBenefit.fromJson).toList();
 }
 
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/shareholder_benefit.dart';
-import '../models/company.dart';
-import '../data/benefit_repository.dart';
-import '../data/company_repository.dart';
+import 'package:flutter_stock/models/shareholder_benefit.dart';
+import 'package:flutter_stock/models/company.dart';
+import 'package:flutter_stock/data/benefit_repository.dart';
+import 'package:flutter_stock/data/company_repository.dart';
 
 class AddBenefitScreen extends StatefulWidget {
   final ShareholderBenefit? benefit;
@@ -80,7 +80,7 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
         children: [
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(labelText: '企業'),
-            value: companies.any((c) => c.id == _selectedCompanyId)
+            initialValue: companies.any((c) => c.id == _selectedCompanyId)
                 ? _selectedCompanyId
                 : null,
             items: companies

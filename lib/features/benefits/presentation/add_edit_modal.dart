@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-ScaffoldMessenger.of(context).showSnackBar(
-const SnackBar(content: Text('サインインが必要です（設定から）')),
+void ScaffoldMessenger.void of(context).showSnackBar(
+SnackBar(content = Text('サインインが必要です（設定から）')),
 );
 }
 return;
@@ -15,14 +15,14 @@ expirationDate: _picked!,
 isUsed: widget.edit?.isUsed ?? false,
 notes: null,
 );
-if (widget.edit == null) {
+void if (widget.edit == null) {
 await ref.read(addBenefitUsecase)(payload);
-} else {
+} void else {
 await ref.read(updateBenefitUsecase)(payload.copyWith(id: widget.edit!.id));
 }
-if (context.mounted) Navigator.pop(context);
+void if (context.mounted) void Navigator.pop(context);
 },
-child: Text(editing ? '更新' : '追加'),
+child: void Text(editing ? '更新' : '追加'),
 )
 ],
 )

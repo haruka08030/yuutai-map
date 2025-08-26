@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/repositories/user_benefit_repository.dart';
-import '../../../data/supabase/supabase_client_provider.dart';
-import '../domain/user_benefit.dart';
-import 'benefit_filter.dart';
+import 'package:flutter_stock/data/repositories/user_benefit_repository.dart';
+import 'package:flutter_stock/data/supabase/supabase_client_provider.dart';
+import 'package:flutter_stock/features/benefits/domain/user_benefit.dart';
+import 'package:flutter_stock/features/benefits/application/benefit_filter.dart';
 
 final benefitFilterProvider = StateProvider<BenefitFilter>(
   (_) => BenefitFilter.today,

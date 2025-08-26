@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tokens.dart';
+import 'package:flutter_stock/app/theme/tokens.dart';
 
 class AppTheme {
   static final light = ThemeData(
