@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/company.dart';
 import '../models/shareholder_benefit.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/benefit_repository.dart';
 
 class AddBenefitScreen extends StatefulWidget {
   final ShareholderBenefit? benefit;
@@ -20,46 +21,33 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
   @override
   void initState() {
     super.initState();
-    final b = widget.benefit;
-    if (b != null) {
-      _selectedCompanyId = b.companyId;
-      _detailsController.text = b.benefitDetails;
+    repo = BenefitRepository(Supabase.instance.client);
+    if (widget.benefit != null) {
+      _selectedCompanyId = widget.benefit!.companyId;
+      _detailsController.text = widget.benefit!.benefitDetails;
       _dateController.text =
-          '${b.expirationDate.year.toString().padLeft(4, '0')}-${b.expirationDate.month.toString().padLeft(2, '0')}-${b.expirationDate.day.toString().padLeft(2, '0')}';
-      _isUsed = b.isUsed;
+          '${widget.benefit!.expirationDate.year.toString().padLeft(4, '0')}-${widget.benefit!.expirationDate.month.toString().padLeft(2, '0')}-${widget.benefit!.expirationDate.day.toString().padLeft(2, '0')}';
+      _isUsed = widget.benefit!.isUsed;
     }
   }
 
-  Future<void> _saveBenefit() async {
-    if (_selectedCompanyId == null ||
-        _detailsController.text.isEmpty ||
-        _dateController.text.isEmpty) {
-      // TODO: 簡易バリデーション表示
-      return;
-    }
-
-    final expirationDate = DateTime.tryParse(_dateController.text);
-    if (expirationDate == null) {
-      // TODO: 日付フォーマットエラー表示
-      return;
-    }
-
-    final data = {
-      'company_id': _selectedCompanyId,
-      'benefit_details': _detailsController.text,
-      'expiration_date': Timestamp.fromDate(expirationDate),
-      'is_used': _isUsed,
-    };
-
-    final col = FirebaseFirestore.instance.collection('shareholder_benefits');
+  Future<void> _save() async {
+    final b = ShareholderBenefit(
+      id: widget.benefit?.id ?? '', // insert時は未使用
+      companyId: _selectedCompanyId,
+      benefitDetails: _detailsController.text.trim(),
+      expirationDate: DateTime.parse(_dateController.text),
+      memo: null,
+      isUsed: _isUsed,
+    );
     if (widget.benefit == null) {
-      await col.add(data);
+      await repo.addBenefit(b);
     } else {
-      await col.doc(widget.benefit!.id).update(data);
+      await repo.updateBenefit(b.copyWith(id: widget.benefit!.id));
     }
-
-    if (mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context, true);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -94,15 +82,29 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
                         .toList() ??
                     [];
 
+                final uniqueCompanies = {
+                  for (final c in companies) c.id: c,
+                }.values.toList();
+
+                final items = uniqueCompanies
+                    .map(
+                      (company) => DropdownMenuItem<String>(
+                        value: company.id,
+                        child: Text(company.name),
+                      ),
+                    )
+                    .toList();
+
+                // Only keep the selected value if it exists in the items list
+                final selected =
+                    uniqueCompanies.any((c) => c.id == _selectedCompanyId)
+                    ? _selectedCompanyId
+                    : null;
+
                 return DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Company'),
-                  value: _selectedCompanyId,
-                  items: companies.map((company) {
-                    return DropdownMenuItem<String>(
-                      value: company.id, // ← String
-                      child: Text(company.name),
-                    );
-                  }).toList(),
+                  decoration: const InputDecoration(labelText: '企業'),
+                  value: selected,
+                  items: items,
                   onChanged: (value) =>
                       setState(() => _selectedCompanyId = value),
                 );
@@ -111,22 +113,13 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: _detailsController,
-              decoration: const InputDecoration(labelText: '概要'),
+              decoration: const InputDecoration(labelText: '優待内容'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _dateController,
-              decoration: const InputDecoration(
-                labelText: 'Expiration Date (YYYY-MM-DD)',
-              ),
+              decoration: const InputDecoration(labelText: '有効期限 (YYYY-MM-DD)'),
               keyboardType: TextInputType.datetime,
-            ),
-            const SizedBox(height: 16),
-            CheckboxListTile(
-              title: const Text('使用済み'),
-              contentPadding: EdgeInsets.zero,
-              value: _isUsed,
-              onChanged: (val) => setState(() => _isUsed = val ?? false),
             ),
             const SizedBox(height: 24),
             SizedBox(
