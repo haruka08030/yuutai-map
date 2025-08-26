@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/company.dart';
+import '../models/shareholder_benefit.dart';
 
 class AddBenefitScreen extends StatefulWidget {
-  const AddBenefitScreen({super.key});
+  final ShareholderBenefit? benefit;
+  const AddBenefitScreen({super.key, this.benefit});
 
   @override
   _AddBenefitScreenState createState() => _AddBenefitScreenState();
@@ -13,6 +15,20 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
   String? _selectedCompanyId;
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  bool _isUsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final b = widget.benefit;
+    if (b != null) {
+      _selectedCompanyId = b.companyId;
+      _detailsController.text = b.benefitDetails;
+      _dateController.text =
+          '${b.expirationDate.year.toString().padLeft(4, '0')}-${b.expirationDate.month.toString().padLeft(2, '0')}-${b.expirationDate.day.toString().padLeft(2, '0')}';
+      _isUsed = b.isUsed;
+    }
+  }
 
   Future<void> _saveBenefit() async {
     if (_selectedCompanyId == null ||
@@ -28,20 +44,30 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
       return;
     }
 
-    await FirebaseFirestore.instance.collection('shareholder_benefits').add({
-      'company_id': _selectedCompanyId, // Stringで保存（応急）
+    final data = {
+      'company_id': _selectedCompanyId,
       'benefit_details': _detailsController.text,
       'expiration_date': Timestamp.fromDate(expirationDate),
-      'is_used': false,
-    });
+      'is_used': _isUsed,
+    };
+
+    final col = FirebaseFirestore.instance.collection('shareholder_benefits');
+    if (widget.benefit == null) {
+      await col.add(data);
+    } else {
+      await col.doc(widget.benefit!.id).update(data);
+    }
 
     if (mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.benefit != null;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add New Benefit')),
+      appBar: AppBar(
+        title: Text(isEditing ? 'Edit Benefit' : 'Add New Benefit'),
+      ),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: ListView(
@@ -94,6 +120,13 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
                 labelText: 'Expiration Date (YYYY-MM-DD)',
               ),
               keyboardType: TextInputType.datetime,
+            ),
+            const SizedBox(height: 16),
+            CheckboxListTile(
+              title: const Text('使用済み'),
+              contentPadding: EdgeInsets.zero,
+              value: _isUsed,
+              onChanged: (val) => setState(() => _isUsed = val ?? false),
             ),
             const SizedBox(height: 24),
             SizedBox(
