@@ -65,13 +65,33 @@ class HomeScreen extends StatelessWidget {
                       b.companyId.toString(); // フォールバック
 
                   return ListTile(
-                    // ← タイトルを企業名に
                     title: Text(companyName),
-                    // ← サブタイトルに優待内容（例：5000円分）
                     subtitle: Text(
                       (b.benefitDetails.isEmpty) ? '—' : b.benefitDetails,
                     ),
-                    trailing: Text('Expires: ${fmtDate(b.expirationDate)}'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddBenefitScreen(benefit: b),
+                        ),
+                      );
+                    },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Expires: ${fmtDate(b.expirationDate)}'),
+                        Checkbox(
+                          value: b.isUsed,
+                          onChanged: (val) {
+                            FirebaseFirestore.instance
+                                .collection('shareholder_benefits')
+                                .doc(b.id)
+                                .update({'is_used': val ?? false});
+                          },
+                        ),
+                      ],
+                    ),
                   );
                 },
               );
