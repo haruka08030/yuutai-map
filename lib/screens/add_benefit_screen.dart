@@ -62,6 +62,13 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
   }
 
   @override
+  void dispose() {
+    _detailsController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isEditing = widget.benefit != null;
     return Scaffold(
