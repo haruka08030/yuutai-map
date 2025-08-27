@@ -4,30 +4,28 @@ import 'package:flutter_stock/features/benefits/application/benefits_provider.da
 
 final addBenefitUsecase = Provider(
   (ref) => (UserBenefit b) async {
-    await ref.read(userBenefitRepositoryProvider).create(b);
-    ref.invalidate(benefitsProvider);
+    await ref.read(userBenefitRepositoryProvider).add(b);
+    ref.invalidate(benefitListProvider);
   },
 );
 
 final updateBenefitUsecase = Provider(
   (ref) => (UserBenefit b) async {
     await ref.read(userBenefitRepositoryProvider).update(b);
-    ref.invalidate(benefitsProvider);
+    ref.invalidate(benefitListProvider);
   },
 );
 
 final deleteBenefitUsecase = Provider(
   (ref) => (String id) async {
     await ref.read(userBenefitRepositoryProvider).delete(id);
-    ref.invalidate(benefitsProvider);
+    ref.invalidate(benefitListProvider);
   },
 );
 
 final toggleUsedUsecase = Provider(
-  (ref) => (String id, bool isUsed) async {
-    await ref
-        .read(userBenefitRepositoryProvider)
-        .toggleUsed(id: id, isUsed: isUsed);
-    ref.invalidate(benefitsProvider);
+  (ref) => (String id) async {
+    await ref.read(userBenefitRepositoryProvider).toggleUsed(id);
+    ref.invalidate(benefitListProvider);
   },
 );

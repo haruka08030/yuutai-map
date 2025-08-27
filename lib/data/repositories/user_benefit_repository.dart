@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_stock/features/benefits/domain/user_benefit.dart';
+import 'package:supabase/src/supabase_client.dart';
 
 enum BenefitFilter { all, used, unused, dueSoon, expired }
 
@@ -17,6 +17,8 @@ class UserBenefitRepository {
       isUsed: false,
     ),
   ];
+
+  UserBenefitRepository(SupabaseClient client);
 
   Future<List<UserBenefit>> list({
     BenefitFilter filter = BenefitFilter.all,
@@ -71,7 +73,9 @@ class UserBenefitRepository {
 
   Future<void> update(UserBenefit b) async {
     final idx = _items.indexWhere((e) => e.id == b.id);
-    if (idx >= 0) _items[idx] = b;
+    if (idx >= 0) {
+      _items[idx] = b;
+    }
   }
 
   Future<void> delete(String id) async {
@@ -80,7 +84,8 @@ class UserBenefitRepository {
 
   Future<void> toggleUsed(String id) async {
     final idx = _items.indexWhere((e) => e.id == id);
-    if (idx >= 0)
+    if (idx >= 0) {
       _items[idx] = _items[idx].copyWith(isUsed: !_items[idx].isUsed);
+    }
   }
 }
