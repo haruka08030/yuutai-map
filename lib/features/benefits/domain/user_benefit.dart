@@ -8,7 +8,7 @@ class UserBenefit with _$UserBenefit {
   const factory UserBenefit({
     required String id,
     required String userId,
-    required String companyId, // ← これが無くて他所で落ちてた
+    required String companyCode,
     String? companyName,
     required String benefitDetails,
     required DateTime expirationDate,
