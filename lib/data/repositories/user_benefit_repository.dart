@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_stock/features/benefits/domain/user_benefit.dart';
-import 'package:supabase/src/supabase_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum BenefitFilter { all, used, unused, dueSoon, expired }
 

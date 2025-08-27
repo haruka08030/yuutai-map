@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _refresh();
                   },
                 ),
-                title: Text(b.companyId ?? ''),
+                title: Text(b.companyId),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
