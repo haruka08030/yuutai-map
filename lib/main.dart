@@ -9,5 +9,5 @@ Future<void> main() async {
     url: const String.fromEnvironment('SUPABASE_URL'),
     anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
   );
-  runApp(ProviderScope(child: YuutaiApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
