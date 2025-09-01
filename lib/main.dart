@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/app/app.dart';
+import 'package:flutter_stock/core/notifications/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: const String.fromEnvironment('SUPABASE_URL'),
-    anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
-  );
-  runApp(const ProviderScope(child: MyApp()));
+  await NotificationService.instance.initialize();
+  runApp(const ProviderScope(child: YuutaiApp()));
 }

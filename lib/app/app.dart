@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/app/router/app_router.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/features/benefits/presentation/benefits_page.dart';
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class YuutaiApp extends ConsumerWidget {
+  const YuutaiApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(appRouterProvider);
-    return MaterialApp.router(
-      title: 'Yuutai Map',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
-      routerConfig: router,
+    return MaterialApp(
+      title: 'yuutai-map',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      home: const BenefitsPage(),
     );
   }
 }
