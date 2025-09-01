@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stock/app/theme/tokens.dart';
 
 class AppTheme {
-  static final light = ThemeData(
+  static ThemeData get light => ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2A7DE1)),
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(seedColor: AppTokens.seed),
-  );
-
-  static final dark = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppTokens.seed,
-      brightness: Brightness.dark,
-    ),
+    listTileTheme: const ListTileThemeData(dense: false),
   );
 }
