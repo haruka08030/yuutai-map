@@ -38,6 +38,8 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
       createdAt: now,
       updatedAt: now,
       expireOn: d.Value(b.expireOn),
+      notifyBeforeDays: d.Value(b.notifyBeforeDays),
+      notifyAtHour: d.Value(b.notifyAtHour),
       isUsed: d.Value(b.isUsed),
       notes: d.Value(b.notes),
       brandId: d.Value(b.brandId),
@@ -107,6 +109,8 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
               benefitText: r.benefitText,
               notes: r.notes,
               expireOn: r.expireOn,
+              notifyBeforeDays: r.notifyBeforeDays,
+              notifyAtHour: r.notifyAtHour,
               isUsed: r.isUsed,
             ),
           )

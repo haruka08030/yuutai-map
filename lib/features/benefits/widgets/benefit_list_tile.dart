@@ -183,7 +183,8 @@ class BenefitListTile extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
               )
             : null,
-        trailing: _Badge(expireOn: benefit.expireOn),
+        // Expiration chip removed per request
+        // trailing: _Badge(expireOn: benefit.expireOn),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         onTap: () async {
           showModalBottomSheet(
@@ -204,57 +205,5 @@ class BenefitListTile extends ConsumerWidget {
         },
       ),
     );
-  }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge({this.expireOn});
-  final DateTime? expireOn;
-
-  @override
-  Widget build(BuildContext context) {
-    if (expireOn == null) return const SizedBox.shrink();
-    final now = DateTime.now();
-    final d = DateTime(
-      expireOn!.year,
-      expireOn!.month,
-      expireOn!.day,
-    ).difference(DateTime(now.year, now.month, now.day)).inDays;
-
-    if (d > 30) return const SizedBox.shrink();
-
-    String label;
-    Color color;
-    if (d < 0) {
-      label = '期限切れ';
-      color = Colors.red.shade300;
-    } else if (d == 0) {
-      label = '本日';
-      color = Colors.orange.shade400;
-    } else {
-      label = 'D-$d';
-      color = d <= 7 ? Colors.orange.shade300 : Colors.blueGrey.shade200;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: Chip(
-        label: Text(label),
-        visualDensity: VisualDensity.compact,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        backgroundColor: color.withValues(alpha: 0.25),
-        side: BorderSide(color: color, width: 0.5),
-        labelStyle: TextStyle(color: color.darken()),
-      ),
-    );
-  }
-}
-
-extension on Color {
-  Color darken([double amount = .2]) {
-    assert(amount >= 0 && amount <= 1);
-    final hsl = HSLColor.fromColor(this);
-    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
-    return hslDark.toColor();
   }
 }

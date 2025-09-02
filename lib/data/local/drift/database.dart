@@ -11,6 +11,8 @@ class UserBenefits extends Table {
   TextColumn get title => text()();
   TextColumn get benefitText => text()();
   DateTimeColumn get expireOn => dateTime().nullable()();
+  IntColumn get notifyBeforeDays => integer().nullable()();
+  IntColumn get notifyAtHour => integer().nullable()();
   BoolColumn get isUsed => boolean().withDefault(const Constant(false))();
   TextColumn get notes => text().nullable()();
   TextColumn get brandId => text().nullable()();
@@ -41,7 +43,17 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase() => _instance ??= AppDatabase._(_open());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(userBenefits, userBenefits.notifyBeforeDays);
+            await m.addColumn(userBenefits, userBenefits.notifyAtHour);
+          }
+        },
+      );
 }
 
 LazyDatabase _open() {
