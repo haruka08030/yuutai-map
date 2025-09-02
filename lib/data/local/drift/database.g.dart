@@ -104,6 +104,26 @@ class $UserBenefitsTable extends UserBenefits
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _notifyBeforeDaysMeta = const VerificationMeta(
+    'notifyBeforeDays',
+  );
+  late final GeneratedColumn<int> notifyBeforeDays = GeneratedColumn<int>(
+    'notify_before_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notifyAtHourMeta = const VerificationMeta(
+    'notifyAtHour',
+  );
+  late final GeneratedColumn<int> notifyAtHour = GeneratedColumn<int>(
+    'notify_at_hour',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -148,6 +168,8 @@ class $UserBenefitsTable extends UserBenefits
     brandId,
     companyId,
     brandText,
+    notifyBeforeDays,
+    notifyAtHour,
     createdAt,
     updatedAt,
     deletedAt,
@@ -224,6 +246,24 @@ class $UserBenefitsTable extends UserBenefits
         brandText.isAcceptableOrUnknown(data['brand_text']!, _brandTextMeta),
       );
     }
+    if (data.containsKey('notify_before_days')) {
+      context.handle(
+        _notifyBeforeDaysMeta,
+        notifyBeforeDays.isAcceptableOrUnknown(
+          data['notify_before_days']!,
+          _notifyBeforeDaysMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notify_at_hour')) {
+      context.handle(
+        _notifyAtHourMeta,
+        notifyAtHour.isAcceptableOrUnknown(
+          data['notify_at_hour']!,
+          _notifyAtHourMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -291,6 +331,14 @@ class $UserBenefitsTable extends UserBenefits
         DriftSqlType.string,
         data['${effectivePrefix}brand_text'],
       ),
+      notifyBeforeDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}notify_before_days'],
+      ),
+      notifyAtHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}notify_at_hour'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -322,6 +370,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
   final String? brandId;
   final String? companyId;
   final String? brandText;
+  final int? notifyBeforeDays;
+  final int? notifyAtHour;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -335,6 +385,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
     this.brandId,
     this.companyId,
     this.brandText,
+    this.notifyBeforeDays,
+    this.notifyAtHour,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -360,6 +412,12 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
     }
     if (!nullToAbsent || brandText != null) {
       map['brand_text'] = Variable<String>(brandText);
+    }
+    if (!nullToAbsent || notifyBeforeDays != null) {
+      map['notify_before_days'] = Variable<int>(notifyBeforeDays);
+    }
+    if (!nullToAbsent || notifyAtHour != null) {
+      map['notify_at_hour'] = Variable<int>(notifyAtHour);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -390,6 +448,12 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
       brandText: brandText == null && nullToAbsent
           ? const Value.absent()
           : Value(brandText),
+      notifyBeforeDays: notifyBeforeDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notifyBeforeDays),
+      notifyAtHour: notifyAtHour == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notifyAtHour),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       deletedAt: deletedAt == null && nullToAbsent
@@ -413,6 +477,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
       brandId: serializer.fromJson<String?>(json['brandId']),
       companyId: serializer.fromJson<String?>(json['companyId']),
       brandText: serializer.fromJson<String?>(json['brandText']),
+      notifyBeforeDays: serializer.fromJson<int?>(json['notifyBeforeDays']),
+      notifyAtHour: serializer.fromJson<int?>(json['notifyAtHour']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -431,6 +497,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
       'brandId': serializer.toJson<String?>(brandId),
       'companyId': serializer.toJson<String?>(companyId),
       'brandText': serializer.toJson<String?>(brandText),
+      'notifyBeforeDays': serializer.toJson<int?>(notifyBeforeDays),
+      'notifyAtHour': serializer.toJson<int?>(notifyAtHour),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -447,6 +515,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
     Value<String?> brandId = const Value.absent(),
     Value<String?> companyId = const Value.absent(),
     Value<String?> brandText = const Value.absent(),
+    Value<int?> notifyBeforeDays = const Value.absent(),
+    Value<int?> notifyAtHour = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -460,6 +530,10 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
     brandId: brandId.present ? brandId.value : this.brandId,
     companyId: companyId.present ? companyId.value : this.companyId,
     brandText: brandText.present ? brandText.value : this.brandText,
+    notifyBeforeDays: notifyBeforeDays.present
+        ? notifyBeforeDays.value
+        : this.notifyBeforeDays,
+    notifyAtHour: notifyAtHour.present ? notifyAtHour.value : this.notifyAtHour,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -477,6 +551,11 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
       brandId: data.brandId.present ? data.brandId.value : this.brandId,
       companyId: data.companyId.present ? data.companyId.value : this.companyId,
       brandText: data.brandText.present ? data.brandText.value : this.brandText,
+      notifyBeforeDays: data.notifyBeforeDays.present
+          ? data.notifyBeforeDays.value
+          : this.notifyBeforeDays,
+      notifyAtHour:
+          data.notifyAtHour.present ? data.notifyAtHour.value : this.notifyAtHour,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -494,11 +573,13 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
           ..write('notes: $notes, ')
           ..write('brandId: $brandId, ')
           ..write('companyId: $companyId, ')
-          ..write('brandText: $brandText, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt')
-          ..write(')'))
+      ..write('brandText: $brandText, ')
+      ..write('notifyBeforeDays: $notifyBeforeDays, ')
+      ..write('notifyAtHour: $notifyAtHour, ')
+      ..write('createdAt: $createdAt, ')
+      ..write('updatedAt: $updatedAt, ')
+      ..write('deletedAt: $deletedAt')
+      ..write(')'))
         .toString();
   }
 
@@ -513,6 +594,8 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
     brandId,
     companyId,
     brandText,
+    notifyBeforeDays,
+    notifyAtHour,
     createdAt,
     updatedAt,
     deletedAt,
@@ -530,6 +613,7 @@ class UserBenefit extends DataClass implements Insertable<UserBenefit> {
           other.brandId == this.brandId &&
           other.companyId == this.companyId &&
           other.brandText == this.brandText &&
+          other.notifyBeforeDays == this.notifyBeforeDays &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -545,6 +629,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
   final Value<String?> brandId;
   final Value<String?> companyId;
   final Value<String?> brandText;
+  final Value<int?> notifyBeforeDays;
+  final Value<int?> notifyAtHour;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
@@ -559,6 +645,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
     this.brandId = const Value.absent(),
     this.companyId = const Value.absent(),
     this.brandText = const Value.absent(),
+    this.notifyBeforeDays = const Value.absent(),
+    this.notifyAtHour = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -574,6 +662,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
     this.brandId = const Value.absent(),
     this.companyId = const Value.absent(),
     this.brandText = const Value.absent(),
+    this.notifyBeforeDays = const Value.absent(),
+    this.notifyAtHour = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.deletedAt = const Value.absent(),
@@ -593,6 +683,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
     Expression<String>? brandId,
     Expression<String>? companyId,
     Expression<String>? brandText,
+    Expression<int>? notifyBeforeDays,
+    Expression<int>? notifyAtHour,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -608,6 +700,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
       if (brandId != null) 'brand_id': brandId,
       if (companyId != null) 'company_id': companyId,
       if (brandText != null) 'brand_text': brandText,
+      if (notifyBeforeDays != null) 'notify_before_days': notifyBeforeDays,
+      if (notifyAtHour != null) 'notify_at_hour': notifyAtHour,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -625,6 +719,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
     Value<String?>? brandId,
     Value<String?>? companyId,
     Value<String?>? brandText,
+    Value<int?>? notifyBeforeDays,
+    Value<int?>? notifyAtHour,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
@@ -640,6 +736,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
       brandId: brandId ?? this.brandId,
       companyId: companyId ?? this.companyId,
       brandText: brandText ?? this.brandText,
+      notifyBeforeDays: notifyBeforeDays ?? this.notifyBeforeDays,
+      notifyAtHour: notifyAtHour ?? this.notifyAtHour,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -677,6 +775,12 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
     if (brandText.present) {
       map['brand_text'] = Variable<String>(brandText.value);
     }
+    if (notifyBeforeDays.present) {
+      map['notify_before_days'] = Variable<int>(notifyBeforeDays.value);
+    }
+    if (notifyAtHour.present) {
+      map['notify_at_hour'] = Variable<int>(notifyAtHour.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -704,6 +808,8 @@ class UserBenefitsCompanion extends UpdateCompanion<UserBenefit> {
           ..write('brandId: $brandId, ')
           ..write('companyId: $companyId, ')
           ..write('brandText: $brandText, ')
+          ..write('notifyBeforeDays: $notifyBeforeDays, ')
+          ..write('notifyAtHour: $notifyAtHour, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -1076,6 +1182,8 @@ typedef $$UserBenefitsTableCreateCompanionBuilder =
       Value<String?> brandId,
       Value<String?> companyId,
       Value<String?> brandText,
+      Value<int?> notifyBeforeDays,
+      Value<int?> notifyAtHour,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<DateTime?> deletedAt,
@@ -1092,6 +1200,8 @@ typedef $$UserBenefitsTableUpdateCompanionBuilder =
       Value<String?> brandId,
       Value<String?> companyId,
       Value<String?> brandText,
+      Value<int?> notifyBeforeDays,
+      Value<int?> notifyAtHour,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
@@ -1149,6 +1259,16 @@ class $$UserBenefitsTableFilterComposer
 
   ColumnFilters<String> get brandText => $composableBuilder(
     column: $table.brandText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get notifyBeforeDays => $composableBuilder(
+    column: $table.notifyBeforeDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get notifyAtHour => $composableBuilder(
+    column: $table.notifyAtHour,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1222,6 +1342,16 @@ class $$UserBenefitsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get notifyBeforeDays => $composableBuilder(
+    column: $table.notifyBeforeDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get notifyAtHour => $composableBuilder(
+    column: $table.notifyAtHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1257,6 +1387,10 @@ class $$UserBenefitsTableAnnotationComposer
     column: $table.benefitText,
     builder: (column) => column,
   );
+  GeneratedColumn<int> get notifyAtHour => $composableBuilder(
+    column: $table.notifyAtHour,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get expireOn =>
       $composableBuilder(column: $table.expireOn, builder: (column) => column);
@@ -1275,6 +1409,11 @@ class $$UserBenefitsTableAnnotationComposer
 
   GeneratedColumn<String> get brandText =>
       $composableBuilder(column: $table.brandText, builder: (column) => column);
+
+  GeneratedColumn<int> get notifyBeforeDays => $composableBuilder(
+    column: $table.notifyBeforeDays,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1326,6 +1465,8 @@ class $$UserBenefitsTableTableManager
                 Value<String?> brandId = const Value.absent(),
                 Value<String?> companyId = const Value.absent(),
                 Value<String?> brandText = const Value.absent(),
+                Value<int?> notifyBeforeDays = const Value.absent(),
+                Value<int?> notifyAtHour = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -1340,6 +1481,8 @@ class $$UserBenefitsTableTableManager
                 brandId: brandId,
                 companyId: companyId,
                 brandText: brandText,
+                notifyBeforeDays: notifyBeforeDays,
+                notifyAtHour: notifyAtHour,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -1356,6 +1499,8 @@ class $$UserBenefitsTableTableManager
                 Value<String?> brandId = const Value.absent(),
                 Value<String?> companyId = const Value.absent(),
                 Value<String?> brandText = const Value.absent(),
+                Value<int?> notifyBeforeDays = const Value.absent(),
+                Value<int?> notifyAtHour = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -1370,6 +1515,8 @@ class $$UserBenefitsTableTableManager
                 brandId: brandId,
                 companyId: companyId,
                 brandText: brandText,
+                notifyBeforeDays: notifyBeforeDays,
+                notifyAtHour: notifyAtHour,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,

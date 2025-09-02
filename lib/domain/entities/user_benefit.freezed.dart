@@ -19,6 +19,8 @@ mixin _$UserBenefit {
  String get title;// 企業名（表示用）
  String? get brandId; String? get companyId; String? get benefitText;// 優待内容（3000円分など）
  String? get notes;// 自由記入メモ
+ int? get notifyBeforeDays;// 通知するか（null=デフォルト）
+ int? get notifyAtHour;// 通知時刻（時, null=9）
  DateTime? get expireOn;// 期限日（JST基準）
  bool get isUsed;// 使用済み
  List<String> get tags;
@@ -34,16 +36,16 @@ $UserBenefitCopyWith<UserBenefit> get copyWith => _$UserBenefitCopyWithImpl<User
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserBenefit&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.brandId, brandId) || other.brandId == brandId)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitText, benefitText) || other.benefitText == benefitText)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.expireOn, expireOn) || other.expireOn == expireOn)&&(identical(other.isUsed, isUsed) || other.isUsed == isUsed)&&const DeepCollectionEquality().equals(other.tags, tags));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserBenefit&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.brandId, brandId) || other.brandId == brandId)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitText, benefitText) || other.benefitText == benefitText)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.notifyBeforeDays, notifyBeforeDays) || other.notifyBeforeDays == notifyBeforeDays)&&(identical(other.expireOn, expireOn) || other.expireOn == expireOn)&&(identical(other.isUsed, isUsed) || other.isUsed == isUsed)&&const DeepCollectionEquality().equals(other.tags, tags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,brandId,companyId,benefitText,notes,expireOn,isUsed,const DeepCollectionEquality().hash(tags));
+int get hashCode => Object.hash(runtimeType,id,title,brandId,companyId,benefitText,notes,notifyBeforeDays,notifyAtHour,expireOn,isUsed,const DeepCollectionEquality().hash(tags));
 
 @override
 String toString() {
-  return 'UserBenefit(id: $id, title: $title, brandId: $brandId, companyId: $companyId, benefitText: $benefitText, notes: $notes, expireOn: $expireOn, isUsed: $isUsed, tags: $tags)';
+  return 'UserBenefit(id: $id, title: $title, brandId: $brandId, companyId: $companyId, benefitText: $benefitText, notes: $notes, notifyBeforeDays: $notifyBeforeDays, notifyAtHour: $notifyAtHour, expireOn: $expireOn, isUsed: $isUsed, tags: $tags)';
 }
 
 
@@ -54,7 +56,7 @@ abstract mixin class $UserBenefitCopyWith<$Res>  {
   factory $UserBenefitCopyWith(UserBenefit value, $Res Function(UserBenefit) _then) = _$UserBenefitCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? brandId, String? companyId, String? benefitText, String? notes, DateTime? expireOn, bool isUsed, List<String> tags
+ String id, String title, String? brandId, String? companyId, String? benefitText, String? notes, int? notifyBeforeDays, int? notifyAtHour, DateTime? expireOn, bool isUsed, List<String> tags
 });
 
 
@@ -71,7 +73,7 @@ class _$UserBenefitCopyWithImpl<$Res>
 
 /// Create a copy of UserBenefit
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? brandId = freezed,Object? companyId = freezed,Object? benefitText = freezed,Object? notes = freezed,Object? expireOn = freezed,Object? isUsed = null,Object? tags = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? brandId = freezed,Object? companyId = freezed,Object? benefitText = freezed,Object? notes = freezed,Object? notifyBeforeDays = freezed,Object? notifyAtHour = freezed,Object? expireOn = freezed,Object? isUsed = null,Object? tags = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -79,7 +81,9 @@ as String,brandId: freezed == brandId ? _self.brandId : brandId // ignore: cast_
 as String?,companyId: freezed == companyId ? _self.companyId : companyId // ignore: cast_nullable_to_non_nullable
 as String?,benefitText: freezed == benefitText ? _self.benefitText : benefitText // ignore: cast_nullable_to_non_nullable
 as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
-as String?,expireOn: freezed == expireOn ? _self.expireOn : expireOn // ignore: cast_nullable_to_non_nullable
+as String?,notifyBeforeDays: freezed == notifyBeforeDays ? _self.notifyBeforeDays : notifyBeforeDays // ignore: cast_nullable_to_non_nullable
+as int?,notifyAtHour: freezed == notifyAtHour ? _self.notifyAtHour : notifyAtHour // ignore: cast_nullable_to_non_nullable
+as int?,expireOn: freezed == expireOn ? _self.expireOn : expireOn // ignore: cast_nullable_to_non_nullable
 as DateTime?,isUsed: null == isUsed ? _self.isUsed : isUsed // ignore: cast_nullable_to_non_nullable
 as bool,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,
@@ -167,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  DateTime? expireOn,  bool isUsed,  List<String> tags)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  int? notifyBeforeDays,  DateTime? expireOn,  bool isUsed,  List<String> tags)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserBenefit() when $default != null:
-return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.expireOn,_that.isUsed,_that.tags);case _:
+return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.notifyBeforeDays,_that.expireOn,_that.isUsed,_that.tags);case _:
   return orElse();
 
 }
@@ -188,10 +192,10 @@ return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefit
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  DateTime? expireOn,  bool isUsed,  List<String> tags)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  int? notifyBeforeDays,  DateTime? expireOn,  bool isUsed,  List<String> tags)  $default,) {final _that = this;
 switch (_that) {
 case _UserBenefit():
-return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.expireOn,_that.isUsed,_that.tags);case _:
+return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.notifyBeforeDays,_that.expireOn,_that.isUsed,_that.tags);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +212,10 @@ return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefit
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  DateTime? expireOn,  bool isUsed,  List<String> tags)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? brandId,  String? companyId,  String? benefitText,  String? notes,  int? notifyBeforeDays,  DateTime? expireOn,  bool isUsed,  List<String> tags)?  $default,) {final _that = this;
 switch (_that) {
 case _UserBenefit() when $default != null:
-return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.expireOn,_that.isUsed,_that.tags);case _:
+return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefitText,_that.notes,_that.notifyBeforeDays,_that.expireOn,_that.isUsed,_that.tags);case _:
   return null;
 
 }
@@ -223,7 +227,7 @@ return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefit
 @JsonSerializable()
 
 class _UserBenefit implements UserBenefit {
-  const _UserBenefit({required this.id, required this.title, this.brandId, this.companyId, this.benefitText, this.notes, this.expireOn, this.isUsed = false, final  List<String> tags = const []}): _tags = tags;
+  const _UserBenefit({required this.id, required this.title, this.brandId, this.companyId, this.benefitText, this.notes, this.notifyBeforeDays, this.notifyAtHour, this.expireOn, this.isUsed = false, final  List<String> tags = const []}): _tags = tags;
   factory _UserBenefit.fromJson(Map<String, dynamic> json) => _$UserBenefitFromJson(json);
 
 @override final  String id;
@@ -236,6 +240,10 @@ class _UserBenefit implements UserBenefit {
 // 優待内容（3000円分など）
 @override final  String? notes;
 // 自由記入メモ
+@override final  int? notifyBeforeDays;
+// 通知するか（null=デフォルト）
+@override final  int? notifyAtHour;
+// 通知時刻（時, null=9）
 @override final  DateTime? expireOn;
 // 期限日（JST基準）
 @override@JsonKey() final  bool isUsed;
@@ -262,16 +270,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserBenefit&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.brandId, brandId) || other.brandId == brandId)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitText, benefitText) || other.benefitText == benefitText)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.expireOn, expireOn) || other.expireOn == expireOn)&&(identical(other.isUsed, isUsed) || other.isUsed == isUsed)&&const DeepCollectionEquality().equals(other._tags, _tags));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserBenefit&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.brandId, brandId) || other.brandId == brandId)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitText, benefitText) || other.benefitText == benefitText)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.notifyBeforeDays, notifyBeforeDays) || other.notifyBeforeDays == notifyBeforeDays)&&(identical(other.notifyAtHour, notifyAtHour) || other.notifyAtHour == notifyAtHour)&&(identical(other.expireOn, expireOn) || other.expireOn == expireOn)&&(identical(other.isUsed, isUsed) || other.isUsed == isUsed)&&const DeepCollectionEquality().equals(other._tags, _tags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,brandId,companyId,benefitText,notes,expireOn,isUsed,const DeepCollectionEquality().hash(_tags));
+int get hashCode => Object.hash(runtimeType,id,title,brandId,companyId,benefitText,notes,notifyBeforeDays,notifyAtHour,expireOn,isUsed,const DeepCollectionEquality().hash(_tags));
 
 @override
 String toString() {
-  return 'UserBenefit(id: $id, title: $title, brandId: $brandId, companyId: $companyId, benefitText: $benefitText, notes: $notes, expireOn: $expireOn, isUsed: $isUsed, tags: $tags)';
+  return 'UserBenefit(id: $id, title: $title, brandId: $brandId, companyId: $companyId, benefitText: $benefitText, notes: $notes, notifyBeforeDays: $notifyBeforeDays, notifyAtHour: $notifyAtHour, expireOn: $expireOn, isUsed: $isUsed, tags: $tags)';
 }
 
 
@@ -282,7 +290,7 @@ abstract mixin class _$UserBenefitCopyWith<$Res> implements $UserBenefitCopyWith
   factory _$UserBenefitCopyWith(_UserBenefit value, $Res Function(_UserBenefit) _then) = __$UserBenefitCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? brandId, String? companyId, String? benefitText, String? notes, DateTime? expireOn, bool isUsed, List<String> tags
+ String id, String title, String? brandId, String? companyId, String? benefitText, String? notes, int? notifyBeforeDays, int? notifyAtHour, DateTime? expireOn, bool isUsed, List<String> tags
 });
 
 
@@ -299,7 +307,7 @@ class __$UserBenefitCopyWithImpl<$Res>
 
 /// Create a copy of UserBenefit
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? brandId = freezed,Object? companyId = freezed,Object? benefitText = freezed,Object? notes = freezed,Object? expireOn = freezed,Object? isUsed = null,Object? tags = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? brandId = freezed,Object? companyId = freezed,Object? benefitText = freezed,Object? notes = freezed,Object? notifyBeforeDays = freezed,Object? notifyAtHour = freezed,Object? expireOn = freezed,Object? isUsed = null,Object? tags = null,}) {
   return _then(_UserBenefit(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -307,7 +315,9 @@ as String,brandId: freezed == brandId ? _self.brandId : brandId // ignore: cast_
 as String?,companyId: freezed == companyId ? _self.companyId : companyId // ignore: cast_nullable_to_non_nullable
 as String?,benefitText: freezed == benefitText ? _self.benefitText : benefitText // ignore: cast_nullable_to_non_nullable
 as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
-as String?,expireOn: freezed == expireOn ? _self.expireOn : expireOn // ignore: cast_nullable_to_non_nullable
+as String?,notifyBeforeDays: freezed == notifyBeforeDays ? _self.notifyBeforeDays : notifyBeforeDays // ignore: cast_nullable_to_non_nullable
+as int?,notifyAtHour: freezed == notifyAtHour ? _self.notifyAtHour : notifyAtHour // ignore: cast_nullable_to_non_nullable
+as int?,expireOn: freezed == expireOn ? _self.expireOn : expireOn // ignore: cast_nullable_to_non_nullable
 as DateTime?,isUsed: null == isUsed ? _self.isUsed : isUsed // ignore: cast_nullable_to_non_nullable
 as bool,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,

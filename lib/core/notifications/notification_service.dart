@@ -42,12 +42,17 @@ class NotificationService {
 
     final base = _baseId(b.id);
     final expire = b.expireOn!;
-    final anchors = <(int daysBefore, int idSuffix)>[
-      (30, 30),
-      (7, 7),
-      (1, 1),
-      (0, 0),
-    ];
+    final selected = b.notifyBeforeDays;
+    final anchors = selected == null
+        ? <(int daysBefore, int idSuffix)>[
+            (30, 30),
+            (7, 7),
+            (1, 1),
+            (0, 0),
+          ]
+        : <(int daysBefore, int idSuffix)>[
+            (selected, selected.clamp(0, 30)),
+          ];
 
     final tokyo = tz.getLocation('Asia/Tokyo');
     final nowTz = tz.TZDateTime.now(tokyo);
@@ -57,7 +62,7 @@ class NotificationService {
         expire.year,
         expire.month,
         expire.day,
-        9,
+        (b.notifyAtHour ?? 9).clamp(0, 23),
       );
       final when = scheduled.subtract(Duration(days: a.$1));
       if (when.isBefore(nowTz)) continue;

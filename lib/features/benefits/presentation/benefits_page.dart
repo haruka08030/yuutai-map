@@ -11,22 +11,20 @@ class BenefitsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(userBenefitRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('優待一覧')),
+      appBar: AppBar(title: const Text('優待リスト')),
       body: StreamBuilder(
         stream: repo.watchActive(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          final items = snapshot.data ?? [];
+          final items = snapshot.data ?? const [];
           if (items.isEmpty) {
             final cs = Theme.of(context).colorScheme;
             final bg = cs.primary.withValues(alpha: 0.05);
             final fg = cs.onSurface.withValues(alpha: 0.65);
             final sub = cs.onSurface.withValues(alpha: 0.45);
             return Container(
-              width: double.infinity,
-              height: double.infinity,
               color: bg,
               child: Center(
                 child: Column(
@@ -49,7 +47,7 @@ class BenefitsPage extends ConsumerWidget {
               final b = items[index];
               return BenefitListTile(
                 benefit: b,
-                subtitle: b.benefitText?.isNotEmpty == true
+                subtitle: (b.benefitText?.isNotEmpty ?? false)
                     ? b.benefitText
                     : null,
               );
@@ -62,8 +60,6 @@ class BenefitsPage extends ConsumerWidget {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            isDismissible: true,
-            enableDrag: true,
             useSafeArea: true,
             backgroundColor: Theme.of(context).colorScheme.surface,
             shape: const RoundedRectangleBorder(
