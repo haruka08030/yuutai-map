@@ -53,6 +53,22 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(userBenefits, userBenefits.notifyAtHour);
           }
         },
+        // Safety net: if a device already has an older table without the new
+        // columns (but user_version is out-of-sync), ensure columns exist.
+        beforeOpen: (details) async {
+          final rows = await customSelect('PRAGMA table_info(user_benefits);').get();
+          final names = rows
+              .map((r) => (r.data['name'] ?? r.data['cid']).toString())
+              .toSet();
+          if (!names.contains('notify_before_days')) {
+            await customStatement(
+                'ALTER TABLE user_benefits ADD COLUMN notify_before_days INTEGER');
+          }
+          if (!names.contains('notify_at_hour')) {
+            await customStatement(
+                'ALTER TABLE user_benefits ADD COLUMN notify_at_hour INTEGER');
+          }
+        },
       );
 }
 
