@@ -21,7 +21,7 @@ class BenefitListTile extends ConsumerWidget {
         motion: const DrawerMotion(),
         children: [
           SlidableAction(
-            backgroundColor: Colors.blue,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
             icon: Icons.edit,
             label: '編集',
@@ -44,7 +44,7 @@ class BenefitListTile extends ConsumerWidget {
             },
           ),
           SlidableAction(
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: '削除',
@@ -62,7 +62,9 @@ class BenefitListTile extends ConsumerWidget {
                       child: const Text('キャンセル'),
                     ),
                     FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),
                     ),
@@ -90,7 +92,7 @@ class BenefitListTile extends ConsumerWidget {
         motion: const DrawerMotion(),
         children: [
           SlidableAction(
-            backgroundColor: Colors.blue,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
             icon: Icons.edit,
             label: '編集',
@@ -113,7 +115,7 @@ class BenefitListTile extends ConsumerWidget {
             },
           ),
           SlidableAction(
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: '削除',
@@ -131,7 +133,9 @@ class BenefitListTile extends ConsumerWidget {
                       child: const Text('キャンセル'),
                     ),
                     FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),
                     ),
@@ -163,7 +167,7 @@ class BenefitListTile extends ConsumerWidget {
             repo.toggleUsed(benefit.id, v ?? false);
           },
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          activeColor: Colors.teal,
+          checkColor: Theme.of(context).colorScheme.primary,
         ),
         title: Text(
           benefit.title,

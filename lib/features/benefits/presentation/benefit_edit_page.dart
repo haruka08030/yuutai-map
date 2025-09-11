@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 class BenefitEditPage extends ConsumerStatefulWidget {
   const BenefitEditPage({super.key, this.existing, this.asSheet = false});
   final UserBenefit? existing;
-  final bool asSheet; // 下から出るシート表示用
+  final bool asSheet;
 
   @override
   ConsumerState<BenefitEditPage> createState() => _BenefitEditPageState();
@@ -21,6 +21,35 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
   late final TextEditingController _memoCtl;
   DateTime? _expireOn;
   int? _notifyBeforeDays;
+
+  InputDecoration _underlineDecoration(String label, String hint) {
+    final scheme = Theme.of(context).colorScheme;
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      isDense: true,
+      // compact paddings and label sizes to reduce height
+      contentPadding: const EdgeInsets.symmetric(vertical: 6),
+      labelStyle: TextStyle(
+        fontSize: 15,
+        color: Theme.of(context).textTheme.bodySmall?.color,
+      ),
+      floatingLabelStyle: TextStyle(fontSize: 13, color: scheme.primary),
+      hintStyle: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(color: scheme.outline),
+      filled: false,
+      border: const UnderlineInputBorder(),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: scheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: scheme.primary, width: 1.6),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -125,36 +154,177 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
     return '$dateStr $tail';
   }
 
+  int _bitForDay(int d) {
+    switch (d) {
+      case 0:
+        return 1 << 0;
+      case 1:
+        return 1 << 1;
+      case 7:
+        return 1 << 2;
+      case 30:
+        return 1 << 3;
+      default:
+        return 0;
+    }
+  }
+
+  Set<int> _decodeDays(int? v) {
+    if (v == null) {
+      return {30, 7, 1, 0};
+    }
+    if (v > 15 && v != 30 && v != 7 && v != 1 && v != 0) {
+      return {v}; // custom single value
+    }
+    if (v == 0 || v == 1 || v == 7 || v == 30) {
+      return {v};
+    }
+    final set = <int>{};
+    for (final d in const [0, 1, 7, 30]) {
+      if ((v & _bitForDay(d)) != 0) {
+        set.add(d);
+      }
+    }
+    return set;
+  }
+
   Future<void> _pickReminderOffset() async {
-    final choices = <(String, int?)>[
-      ('None', null),
-      ('On the day', 0),
-      ('1 day before', 1),
-      ('7 days before', 7),
-      ('30 days before', 30),
-    ];
-    final sel = await showModalBottomSheet<int?>(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final c in choices)
-              ListTile(
-                title: Text(c.$1),
-                trailing:
-                    ((_notifyBeforeDays == null && c.$2 == null) ||
-                        (_notifyBeforeDays == c.$2))
-                    ? const Icon(Icons.check)
-                    : null,
-                onTap: () => Navigator.of(ctx).pop(c.$2),
-              ),
+    final initialPreset = _decodeDays(_notifyBeforeDays);
+    final Set<int> pending = {...initialPreset};
+    int? custom;
+    final vInit = _notifyBeforeDays;
+    if (vInit != null) {
+      if (vInit >= 1000) {
+        custom = vInit ~/ 1000;
+      } else if (vInit > 15 && !{0, 1, 7, 30}.contains(vInit)) {
+        custom = vInit; // legacy custom single
+      }
+    }
+
+    Future<int?> askCustomDays(BuildContext ctx, {int? initial}) async {
+      final ctl = TextEditingController(text: (initial ?? 3).toString());
+      final picked = await showDialog<int?>(
+        context: ctx,
+        builder: (dctx) => AlertDialog(
+          title: const Text('カスタム日数を入力'),
+          content: TextField(
+            controller: ctl,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: '例: 14 (日)'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dctx, null),
+              child: const Text('キャンセル'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final n = int.tryParse(ctl.text.trim());
+                Navigator.pop(dctx, n);
+              },
+              child: const Text('決定'),
+            ),
           ],
+        ),
+      );
+      if (picked == null) return null;
+      if (picked < 0) return null;
+      return picked;
+    }
+
+    int? encode(Set<int> days, int? custom) {
+      final hasPresets = days.isNotEmpty;
+      final hasCustom = custom != null;
+      if (!hasPresets && !hasCustom) return null; // 通知なし
+      var mask = 0;
+      for (final d in days) {
+        mask |= _bitForDay(d);
+      }
+      if (hasCustom) return custom * 1000 + mask; // 追加方式
+      return mask;
+    }
+
+    final result = await showModalBottomSheet<int?>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => SafeArea(
+        child: StatefulBuilder(
+          builder: (ctx, setLocal) {
+            Widget tile(String label, int day) {
+              final checked = pending.contains(day);
+              return ListTile(
+                title: Text(label),
+                trailing: checked ? const Icon(Icons.check) : null,
+                onTap: () => setLocal(() {
+                  if (checked) {
+                    pending.remove(day);
+                  } else {
+                    pending.add(day);
+                  }
+                }),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(null),
+                        child: const Text('キャンセル'),
+                      ),
+                      const SizedBox(width: 4),
+                      FilledButton(
+                        onPressed: () =>
+                            Navigator.of(ctx).pop(encode(pending, custom)),
+                        child: const Text('決定'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  ListTile(
+                    title: const Text('通知なし'),
+                    trailing: (pending.isEmpty && custom == null)
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () => setLocal(() {
+                      pending.clear();
+                      custom = null;
+                    }),
+                  ),
+                  tile('30日前', 30),
+                  tile('7日前', 7),
+                  tile('1日前', 1),
+                  tile('当日', 0),
+                  const Divider(height: 12),
+                  ListTile(
+                    leading: const Icon(Icons.tune),
+                    title: Text(custom == null ? 'カスタムを追加' : 'カスタム: $custom日前'),
+                    trailing: custom != null ? const Icon(Icons.check) : null,
+                    onTap: () async {
+                      final v = await askCustomDays(ctx, initial: custom);
+                      // 空欄やキャンセルなら選択解除
+                      setLocal(() => custom = v);
+                    },
+                    onLongPress: () => setLocal(() => custom = null),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
-    if (sel != null || _notifyBeforeDays != sel) {
-      setState(() => _notifyBeforeDays = sel);
+
+    if (result == null) {
+      setState(() => _notifyBeforeDays = null);
+    } else {
+      setState(() => _notifyBeforeDays = result);
     }
   }
 
@@ -175,7 +345,20 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
       isUsed: existing?.isUsed ?? false,
     );
 
-    await repo.upsert(entity, scheduleReminders: true);
+    try {
+      await repo.upsert(entity, scheduleReminders: true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('保存に失敗しました: $e'),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     await HapticFeedback.mediumImpact();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -186,7 +369,9 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
       ),
     );
 
-    await showGeneralDialog(
+    // 成功チェックのポップアップを表示（非同期で自己クローズ）
+    // NOTE: ここでawaitしない。遅延で明示的に閉じる。
+    showGeneralDialog(
       context: context,
       barrierDismissible: false,
       barrierLabel: 'success',
@@ -211,9 +396,9 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
                 ],
               ),
               padding: const EdgeInsets.all(16),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle,
-                color: Colors.green,
+                color: Theme.of(context).colorScheme.primary,
                 size: 48,
               ),
             ),
@@ -222,12 +407,18 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
       },
     );
 
-    await Future.delayed(const Duration(milliseconds: 350));
-    if (mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-    if (mounted) {
+    // 少し見せてから自動で閉じる→ホームへ戻る
+    await Future.delayed(const Duration(milliseconds: 600));
+    if (!mounted) return;
+    // ダイアログを閉じる（rootNavigatorに積まれるためtrue指定）
+    Navigator.of(context, rootNavigator: true).pop();
+    if (!mounted) return;
+    if (widget.asSheet) {
+      // シートを閉じる（一覧はStreamで自動更新）
       Navigator.of(context).pop();
+    } else {
+      // 画面遷移から来た場合はホームへ
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -292,21 +483,16 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
         children: [
           TextFormField(
             controller: _titleCtl,
-            decoration: const InputDecoration(
-              labelText: '企業名',
-              hintText: '例: 〇〇ホールディングス',
-            ),
+            style: const TextStyle(fontSize: 16, height: 1.2),
+            decoration: _underlineDecoration('企業名', '例: 〇〇ホールディングス'),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'タイトルを入力してください' : null,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           TextFormField(
             controller: _benefitContentCtl,
-            decoration: const InputDecoration(
-              labelText: '優待内容',
-              hintText: '例: 3000円分の割引券',
-              isDense: true,
-            ),
+            style: const TextStyle(fontSize: 15, height: 1.2),
+            decoration: _underlineDecoration('優待内容', '例: 3000円分の割引券'),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -334,9 +520,21 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
             title: const Text('リマインダー'),
             subtitle: Text(() {
               final v = _notifyBeforeDays;
-              if (v == null) return 'Default (30/7/1/0 days)';
-              if (v == 0) return 'On the day';
-              return '$v day(s) before';
+              if (v == null) return '通知なし';
+              final days = _decodeDays(v).toList()
+                ..sort((a, b) => b.compareTo(a));
+              int? custom;
+              if (v >= 1000) {
+                custom = v ~/ 1000;
+              } else if (v > 15 && !{0, 1, 7, 30}.contains(v)) {
+                custom = v; // legacy
+              }
+              final labels = <String>[
+                ...days.map((d) => d == 0 ? '当日' : '$d日前'),
+                if (custom != null) '$custom日前',
+              ];
+              if (labels.isEmpty) return '通知なし';
+              return labels.join(', ');
             }()),
             trailing: TextButton(
               onPressed: _pickReminderOffset,
@@ -350,11 +548,9 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
             child: Text(
               'メモ',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.color
-                    ?.withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.color?.withValues(alpha: 0.8),
               ),
             ),
           ),
