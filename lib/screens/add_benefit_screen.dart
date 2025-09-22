@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/company.dart';
 
 class AddBenefitScreen extends StatefulWidget {
@@ -44,14 +44,20 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
       return;
     }
 
-    await FirebaseFirestore.instance.collection('shareholder_benefits').add({
-      'company_id': _selectedCompanyId, // Stringで保存（応急）
-      'benefit_details': _detailsController.text,
-      'expiration_date': Timestamp.fromDate(expirationDate),
-      'is_used': false,
-    });
+    try {
+      await Supabase.instance.client
+          .from('shareholder_benefits')
+          .insert({
+        'company_id': _selectedCompanyId,
+        'benefit_details': _detailsController.text,
+        'expiration_date': expirationDate.toIso8601String(),
+        'is_used': false,
+      });
 
-    if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
+    } catch (error) {
+      // TODO: エラーハンドリング表示
+    }
   }
 
   @override
@@ -64,10 +70,10 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             // 会社選択ドロップダウン
-            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('companies')
-                  .snapshots(),
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: Supabase.instance.client
+                  .from('companies')
+                  .stream(primaryKey: ['id']),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
@@ -78,18 +84,17 @@ class _AddBenefitScreenState extends State<AddBenefitScreen> {
                 if (snapshot.hasError) {
                   return Text('Failed to load companies: ${snapshot.error}');
                 }
-                final companies =
-                    snapshot.data?.docs
-                        .map((doc) => Company.fromFirestore(doc))
+                final companies = snapshot.data
+                        ?.map((data) => Company.fromSupabase(data))
                         .toList() ??
                     [];
 
                 return DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Company'),
-                  value: _selectedCompanyId,
+                  initialValue: _selectedCompanyId,
                   items: companies.map((company) {
                     return DropdownMenuItem<String>(
-                      value: company.id, // ← String
+                      value: company.id,
                       child: Text(company.name),
                     );
                   }).toList(),
