@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ShareholderBenefit {
   final String id;
   final String companyId;
@@ -15,14 +13,21 @@ class ShareholderBenefit {
     required this.isUsed,
   });
 
-  factory ShareholderBenefit.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory ShareholderBenefit.fromSupabase(Map<String, dynamic> data) {
     return ShareholderBenefit(
-      id: doc.id,
-      companyId: data['company_id'],
-      benefitDetails: data['benefit_details'],
-      expirationDate: (data['expiration_date'] as Timestamp).toDate(),
+      id: data['id']?.toString() ?? '',
+      companyId: data['company_id']?.toString() ?? '',
+      benefitDetails: data['benefit_details']?.toString() ?? '',
+      expirationDate: DateTime.parse(data['expiration_date'] ?? DateTime.now().toIso8601String()),
       isUsed: data['is_used'] ?? false,
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'company_id': companyId,
+    'benefit_details': benefitDetails,
+    'expiration_date': expirationDate.toIso8601String(),
+    'is_used': isUsed,
+  };
 }
