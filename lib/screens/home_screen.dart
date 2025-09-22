@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/screens/map_screen.dart';
 import '../models/shareholder_benefit.dart';
+import '../models/company.dart';
 import 'add_benefit_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -29,19 +30,21 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('shareholder_benefits')
-            // .orderBy('expiration_date') // 並び替えしたい場合は有効化
-            .snapshots(),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: Supabase.instance.client
+            .from('shareholder_benefits')
+            .stream(primaryKey: ['id']),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-          final benefits = snapshot.data!.docs
-              .map((doc) => ShareholderBenefit.fromFirestore(doc))
-              .toList();
+          final benefits = snapshot.data
+              ?.map((data) => ShareholderBenefit.fromSupabase(data))
+              .toList() ?? [];
 
           if (benefits.isEmpty) {
             return const Center(child: Text('まだ追加されていません'));
@@ -53,16 +56,19 @@ class HomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final b = benefits[index];
 
-              // company_id から companies/{id} を引いて name を取得
-              return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                future: FirebaseFirestore.instance
-                    .collection('companies')
-                    .doc(b.companyId.toString())
-                    .get(),
+              // company_id から会社名を取得
+              return FutureBuilder<List<Map<String, dynamic>>>(
+                future: Supabase.instance.client
+                    .from('companies')
+                    .select()
+                    .eq('id', b.companyId),
                 builder: (context, companySnap) {
-                  final companyName =
-                      companySnap.data?.data()?['name']?.toString() ??
-                      b.companyId.toString(); // フォールバック
+                  String companyName = b.companyId; // フォールバック
+                  
+                  if (companySnap.hasData && companySnap.data!.isNotEmpty) {
+                    final company = Company.fromSupabase(companySnap.data!.first);
+                    companyName = company.name;
+                  }
 
                   return ListTile(
                     // ← タイトルを企業名に

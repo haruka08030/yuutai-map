@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logging/logging.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/location.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,16 +29,14 @@ class _MapScreenState extends State<MapScreen> {
     await _determinePosition();
     if (_currentPosition == null) return;
 
-    // 全ての店舗情報を取得
-    final companiesSnapshot = await FirebaseFirestore.instance
-        .collection('companies')
-        .get();
-    for (var companyDoc in companiesSnapshot.docs) {
-      final locationsSnapshot = await companyDoc.reference
-          .collection('locations')
-          .get();
-      for (var locationDoc in locationsSnapshot.docs) {
-        final location = Location.fromFirestore(locationDoc);
+    try {
+      // Supabaseから全ての店舗情報を取得
+      final locationsData = await Supabase.instance.client
+          .from('locations')
+          .select();
+      
+      for (var locationData in locationsData) {
+        final location = Location.fromSupabase(locationData);
         final markerId = MarkerId(location.id);
         final marker = Marker(
           markerId: markerId,
@@ -46,8 +45,10 @@ class _MapScreenState extends State<MapScreen> {
         );
         _markers[markerId] = marker;
       }
+      setState(() {});
+    } catch (e) {
+      Logger('map_screen').warning('Error loading locations: $e');
     }
-    setState(() {});
   }
 
   Future<void> _determinePosition() async {
