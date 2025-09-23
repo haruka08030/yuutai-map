@@ -1,0 +1,11 @@
+name: seed_stores_script
+description: Standalone script to seed stores data to Supabase
+version: 1.0.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  supabase: ^2.3.4
+  dotenv: ^4.2.0
+  logging: ^1.3.0
