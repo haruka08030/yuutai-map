@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+import 'screens/home_screen.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  );
+
+  runApp(const MyApp()); // ← Supabase 初期化済みなので安全
 }
 
 class MyApp extends StatelessWidget {
