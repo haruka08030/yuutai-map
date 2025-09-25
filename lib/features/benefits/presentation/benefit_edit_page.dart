@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stock/domain/entities/user_benefit.dart';
 import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
+import 'package:flutter_stock/app/routing/slide_right_route.dart';
+import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:intl/intl.dart';
 
 class BenefitEditPage extends ConsumerStatefulWidget {
-  const BenefitEditPage({super.key, this.existing, this.asSheet = false});
+  const BenefitEditPage({super.key, this.existing});
   final UserBenefit? existing;
-  final bool asSheet; // 下から出るシート表示用
 
   @override
   ConsumerState<BenefitEditPage> createState() => _BenefitEditPageState();
@@ -127,11 +128,11 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
 
   Future<void> _pickReminderOffset() async {
     final choices = <(String, int?)>[
-      ('None', null),
-      ('On the day', 0),
-      ('1 day before', 1),
-      ('7 days before', 7),
-      ('30 days before', 30),
+      ('設定しない', null),
+      ('当日', 0),
+      ('1日前', 1),
+      ('7日前', 7),
+      ('30日前', 30),
     ];
     final sel = await showModalBottomSheet<int?>(
       context: context,
@@ -231,54 +232,23 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
     }
   }
 
+  Future<void> _openCompanySearchSheet() async {
+    final company = await Navigator.of(context).push<String>(
+      SlideRightRoute<String>(page: const CompanySearchPage()),
+    );
+    if (company != null) {
+      setState(() {
+        _titleCtl.text = company;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.asSheet) {
-      // 下からのモーダル用UI
-      final bottom = MediaQuery.of(context).viewInsets.bottom;
-      return Padding(
-        padding: EdgeInsets.only(bottom: bottom),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  IconButton(
-                    onPressed: _save,
-                    icon: const Icon(Icons.check),
-                    tooltip: '保存',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 2),
-            Expanded(
-              child: _buildFormList(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.existing == null ? '優待を追加' : '優待を編集'),
-        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.save))],
+        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check))],
       ),
       body: _buildFormList(),
     );
@@ -295,9 +265,12 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
             decoration: const InputDecoration(
               labelText: '企業名',
               hintText: '例: 〇〇ホールディングス',
+              suffixIcon: Icon(Icons.search),
             ),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'タイトルを入力してください' : null,
+            readOnly: true,
+            onTap: _openCompanySearchSheet,
           ),
           const SizedBox(height: 12),
           TextFormField(
@@ -334,9 +307,9 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
             title: const Text('リマインダー'),
             subtitle: Text(() {
               final v = _notifyBeforeDays;
-              if (v == null) return 'Default (30/7/1/0 days)';
-              if (v == 0) return 'On the day';
-              return '$v day(s) before';
+              if (v == null) return '未設定';
+              if (v == 0) return '当日';
+              return '$v日前';
             }()),
             trailing: TextButton(
               onPressed: _pickReminderOffset,

@@ -44,15 +44,8 @@ class NotificationService {
     final expire = b.expireOn!;
     final selected = b.notifyBeforeDays;
     final anchors = selected == null
-        ? <(int daysBefore, int idSuffix)>[
-            (30, 30),
-            (7, 7),
-            (1, 1),
-            (0, 0),
-          ]
-        : <(int daysBefore, int idSuffix)>[
-            (selected, selected.clamp(0, 30)),
-          ];
+        ? <(int daysBefore, int idSuffix)>[(30, 30), (7, 7), (1, 1), (0, 0)]
+        : <(int daysBefore, int idSuffix)>[(selected, selected.clamp(0, 30))];
 
     final tokyo = tz.getLocation('Asia/Tokyo');
     final nowTz = tz.TZDateTime.now(tokyo);
