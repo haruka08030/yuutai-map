@@ -26,19 +26,9 @@ class BenefitListTile extends ConsumerWidget {
             icon: Icons.edit,
             label: '編集',
             onPressed: (_) async {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                isDismissible: true,
-                enableDrag: true,
-                useSafeArea: true,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                builder: (ctx) => FractionallySizedBox(
-                  heightFactor: 0.6,
-                  child: BenefitEditPage(existing: benefit, asSheet: true),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BenefitEditPage(existing: benefit),
                 ),
               );
             },
@@ -95,19 +85,9 @@ class BenefitListTile extends ConsumerWidget {
             icon: Icons.edit,
             label: '編集',
             onPressed: (_) async {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                isDismissible: true,
-                enableDrag: true,
-                useSafeArea: true,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                builder: (ctx) => FractionallySizedBox(
-                  heightFactor: 0.6,
-                  child: BenefitEditPage(existing: benefit, asSheet: true),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BenefitEditPage(existing: benefit),
                 ),
               );
             },
@@ -187,19 +167,9 @@ class BenefitListTile extends ConsumerWidget {
         // trailing: _Badge(expireOn: benefit.expireOn),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         onTap: () async {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            isDismissible: true,
-            enableDrag: true,
-            useSafeArea: true,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            ),
-            builder: (ctx) => FractionallySizedBox(
-              heightFactor: 0.6,
-              child: BenefitEditPage(existing: benefit, asSheet: true),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BenefitEditPage(existing: benefit),
             ),
           );
         },
