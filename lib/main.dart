@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/core/notifications/notification_service.dart';
+import 'package:flutter_stock/features/benefits/presentation/benefits_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_stock/screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +16,7 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Shareholder Benefit App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(),
+      home: const BenefitsPage(),
     );
   }
 }
