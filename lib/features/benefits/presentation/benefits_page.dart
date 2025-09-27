@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/user_benefit.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
 import 'package:flutter_stock/features/benefits/presentation/benefit_edit_page.dart';
 import 'package:flutter_stock/features/benefits/widgets/benefit_list_tile.dart';
@@ -34,6 +36,8 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
+    final isGuest = ref.watch(isGuestProvider);
+
     if (_isSearching) {
       return AppBar(
         leading: IconButton(
@@ -75,6 +79,16 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
               });
             },
           ),
+          if (isGuest)
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const AuthGate()),
+                  (route) => false,
+                );
+              },
+              child: const Text('ログイン/登録'),
+            )
         ],
       );
     }
@@ -83,8 +97,33 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
   @override
   Widget build(BuildContext context) {
     final repo = ref.watch(userBenefitRepositoryProvider);
+    final isGuest = ref.watch(isGuestProvider);
+
     return Scaffold(
       appBar: _buildAppBar(context),
+      drawer: isGuest
+          ? null
+          : Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  const DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                    ),
+                    child: Text('メニュー', style: TextStyle(color: Colors.white, fontSize: 24)),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: const Text('ログアウト'),
+                    onTap: () async {
+                      await ref.read(authRepositoryProvider).signOut();
+                      // AuthGate will handle navigation
+                    },
+                  ),
+                ],
+              ),
+            ),
       body: StreamBuilder<List<UserBenefit>>(
         stream: repo.watchActive(),
         builder: (context, snapshot) {
@@ -119,7 +158,8 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
                     const SizedBox(height: 12),
                     Text('優待がありません', style: TextStyle(fontSize: 16, color: fg)),
                     const SizedBox(height: 4),
-                    Text('右下の + から追加できます', style: TextStyle(color: sub)),
+                    if (!isGuest)
+                      Text('右下の + から追加できます', style: TextStyle(color: sub)),
                   ],
                 ),
               ),
@@ -140,17 +180,19 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const BenefitEditPage(),
+      floatingActionButton: isGuest
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const BenefitEditPage(),
+                  ),
+                );
+              },
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
             ),
-          );
-        },
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
