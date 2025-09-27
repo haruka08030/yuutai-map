@@ -186,47 +186,6 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
         duration: Duration(seconds: 2),
       ),
     );
-
-    await showGeneralDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierLabel: 'success',
-      barrierColor: Colors.transparent,
-      transitionDuration: const Duration(milliseconds: 150),
-      pageBuilder: (ctx, a1, a2) {
-        return Center(
-          child: AnimatedScale(
-            duration: const Duration(milliseconds: 150),
-            scale: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surface.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 12,
-                    color: Colors.black.withValues(alpha: 0.15),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 48,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
-    await Future.delayed(const Duration(milliseconds: 350));
-    if (mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
     if (mounted) {
       Navigator.of(context).pop();
     }
