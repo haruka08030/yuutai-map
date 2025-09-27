@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS companies (
 -- Create shareholder_benefits table
 CREATE TABLE IF NOT EXISTS shareholder_benefits (
     id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES companies(id),
+    company_id uuid REFERENCES companies(id),
     benefit_type VARCHAR(50) NOT NULL,         -- 優待種別（買い物券、割引券等）
     benefit_value INTEGER,                     -- 優待券面額（円）
     validity_start_date DATE,                  -- 有効期間開始
