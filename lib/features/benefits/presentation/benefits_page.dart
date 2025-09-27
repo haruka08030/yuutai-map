@@ -88,7 +88,7 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
                 );
               },
               child: const Text('ログイン/登録'),
-            )
+            ),
         ],
       );
     }
@@ -108,10 +108,11 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
                 padding: EdgeInsets.zero,
                 children: [
                   const DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
+                    decoration: BoxDecoration(color: Colors.blue),
+                    child: Text(
+                      'メニュー',
+                      style: TextStyle(color: Colors.white, fontSize: 24),
                     ),
-                    child: Text('メニュー', style: TextStyle(color: Colors.white, fontSize: 24)),
                   ),
                   ListTile(
                     leading: const Icon(Icons.logout),
@@ -158,8 +159,7 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
                     const SizedBox(height: 12),
                     Text('優待がありません', style: TextStyle(fontSize: 16, color: fg)),
                     const SizedBox(height: 4),
-                    if (!isGuest)
-                      Text('右下の + から追加できます', style: TextStyle(color: sub)),
+                    Text('右下の + から追加できます', style: TextStyle(color: sub)),
                   ],
                 ),
               ),
@@ -180,19 +180,15 @@ class _BenefitsPageState extends ConsumerState<BenefitsPage> {
           );
         },
       ),
-      floatingActionButton: isGuest
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const BenefitEditPage(),
-                  ),
-                );
-              },
-              shape: const CircleBorder(),
-              child: const Icon(Icons.add),
-            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const BenefitEditPage()),
+          );
+        },
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

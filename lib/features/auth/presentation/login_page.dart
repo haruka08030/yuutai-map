@@ -28,6 +28,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _signInWithEmail() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       try {
         await ref
             .read(authRepositoryProvider)
@@ -37,17 +38,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             );
         // The AuthGate will handle navigation if successful
       } on AuthException catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(e.message)));
-        }
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
-          );
-        }
+        if (!mounted) return;
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+        );
       } finally {
         if (mounted) {
           setState(() => _isLoading = false);
@@ -58,20 +55,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
     } on AuthException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
-      }
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
-        );
-      }
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -79,42 +73,65 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
-  Future<void> _resendConfirmationEmail() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('再送のためにメールアドレスを入力してください')));
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    try {
-      await ref
-          .read(authRepositoryProvider)
-          .resendConfirmationEmail(email: email);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('確認メールを再送しました')));
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('メールの再送に失敗しました: ${e.toString()}')),
+  Future<void> _showForgotPasswordDialog() async {
+    final emailController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('パスワードをリセット'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('登録したメールアドレスを入力してください。パスワードリセット用のメールを送信します。'),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('キャンセル'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+                if (email.isEmpty) {
+                  return;
+                }
+                final scaffoldMessenger = ScaffoldMessenger.of(dialogContext);
+                final navigator = Navigator.of(dialogContext);
+                try {
+                  await ref
+                      .read(authRepositoryProvider)
+                      .resetPasswordForEmail(email: email);
+                  if (!mounted) return;
+                  scaffoldMessenger.showSnackBar(
+                    const SnackBar(content: Text('パスワードリセット用のメールを送信しました。')),
+                  );
+                  navigator.pop();
+                } on AuthException catch (e) {
+                  if (!mounted) return;
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text(e.message)),
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text('エラーが発生しました: ${e.toString()}')),
+                  );
+                }
+              },
+              child: const Text('送信'),
+            ),
+          ],
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+      },
+    );
   }
 
   @override
@@ -134,10 +151,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'メールアドレスを入力してください';
                   }
                   if (!emailRegex.hasMatch(value)) {
-                    return 'Please enter a valid email address';
+                    return '有効なメールアドレスを入力してください';
                   }
                   return null;
                 },
@@ -163,8 +180,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: _isLoading ? null : _resendConfirmationEmail,
-                child: const Text('確認メールを再送する'),
+                onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                child: const Text('パスワードを忘れましたか？'),
               ),
               const SizedBox(height: 12),
               const Row(

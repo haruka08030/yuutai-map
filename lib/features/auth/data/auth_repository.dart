@@ -45,6 +45,13 @@ class AuthRepository {
     );
   }
 
+  Future<void> resetPasswordForEmail({required String email}) async {
+    await _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'io.supabase.flutterstock://login-callback/',
+    );
+  }
+
   Future<void> signOut() async {
     await _client.auth.signOut();
   }
