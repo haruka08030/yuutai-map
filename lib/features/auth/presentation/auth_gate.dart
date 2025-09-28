@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+import 'package:flutter_stock/features/app/presentation/main_page.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
-import 'package:flutter_stock/features/benefits/presentation/benefits_page.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
@@ -20,7 +20,7 @@ class AuthGate extends ConsumerWidget {
           Future.microtask(
             () => ref.read(isGuestProvider.notifier).state = false,
           );
-          return const BenefitsPage();
+          return const MainPage();
         }
         return const AuthOptions();
       },
@@ -80,7 +80,7 @@ class AuthOptions extends ConsumerWidget {
                     ref.read(isGuestProvider.notifier).state = true;
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const BenefitsPage(),
+                        builder: (context) => const MainPage(),
                       ),
                     );
                   },
