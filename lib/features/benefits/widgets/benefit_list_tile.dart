@@ -6,6 +6,8 @@ import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart'
 import 'package:flutter_stock/features/benefits/presentation/benefit_edit_page.dart';
 import 'package:flutter_stock/domain/entities/user_benefit.dart';
 
+import 'package:intl/intl.dart';
+
 class BenefitListTile extends ConsumerWidget {
   const BenefitListTile({super.key, required this.benefit, this.subtitle});
   final UserBenefit benefit;
@@ -38,12 +40,12 @@ class BenefitListTile extends ConsumerWidget {
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: '削除',
-          onPressed: (_) async {
-            await HapticFeedback.lightImpact();
-            if (!context.mounted) return;
-            final ok = await showDialog<bool>(
-              context: context,
-              builder: (ctx) => AlertDialog(
+            onPressed: (_) async {
+              await HapticFeedback.lightImpact();
+              if (!context.mounted) return;
+              final ok = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
                   title: const Text('削除しますか？'),
                   content: Text('「${benefit.title}」を削除します。取り消せません。'),
                   actions: [
@@ -52,7 +54,9 @@ class BenefitListTile extends ConsumerWidget {
                       child: const Text('キャンセル'),
                     ),
                     FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),
                     ),
@@ -97,12 +101,12 @@ class BenefitListTile extends ConsumerWidget {
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: '削除',
-          onPressed: (_) async {
-            await HapticFeedback.lightImpact();
-            if (!context.mounted) return;
-            final ok = await showDialog<bool>(
-              context: context,
-              builder: (ctx) => AlertDialog(
+            onPressed: (_) async {
+              await HapticFeedback.lightImpact();
+              if (!context.mounted) return;
+              final ok = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
                   title: const Text('削除しますか？'),
                   content: Text('「${benefit.title}」を削除します。取り消せません。'),
                   actions: [
@@ -111,7 +115,9 @@ class BenefitListTile extends ConsumerWidget {
                       child: const Text('キャンセル'),
                     ),
                     FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),
                     ),
@@ -156,13 +162,15 @@ class BenefitListTile extends ConsumerWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              )
-            : null,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (subtitle != null)
+              Text(subtitle!, maxLines: 2, overflow: TextOverflow.ellipsis),
+            if (benefit.expireOn != null)
+              Text(DateFormat('yyyy/MM/dd').format(benefit.expireOn!)),
+          ],
+        ),
         // Expiration chip removed per request
         // trailing: _Badge(expireOn: benefit.expireOn),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
