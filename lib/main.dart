@@ -5,9 +5,11 @@ import 'package:flutter_stock/core/notifications/notification_service.dart';
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
   await dotenv.load(fileName: ".env");
   await initializeDateFormatting('ja_JP');
   await NotificationService.instance.initialize();

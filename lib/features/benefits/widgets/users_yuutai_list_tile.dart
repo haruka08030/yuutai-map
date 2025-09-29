@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
-import 'package:flutter_stock/features/benefits/presentation/benefit_edit_page.dart';
-import 'package:flutter_stock/domain/entities/user_benefit.dart';
+import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
+import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 
 import 'package:intl/intl.dart';
 
-class BenefitListTile extends ConsumerWidget {
-  const BenefitListTile({super.key, required this.benefit, this.subtitle});
-  final UserBenefit benefit;
+class UsersYuutaiListTile extends ConsumerWidget {
+  const UsersYuutaiListTile({super.key, required this.benefit, this.subtitle});
+  final UsersYuutai benefit;
   final String? subtitle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.watch(userBenefitRepositoryProvider);
+    final repo = ref.watch(usersYuutaiRepositoryProvider);
 
     return Slidable(
       key: ValueKey(benefit.id),
@@ -30,7 +30,7 @@ class BenefitListTile extends ConsumerWidget {
             onPressed: (_) async {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => BenefitEditPage(existing: benefit),
+                  builder: (context) => UsersYuutaiEditPage(existing: benefit),
                 ),
               );
             },
@@ -91,7 +91,7 @@ class BenefitListTile extends ConsumerWidget {
             onPressed: (_) async {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => BenefitEditPage(existing: benefit),
+                  builder: (context) => UsersYuutaiEditPage(existing: benefit),
                 ),
               );
             },
@@ -177,7 +177,7 @@ class BenefitListTile extends ConsumerWidget {
         onTap: () async {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => BenefitEditPage(existing: benefit),
+              builder: (context) => UsersYuutaiEditPage(existing: benefit),
             ),
           );
         },

@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-part 'user_benefit.freezed.dart';
-part 'user_benefit.g.dart';
+part 'users_yuutai.freezed.dart';
+part 'users_yuutai.g.dart';
 
 @freezed
-abstract class UserBenefit with _$UserBenefit {
-  const factory UserBenefit({
+abstract class UsersYuutai with _$UsersYuutai {
+  const factory UsersYuutai({
     required String id, // UUID
     required String title, // 企業名（表示用）
     String? brandId,
@@ -16,8 +16,8 @@ abstract class UserBenefit with _$UserBenefit {
     DateTime? expireOn, // 期限日（JST基準）
     @Default(false) bool isUsed, // 使用済み
     @Default([]) List<String> tags,
-  }) = _UserBenefit;
+  }) = _UsersYuutai;
 
-  factory UserBenefit.fromJson(Map<String, dynamic> json) =>
-      _$UserBenefitFromJson(json);
+  factory UsersYuutai.fromJson(Map<String, dynamic> json) =>
+      _$UsersYuutaiFromJson(json);
 }

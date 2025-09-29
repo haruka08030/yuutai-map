@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_stock/domain/entities/user_benefit.dart';
-import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/app/routing/slide_right_route.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:intl/intl.dart';
 
-class BenefitEditPage extends ConsumerStatefulWidget {
-  const BenefitEditPage({super.key, this.existing});
-  final UserBenefit? existing;
+class UsersYuutaiEditPage extends ConsumerStatefulWidget {
+  const UsersYuutaiEditPage({super.key, this.existing});
+  final UsersYuutai? existing;
 
   @override
-  ConsumerState<BenefitEditPage> createState() => _BenefitEditPageState();
+  ConsumerState<UsersYuutaiEditPage> createState() => _UsersYuutaiEditPageState();
 }
 
-class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
+class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
@@ -161,10 +161,10 @@ class _BenefitEditPageState extends ConsumerState<BenefitEditPage> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final repo = ref.read(userBenefitRepositoryProvider);
+    final repo = ref.read(usersYuutaiRepositoryProvider);
     final existing = widget.existing;
 
-    final entity = UserBenefit(
+    final entity = UsersYuutai(
       id: existing?.id ?? '',
       title: _titleCtl.text.trim(),
       benefitText: _benefitContentCtl.text.trim().isEmpty
