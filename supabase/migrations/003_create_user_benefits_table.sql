@@ -1,5 +1,5 @@
 
-CREATE TABLE user_benefits (
+CREATE TABLE users_yuutai (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) NOT NULL,
     title TEXT NOT NULL,
@@ -13,33 +13,32 @@ CREATE TABLE user_benefits (
     is_used BOOLEAN DEFAULT false NOT NULL,
     tags TEXT[] NOT NULL,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-    deleted_at TIMESTAMPTZ
+    updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
-ALTER TABLE user_benefits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users_yuutai ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view their own benefits" ON user_benefits
+CREATE POLICY "Users can view their own benefits" ON users_yuutai
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own benefits" ON user_benefits
+CREATE POLICY "Users can insert their own benefits" ON users_yuutai
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own benefits" ON user_benefits
+CREATE POLICY "Users can update their own benefits" ON users_yuutai
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own benefits" ON user_benefits
+CREATE POLICY "Users can delete their own benefits" ON users_yuutai
     FOR DELETE USING (auth.uid() = user_id);
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
     NEW.updated_at = now();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$ language 'plpgsql';
 
-CREATE TRIGGER update_user_benefits_updated_at
-    BEFORE UPDATE ON user_benefits
+CREATE TRIGGER update_users_yuutai_updated_at
+    BEFORE UPDATE ON users_yuutai
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();

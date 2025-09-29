@@ -6,7 +6,7 @@ import 'package:dotenv/dotenv.dart';
 void main() async {
   try {
     // Load environment variables
-    final env = DotEnv()..load(['../.env']);
+    final env = DotEnv()..load(['./.env']);
 
     // Initialize Supabase client with service role key for admin operations
     final supabase = SupabaseClient(
@@ -15,7 +15,7 @@ void main() async {
     );
 
     // Read JSON data
-    final jsonFile = File('../stores_data.json');
+    final jsonFile = File('./stores_data.json');
     if (!await jsonFile.exists()) {
       print('Error: stores_data.json not found');
       exit(1);

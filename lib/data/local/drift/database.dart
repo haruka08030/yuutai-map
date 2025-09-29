@@ -1,62 +1,55 @@
 import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:drift/native.dart';
 
 part 'database.g.dart';
 
-class UserBenefits extends Table {
+@DataClassName('UsersYuutai')
+class UsersYuutais extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
-  TextColumn get benefitText => text()();
-  DateTimeColumn get expireOn => dateTime().nullable()();
-  IntColumn get notifyBeforeDays => integer().nullable()();
-  IntColumn get notifyAtHour => integer().nullable()();
-  BoolColumn get isUsed => boolean().withDefault(const Constant(false))();
+  TextColumn get benefitText => text().nullable()();
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get expireOn => dateTime().nullable()();
+  BoolColumn get isUsed => boolean().withDefault(const Constant(false))();
   TextColumn get brandId => text().nullable()();
   TextColumn get companyId => text().nullable()();
-  TextColumn get brandText => text().nullable()();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  IntColumn get notifyBeforeDays => integer().nullable()();
+  IntColumn get notifyAtHour => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
 }
 
-// Outbox はフェーズ1で活躍。先に作っておく
-class Outbox extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get entityId => text()();
-  TextColumn get payload => text()();
-  TextColumn get op => text()(); // 'upsert' | 'delete'
-  DateTimeColumn get createdAt => dateTime()();
-}
-
-@DriftDatabase(tables: [UserBenefits, Outbox])
+@DriftDatabase(tables: [UsersYuutais])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase._(super.e);
-
-  static AppDatabase? _instance;
-  factory AppDatabase() => _instance ??= AppDatabase._(_open());
+  AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async {
+          await m.createAll();
+        },
         onUpgrade: (m, from, to) async {
           if (from < 2) {
-            await m.addColumn(userBenefits, userBenefits.notifyBeforeDays);
-            await m.addColumn(userBenefits, userBenefits.notifyAtHour);
+            await m.addColumn(usersYuutais, usersYuutais.notifyBeforeDays);
+            await m.addColumn(usersYuutais, usersYuutais.notifyAtHour);
           }
         },
       );
 }
 
-LazyDatabase _open() {
+LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'app.db'));

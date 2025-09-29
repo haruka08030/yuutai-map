@@ -1,40 +1,38 @@
 import 'package:drift/drift.dart' as d;
 import 'package:flutter_stock/core/notifications/notification_service.dart';
 import 'package:flutter_stock/data/local/drift/database.dart' as db;
-import 'package:flutter_stock/domain/entities/user_benefit.dart' as domain;
-import 'package:flutter_stock/domain/repositories/user_benefit_repository.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart' as domain;
+import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
 import 'package:uuid/uuid.dart';
 
-class UserBenefitRepositoryLocal implements UserBenefitRepository {
-  UserBenefitRepositoryLocal(this._db);
+class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
+  UsersYuutaiRepositoryLocal(this._db);
 
   final db.AppDatabase _db;
   final _uuid = const Uuid();
 
-  db.$UserBenefitsTable get t => _db.userBenefits;
-
   @override
-  Stream<List<domain.UserBenefit>> watchActive() {
-    final query = (_db.select(t)..where((tbl) => tbl.deletedAt.isNull()));
+  Stream<List<domain.UsersYuutai>> watchActive() {
+    final query = (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()));
     return query.watch().map(_rowsToEntities);
   }
 
   @override
-  Future<List<domain.UserBenefit>> getActive() async {
-    final rows = await (_db.select(t)..where((tbl) => tbl.deletedAt.isNull()))
+  Future<List<domain.UsersYuutai>> getActive() async {
+    final rows = await (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()))
         .get();
     return _rowsToEntities(rows);
   }
 
   @override
-  Future<void> upsert(domain.UserBenefit b, {bool scheduleReminders = true}) async {
+  Future<void> upsert(domain.UsersYuutai b, {bool scheduleReminders = true}) async {
     final now = DateTime.now();
     final id = b.id.isEmpty ? _uuid.v4() : b.id;
 
-    final row = db.UserBenefitsCompanion.insert(
+    final row = db.UsersYuutaisCompanion.insert(
       id: id,
       title: b.title,
-      benefitText: b.benefitText ?? '',
+      benefitText: d.Value(b.benefitText),
       createdAt: now,
       updatedAt: now,
       expireOn: d.Value(b.expireOn),
@@ -44,14 +42,12 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
       notes: d.Value(b.notes),
       brandId: d.Value(b.brandId),
       companyId: d.Value(b.companyId),
-      brandText: const d.Value.absent(),
-      deletedAt: const d.Value.absent(),
     );
 
-    await _db.into(t).insertOnConflictUpdate(row);
+    await _db.into(_db.usersYuutais).insertOnConflictUpdate(row);
 
     if (scheduleReminders) {
-      final scheduled = b.id == id ? b : b.copyWith(id: id);
+      final scheduled = b.id.isEmpty ? b.copyWith(id: id) : b;
       await NotificationService.instance.reschedulePresetReminders(scheduled);
     }
   }
@@ -59,8 +55,8 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
   @override
   Future<void> toggleUsed(String id, bool isUsed) async {
     final now = DateTime.now();
-    await (_db.update(t)..where((tbl) => tbl.id.equals(id))).write(
-      db.UserBenefitsCompanion(
+    await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
+      db.UsersYuutaisCompanion(
         isUsed: d.Value(isUsed),
         updatedAt: d.Value(now),
       ),
@@ -75,8 +71,8 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
   @override
   Future<void> softDelete(String id) async {
     final now = DateTime.now();
-    await (_db.update(t)..where((tbl) => tbl.id.equals(id))).write(
-      db.UserBenefitsCompanion(
+    await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
+      db.UsersYuutaisCompanion(
         deletedAt: d.Value(now),
         updatedAt: d.Value(now),
       ),
@@ -85,23 +81,23 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
   }
 
   @override
-  Future<List<domain.UserBenefit>> search(String query) async {
+  Future<List<domain.UsersYuutai>> search(String query) async {
     final like = '%${query.replaceAll('%', '\\%')}%';
-    final rows = await (_db.select(t)
+    final rows = await (_db.select(_db.usersYuutais)
           ..where(
             (tbl) => tbl.deletedAt.isNull() &
                 (tbl.title.like(like) |
-                    tbl.benefitText.like(like) |
-                    tbl.notes.like(like)),
+                    (tbl.benefitText.like(like)) |
+                    (tbl.notes.like(like))),
           ))
         .get();
     return _rowsToEntities(rows);
   }
 
-  List<domain.UserBenefit> _rowsToEntities(List<db.UserBenefit> rows) =>
+  List<domain.UsersYuutai> _rowsToEntities(List<db.UsersYuutai> rows) =>
       rows
           .map(
-            (r) => domain.UserBenefit(
+            (r) => domain.UsersYuutai(
               id: r.id,
               title: r.title,
               brandId: r.brandId,
@@ -112,6 +108,7 @@ class UserBenefitRepositoryLocal implements UserBenefitRepository {
               notifyBeforeDays: r.notifyBeforeDays,
               notifyAtHour: r.notifyAtHour,
               isUsed: r.isUsed,
+              tags: [],
             ),
           )
           .toList();

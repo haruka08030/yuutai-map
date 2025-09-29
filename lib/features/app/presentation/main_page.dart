@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/features/benefits/presentation/benefit_edit_page.dart';
-import 'package:flutter_stock/features/benefits/presentation/benefits_page.dart';
+import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
+import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
 import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 
@@ -93,7 +93,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = <Widget>[
-      BenefitsPage(searchQuery: _searchQuery),
+      UsersYuutaiPage(searchQuery: _searchQuery),
       const MapPage(),
       const SettingsPage(),
     ];
@@ -141,7 +141,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const BenefitEditPage(),
+                    builder: (context) => const UsersYuutaiEditPage(),
                   ),
                 );
               },

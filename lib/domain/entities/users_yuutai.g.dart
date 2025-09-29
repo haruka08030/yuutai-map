@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_benefit.dart';
+part of 'users_yuutai.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UserBenefit _$UserBenefitFromJson(Map<String, dynamic> json) => _UserBenefit(
+_UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
   id: json['id'] as String,
   title: json['title'] as String,
   brandId: json['brandId'] as String?,
@@ -24,7 +24,7 @@ _UserBenefit _$UserBenefitFromJson(Map<String, dynamic> json) => _UserBenefit(
       const [],
 );
 
-Map<String, dynamic> _$UserBenefitToJson(_UserBenefit instance) =>
+Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

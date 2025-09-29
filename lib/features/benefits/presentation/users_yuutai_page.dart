@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/user_benefit.dart';
-import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
-import 'package:flutter_stock/features/benefits/widgets/benefit_list_tile.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
+import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 
-class BenefitsPage extends ConsumerWidget {
-  const BenefitsPage({super.key, required this.searchQuery});
+class UsersYuutaiPage extends ConsumerWidget {
+  const UsersYuutaiPage({super.key, required this.searchQuery});
 
   final String searchQuery;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.watch(userBenefitRepositoryProvider);
+    final repo = ref.watch(usersYuutaiRepositoryProvider);
 
-    return StreamBuilder<List<UserBenefit>>(
+    return StreamBuilder<List<UsersYuutai>>(
       stream: repo.watchActive(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -58,7 +58,7 @@ class BenefitsPage extends ConsumerWidget {
           separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final b = items[index];
-            return BenefitListTile(
+            return UsersYuutaiListTile(
               benefit: b,
               subtitle: (b.benefitText?.isNotEmpty ?? false)
                   ? b.benefitText

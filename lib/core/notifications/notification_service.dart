@@ -1,89 +1,92 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_stock/domain/entities/user_benefit.dart';
-import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  NotificationService._();
   static final NotificationService instance = NotificationService._();
-  final _plugin = FlutterLocalNotificationsPlugin();
+  NotificationService._();
+
+  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iOS = DarwinInitializationSettings();
-    const init = InitializationSettings(android: android, iOS: iOS);
-    await _plugin.initialize(init);
-
-    // TZDB を初期化し、ローカルを東京固定にする
-    tz_data.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Tokyo'));
-
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+    const AndroidInitializationSettings android = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    const DarwinInitializationSettings iOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const InitializationSettings settings = InitializationSettings(
+      android: android,
+      iOS: iOS,
+    );
+    await _plugin.initialize(settings);
   }
 
-  int _baseId(String uuid) {
-    final hex = uuid.replaceAll('-', '');
-    final slice = hex.substring(0, 8);
-    return int.parse(slice, radix: 16) & 0x7FFFFFFF; // 31bit
-  }
-
-  Future<void> reschedulePresetReminders(UserBenefit b) async {
-    await cancelAllFor(b.id);
-    if (b.isUsed || b.expireOn == null) return;
-
-    final base = _baseId(b.id);
-    final expire = b.expireOn!;
-    final selected = b.notifyBeforeDays;
-    final anchors = selected == null
-        ? <(int daysBefore, int idSuffix)>[(30, 30), (7, 7), (1, 1), (0, 0)]
-        : <(int daysBefore, int idSuffix)>[(selected, selected.clamp(0, 30))];
-
-    final tokyo = tz.getLocation('Asia/Tokyo');
-    final nowTz = tz.TZDateTime.now(tokyo);
-    for (final a in anchors) {
-      final scheduled = tz.TZDateTime(
-        tokyo,
-        expire.year,
-        expire.month,
-        expire.day,
-        (b.notifyAtHour ?? 9).clamp(0, 23),
-      );
-      final when = scheduled.subtract(Duration(days: a.$1));
-      if (when.isBefore(nowTz)) continue;
-
-      await _plugin.zonedSchedule(
-        base + a.$2,
-        '優待の期限が近づいています',
-        '${b.title}:${a.$1 == 0 ? '本日が有効期限' : '${a.$1}日前'}',
-        when,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'yuutai',
-            'Yuutai Reminders',
-            importance: Importance.max,
-            priority: Priority.high,
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
+  Future<void> cancelAllFor(String id) async {
+    final pending = await _plugin.pendingNotificationRequests();
+    for (final p in pending) {
+      if (p.payload == id) {
+        await _plugin.cancel(p.id);
+      }
     }
   }
 
-  Future<void> cancelAllFor(String uuid) async {
-    final base = _baseId(uuid);
-    final ids = [base + 30, base + 7, base + 1, base + 0];
-    for (final id in ids) {
-      await _plugin.cancel(id);
+  Future<void> reschedulePresetReminders(UsersYuutai b) async {
+    await cancelAllFor(b.id);
+
+    if (b.isUsed) {
+      return;
+    }
+
+    final expireOn = b.expireOn;
+    if (expireOn == null) {
+      return;
+    }
+
+    final now = DateTime.now();
+    if (expireOn.isBefore(now)) {
+      return;
+    }
+
+    final presetDays = [1, 3, 7, 30];
+    final notifyAtHour = b.notifyAtHour ?? 9;
+
+    for (final days in presetDays) {
+      if (b.notifyBeforeDays != null && b.notifyBeforeDays != days) {
+        continue;
+      }
+
+      final scheduledAt = expireOn.subtract(Duration(days: days));
+      if (scheduledAt.isBefore(now)) {
+        continue;
+      }
+
+      final notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          'benefit-reminder-$days',
+          '期限リマインダー ($days日前)',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      );
+
+      final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
+        scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
+        tz.local,
+      );
+
+      await _plugin.zonedSchedule(
+        b.id.hashCode + days,
+        '優待の期限が近づいています',
+        '「${b.title}」の期限が$days日後です。',
+        scheduledDate,
+        notificationDetails,
+        payload: b.id,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
     }
   }
 }
