@@ -1,34 +1,34 @@
 
-import 'package:flutter_stock/domain/entities/user_benefit.dart';
-import 'package:flutter_stock/domain/repositories/user_benefit_repository.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
-class UserBenefitRepositoryFacade implements UserBenefitRepository {
-  UserBenefitRepositoryFacade({
+class UsersYuutaiRepositoryFacade implements UsersYuutaiRepository {
+  UsersYuutaiRepositoryFacade({
     required this.authRepository,
     required this.localRepository,
     required this.supabaseRepository,
   });
 
   final AuthRepository authRepository;
-  final UserBenefitRepository localRepository;
-  final UserBenefitRepository supabaseRepository;
+  final UsersYuutaiRepository localRepository;
+  final UsersYuutaiRepository supabaseRepository;
 
-  UserBenefitRepository get _repository =>
+  UsersYuutaiRepository get _repository =>
       authRepository.currentUser != null ? supabaseRepository : localRepository;
 
   @override
-  Stream<List<UserBenefit>> watchActive() {
+  Stream<List<UsersYuutai>> watchActive() {
     return _repository.watchActive();
   }
 
   @override
-  Future<List<UserBenefit>> getActive() {
+  Future<List<UsersYuutai>> getActive() {
     return _repository.getActive();
   }
 
   @override
-  Future<void> upsert(UserBenefit benefit, {bool scheduleReminders = true}) {
+  Future<void> upsert(UsersYuutai benefit, {bool scheduleReminders = true}) {
     return _repository.upsert(benefit, scheduleReminders: scheduleReminders);
   }
 
@@ -43,7 +43,7 @@ class UserBenefitRepositoryFacade implements UserBenefitRepository {
   }
 
   @override
-  Future<List<UserBenefit>> search(String query) {
+  Future<List<UsersYuutai>> search(String query) {
     return _repository.search(query);
   }
 }

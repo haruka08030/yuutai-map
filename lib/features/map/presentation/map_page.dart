@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_stock/features/benefits/provider/benefit_providers.dart';
+import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
 
 class MapPage extends ConsumerStatefulWidget {
@@ -69,7 +69,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   }
 
   Future<void> _fetchStores() async {
-    final benefits = await ref.read(userBenefitRepositoryProvider).getActive();
+    final benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
     final storeRepo = ref.read(storeRepositoryProvider);
     final Set<Marker> markers = {};
 
