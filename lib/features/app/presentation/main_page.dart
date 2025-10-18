@@ -42,11 +42,23 @@ class _MainPageState extends ConsumerState<MainPage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: CompanySearchBar(
-        controller: _searchController,
-      ),
-    );
+    if (_selectedIndex == 0) {
+      return AppBar(
+        title: CompanySearchBar(
+          controller: _searchController,
+        ),
+      );
+    } else {
+      String title = '';
+      if (_selectedIndex == 1) {
+        title = 'マップ';
+      } else if (_selectedIndex == 2) {
+        title = '設定';
+      }
+      return AppBar(
+        title: Text(title),
+      );
+    }
   }
 
   @override

@@ -31,7 +31,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
       text: widget.existing?.benefitText ?? '',
     );
     _memoCtl = TextEditingController(text: widget.existing?.notes ?? '');
-    _expireOn = widget.existing?.expireOn;
+    _expireOn = widget.existing?.expireOn?.toLocal();
     _notifyBeforeDays = widget.existing?.notifyBeforeDays;
   }
 
@@ -171,7 +171,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           ? null
           : _benefitContentCtl.text.trim(),
       notes: _memoCtl.text.trim().isEmpty ? null : _memoCtl.text.trim(),
-      expireOn: _expireOn,
+      expireOn: _expireOn?.toUtc(),
       notifyBeforeDays: _notifyBeforeDays,
       isUsed: existing?.isUsed ?? false,
     );
