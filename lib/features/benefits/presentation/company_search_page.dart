@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 
 class CompanySearchPage extends ConsumerStatefulWidget {
@@ -33,50 +34,48 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
   Widget build(BuildContext context) {
     final companyList = ref.watch(companyListProvider(_query));
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchCtl,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '企業名で検索',
-            border: InputBorder.none,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchCtl.clear();
-            },
-          ),
-        ],
-      ),
-      body: companyList.when(
-        data: (companies) {
-          if (companies.isEmpty && _query.isNotEmpty) {
-            return Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text('"$_query" を企業名として追加'),
-                onPressed: () {
-                  Navigator.of(context).pop(_query);
-                },
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: CompanySearchBar(
+                controller: _searchCtl,
+                autofocus: true,
+                hintText: '企業名で検索',
               ),
-            );
-          }
-          return ListView.builder(
-            itemCount: companies.length,
-            itemBuilder: (context, index) {
-              final company = companies[index];
-              return ListTile(
-                title: Text(company),
-                onTap: () => Navigator.of(context).pop(company),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+            ),
+            Expanded(
+              child: companyList.when(
+                data: (companies) {
+                  if (companies.isEmpty && _query.isNotEmpty) {
+                    return Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: Text('"$_query" を企業名として追加'),
+                        onPressed: () {
+                          Navigator.of(context).pop(_query);
+                        },
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: companies.length,
+                    itemBuilder: (context, index) {
+                      final company = companies[index];
+                      return ListTile(
+                        title: Text(company),
+                        onTap: () => Navigator.of(context).pop(company),
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text('Error: $error')),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

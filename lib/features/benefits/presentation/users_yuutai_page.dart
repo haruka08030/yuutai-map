@@ -34,22 +34,18 @@ class UsersYuutaiPage extends ConsumerWidget {
             return const Center(child: Text('No results found.'));
           }
           final cs = Theme.of(context).colorScheme;
-          final bg = cs.primary.withAlpha(12);
           final fg = cs.onSurface.withAlpha(165);
           final sub = cs.onSurface.withAlpha(114);
-          return Container(
-            color: bg,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: fg),
-                  const SizedBox(height: 12),
-                  Text('優待がありません', style: TextStyle(fontSize: 16, color: fg)),
-                  const SizedBox(height: 4),
-                  Text('右下の + から追加できます', style: TextStyle(color: sub)),
-                ],
-              ),
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.inbox_outlined, size: 64, color: fg),
+                const SizedBox(height: 12),
+                Text('優待がありません', style: TextStyle(fontSize: 16, color: fg)),
+                const SizedBox(height: 4),
+                Text('右下の + から追加できます', style: TextStyle(color: sub)),
+              ],
             ),
           );
         }

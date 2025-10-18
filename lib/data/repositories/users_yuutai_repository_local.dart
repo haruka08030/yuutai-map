@@ -13,13 +13,15 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
 
   @override
   Stream<List<domain.UsersYuutai>> watchActive() {
-    final query = (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()));
+    final query = (_db.select(_db.usersYuutais)
+      ..where((tbl) => tbl.deletedAt.isNull() & tbl.isUsed.equals(false)));
     return query.watch().map(_rowsToEntities);
   }
 
   @override
   Future<List<domain.UsersYuutai>> getActive() async {
-    final rows = await (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()))
+    final rows = await (_db.select(_db.usersYuutais)
+          ..where((tbl) => tbl.deletedAt.isNull() & tbl.isUsed.equals(false)))
         .get();
     return _rowsToEntities(rows);
   }

@@ -4,10 +4,10 @@
 <dict>
 	<key>NSLocationWhenInUseUsagsDescription</key>
 	<string>地図上でお近くの店舗を表示するために、位置情報へのアクセスを許可してください。</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>Maps_API_KEY</key>
 	<string>$(Maps_API_KEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -54,8 +54,6 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>io.supabase.flutterstock</string>
