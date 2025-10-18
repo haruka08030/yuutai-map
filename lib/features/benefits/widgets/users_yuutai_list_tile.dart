@@ -13,6 +13,14 @@ class UsersYuutaiListTile extends ConsumerWidget {
   final UsersYuutai benefit;
   final String? subtitle;
 
+  String _formatExpireDate(DateTime date) {
+    final now = DateTime.now();
+    if (date.year == now.year) {
+      return DateFormat('MM/dd').format(date);
+    }
+    return DateFormat('yyyy/MM/dd').format(date);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(usersYuutaiRepositoryProvider);
@@ -148,33 +156,55 @@ class UsersYuutaiListTile extends ConsumerWidget {
             await HapticFeedback.lightImpact();
             repo.toggleUsed(benefit.id, v ?? false);
           },
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          activeColor: Colors.teal,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          activeColor: Colors.deepPurple,
         ),
         title: Text(
           benefit.title,
           style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
             decoration: benefit.isUsed ? TextDecoration.lineThrough : null,
-            color: benefit.isUsed
-                ? Theme.of(context).disabledColor
-                : Theme.of(context).textTheme.titleMedium?.color,
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (subtitle != null)
-              Text(subtitle!, maxLines: 2, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 5),
             if (benefit.expireOn != null)
-              Text(DateFormat('yyyy/MM/dd').format(benefit.expireOn!)),
+              Text(
+                _formatExpireDate(benefit.expireOn!),
+                style: TextStyle(
+                  color: const Color(0xffafafaf),
+                  fontSize: 14,
+                  decoration: benefit.isUsed
+                      ? TextDecoration.lineThrough
+                      : null,
+                ),
+              ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0x1a7990f8),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  subtitle!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.deepPurple,
+                    decoration: benefit.isUsed
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
-        // Expiration chip removed per request
-        // trailing: _Badge(expireOn: benefit.expireOn),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        onTap: () async {
+        onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => UsersYuutaiEditPage(existing: benefit),

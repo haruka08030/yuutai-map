@@ -25,23 +25,18 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    await _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    await _client.auth.signInWithPassword(email: email, password: password);
   }
 
   Future<void> resendConfirmationEmail({required String email}) async {
-    await _client.auth.resend(
-      email: email,
-      type: OtpType.signup,
-    );
+    await _client.auth.resend(email: email, type: OtpType.signup);
   }
 
   Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: 'io.supabase.flutterstock://login-callback/',
+      queryParams: {'access_type': 'offline'},
     );
   }
 
