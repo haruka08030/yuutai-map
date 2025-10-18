@@ -84,7 +84,11 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     if (_user == null) {
       throw Exception('User not logged in');
     }
-    await _supabase.from(_tableName).delete().eq('id', id);
+    await _supabase
+        .from(_tableName)
+        .delete()
+        .eq('id', id)
+        .eq('user_id', _user!.id);
     await NotificationService.instance.cancelAllFor(id);
   }
 

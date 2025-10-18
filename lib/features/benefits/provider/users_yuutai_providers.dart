@@ -7,16 +7,26 @@ import 'package:flutter_stock/data/supabase/supabase_client_provider.dart';
 import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
-final _dbProvider = Provider<AppDatabase>((ref) => AppDatabase());
+final _dbProvider = Provider<AppDatabase>((ref) {
+  final database = AppDatabase();
+  ref.onDispose(() => database.close());
+  return database;
+});
 
 final usersYuutaiRepositoryProvider = Provider<UsersYuutaiRepository>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final localRepository = UsersYuutaiRepositoryLocal(ref.watch(_dbProvider));
-  final supabaseRepository = UsersYuutaiRepositorySupabase(ref.watch(supabaseProvider));
+  final supabaseRepository = UsersYuutaiRepositorySupabase(
+    ref.watch(supabaseProvider),
+  );
 
-  return UsersYuutaiRepositoryFacade(
+  final facade = UsersYuutaiRepositoryFacade(
     authRepository: authRepository,
     localRepository: localRepository,
     supabaseRepository: supabaseRepository,
   );
+
+  ref.onDispose(() => facade.dispose());
+
+  return facade;
 });

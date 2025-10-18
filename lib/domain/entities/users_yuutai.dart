@@ -13,7 +13,7 @@ abstract class UsersYuutai with _$UsersYuutai {
     String? notes, // 自由記入メモ
     int? notifyBeforeDays, // 期限の何日前に通知するか（null=デフォルト）
     int? notifyAtHour, // 通知する時刻（時のみ、0-23, null=9時）
-    DateTime? expireOn, // 期限日（JST基準）
+    DateTime? expireOn, // 期限日（UTC基準で保存）
     @Default(false) bool isUsed, // 使用済み
     @Default([]) List<String> tags,
   }) = _UsersYuutai;
