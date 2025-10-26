@@ -31,6 +31,15 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Read MAPS_API_KEY from local.properties
+        val localProperties = File(rootProject.projectDir, "local.properties")
+        val properties = java.util.Properties()
+        if (localProperties.exists()) {
+            localProperties.inputStream().use { properties.load(it) }
+        }
+        val mapsApiKey = properties.getProperty("MAPS_API_KEY") ?: ""
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {

@@ -8,8 +8,6 @@
 	<true/>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
-	<key>Maps_API_KEY</key>
-	<string>$(Maps_API_KEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

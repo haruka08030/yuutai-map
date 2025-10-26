@@ -34,48 +34,39 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
   Widget build(BuildContext context) {
     final companyList = ref.watch(companyListProvider(_query));
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: CompanySearchBar(
-                controller: _searchCtl,
-                autofocus: true,
-                hintText: '企業名で検索',
-              ),
-            ),
-            Expanded(
-              child: companyList.when(
-                data: (companies) {
-                  if (companies.isEmpty && _query.isNotEmpty) {
-                    return Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.add),
-                        label: Text('"$_query" を企業名として追加'),
-                        onPressed: () {
-                          Navigator.of(context).pop(_query);
-                        },
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: companies.length,
-                    itemBuilder: (context, index) {
-                      final company = companies[index];
-                      return ListTile(
-                        title: Text(company),
-                        onTap: () => Navigator.of(context).pop(company),
-                      );
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(child: Text('Error: $error')),
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        title: CompanySearchBar(
+          controller: _searchCtl,
+          autofocus: true,
+          hintText: '企業名で検索',
         ),
+      ),
+      body: companyList.when(
+        data: (companies) {
+          if (companies.isEmpty && _query.isNotEmpty) {
+            return Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: Text('"$_query" を企業名として追加'),
+                onPressed: () {
+                  Navigator.of(context).pop(_query);
+                },
+              ),
+            );
+          }
+          return ListView.builder(
+            itemCount: companies.length,
+            itemBuilder: (context, index) {
+              final company = companies[index];
+              return ListTile(
+                title: Text(company),
+                onTap: () => Navigator.of(context).pop(company),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
     );
   }
