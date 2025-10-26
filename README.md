@@ -2,8 +2,6 @@
 
 株主優待情報を登録し、地図上で優待店舗を確認できる Flutter アプリです。
 
-[![CI](https://github.com/haruka08030/yuutai-map/actions/workflows/ci.yml/badge.svg)](https://github.com/haruka08030/yuutai-map/actions/workflows/ci.yml)
-
 ## 主な機能
 
 - **優待管理**: 株主優待の登録・編集・削除（TODO風の一覧管理）
@@ -169,15 +167,6 @@ lib/
 - Repository Pattern: データアクセスの抽象化
 - Facade Pattern: ローカル/リモートデータソースの切り替え
 - Observer Pattern: Riverpod による状態管理
-
-## CI/CD
-
-GitHub Actions で自動テスト・ビルドを実行しています。ワークフローファイル: [.github/workflows/ci.yml](.github/workflows/ci.yml)
-
-**GitHub Secrets の設定が必要**:
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `GOOGLE_MAPS_API_KEY`
 
 ## トラブルシューティング
 
