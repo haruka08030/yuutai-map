@@ -25,50 +25,40 @@
 - **通知**: flutter_local_notifications
 - **認証**: Supabase Auth
 
-## 環境変数
+## クイックスタート
 
-このプロジェクトでは、APIキーや機密情報を安全に管理するために環境変数を使用しています。
-
-### セットアップ方法
-
-#### 1. .env ファイルの作成
-
-プロジェクトルートに `.env` ファイルを作成します：
-
-
-`.env` ファイルを編集して、以下の環境変数を設定してください：
-
-```env
-MAPS_API_KEY=your_google_maps_api_key_here
-SUPABASE_URL=your_supabase_project_url_here
-SUPABASE_ANON_KEY=your_supabase_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
-```
-
-#### 2. Android 用の local.properties の作成
-
-Android プロジェクトのルートに `android/local.properties` ファイルを作成します：
+### 1. リポジトリのクローン
 
 ```bash
+git clone https://github.com/haruka08030/yuutai-map.git
+cd yuutai-map
+```
+
+### 2. 環境変数の設定
+
+```bash
+# .envファイルを作成
+cp .env.example .env
+
+# Android用のlocal.propertiesを作成
 cp android/local.properties.example android/local.properties
 ```
 
-`android/local.properties` ファイルを編集して、以下を設定してください：
+`.env` と `android/local.properties` を編集して、以下のAPIキーを設定してください：
 
-```properties
-sdk.dir=/path/to/your/Android/sdk
-flutter.sdk=/path/to/your/flutter
-MAPS_API_KEY=your_google_maps_api_key_here
+- **Google Maps API Key**: [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK を有効化して取得
+- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/) でプロジェクト作成後に取得
+
+### 3. 依存関係のインストール
+
+```bash
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-**注意**: これらのファイルは `.gitignore` に含まれており、Git にコミットされません。
+### 4. Supabase データベースセットアップ
 
-### 環境変数の取得方法
-
-#### Supabase
-1. [Supabase](https://supabase.com/) でプロジェクトを作成
-2. Settings → API から `URL` と `anon public` キーを取得
-3. SQL Editor で以下のテーブルを作成：
+Supabase ダッシュボードの SQL Editor で以下を実行してください：
 
 ```sql
 -- Users Yuutai テーブル
@@ -128,53 +118,6 @@ CREATE POLICY "Anyone can view stores"
   USING (true);
 ```
 
-#### Google Maps API
-1. [Google Cloud Console](https://console.cloud.google.com/) でプロジェクトを作成
-2. APIs & Services → Enable APIs and Services
-3. 以下の API を有効化：
-   - Maps SDK for Android
-   - Maps SDK for iOS
-   - Places API (オプション)
-4. Credentials → Create Credentials → API Key
-5. API キーの制限を設定（アプリケーション制限を推奨）
-6. 取得したAPIキーを上記の `.env` および `android/local.properties` に設定
-
-**Android の場合**:
-- `android/local.properties` に `MAPS_API_KEY` を追加（上記参照）
-- `android/app/build.gradle.kts` が自動的に `local.properties` から読み込みます
-
-**iOS の場合**:
-- iOS では `$(Maps_API_KEY)` プレースホルダーが使用されます
-- 実行時に以下のコマンドでAPIキーを渡します：
-  ```bash
-  flutter run --dart-define=Maps_API_KEY=your_api_key_here
-  ```
-
-## セットアップ手順
-
-### 1. リポジトリのクローン
-
-```bash
-git clone https://github.com/haruka08030/yuutai-map.git
-cd yuutai-map
-```
-
-### 2. 依存関係のインストール
-
-```bash
-flutter pub get
-```
-
-### 3. コード生成
-
-```bash
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-### 4. 環境変数の設定
-
-上記の「環境変数」セクションに従って、`.env` および `android/local.properties` ファイルを作成してください。
-
 ### 5. アプリの起動
 
 **Android の場合**:
@@ -184,55 +127,17 @@ flutter run
 
 **iOS の場合**:
 ```bash
-flutter run --dart-define=Maps_API_KEY=your_google_maps_api_key_here
-```
-
-**または、全ての環境変数を明示的に指定**:
-```bash
-flutter run \
-  --dart-define=SUPABASE_URL=your_url \
-  --dart-define=SUPABASE_ANON_KEY=your_key \
-  --dart-define=Maps_API_KEY=your_maps_key
+flutter run --dart-define=Maps_API_KEY=your_api_key_here
 ```
 
 ## テスト
-
-### 単体テスト・ウィジェットテストの実行
 
 ```bash
 # すべてのテストを実行
 flutter test
 
-# カバレッジ付きでテストを実行
+# カバレッジ付き
 flutter test --coverage
-
-# 特定のテストファイルを実行
-flutter test test/domain/entities/users_yuutai_test.dart
-```
-
-### カバレッジレポートの生成
-
-```bash
-# HTML形式でカバレッジレポートを生成
-genhtml coverage/lcov.info -o coverage/html
-
-# ブラウザで開く (macOS)
-open coverage/html/index.html
-
-# ブラウザで開く (Linux)
-xdg-open coverage/html/index.html
-```
-
-### 統合テストの実行
-
-```bash
-# 統合テストを実行
-flutter test integration_test
-
-# または特定のデバイスで実行
-flutter drive \
-  --driver=test_driver/integration_test.dart \
-  --target=integration_test/app_test.dart
 ```
 
 ## アーキテクチャ
@@ -260,27 +165,19 @@ lib/
 └── main.dart
 ```
 
-### レイヤー構成
-
-- **Presentation Layer**: UI（Widgets）と ViewModel（Riverpod Providers）
-- **Domain Layer**: ビジネスロジックとエンティティ
-- **Data Layer**: データソース（Supabase、Drift）と Repository 実装
-
-### 設計パターン
-
-- **Repository Pattern**: データアクセスの抽象化
-- **Facade Pattern**: ローカル/リモートデータソースの切り替え
-- **Observer Pattern**: Riverpod による状態管理
+**設計パターン**:
+- Repository Pattern: データアクセスの抽象化
+- Facade Pattern: ローカル/リモートデータソースの切り替え
+- Observer Pattern: Riverpod による状態管理
 
 ## CI/CD
 
-GitHub Actions を使用した自動テスト・ビルド：
+GitHub Actions で自動テスト・ビルドを実行しています。ワークフローファイル: [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
-- **テスト**: プルリクエストごとに自動実行
-- **ビルド**: main/development ブランチへのマージ時に APK/IPA を生成
-- **カバレッジ**: Codecov へ自動アップロード
-
-ワークフローファイル: `.github/workflows/ci.yml`
+**GitHub Secrets の設定が必要**:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `GOOGLE_MAPS_API_KEY`
 
 ## トラブルシューティング
 
@@ -295,21 +192,14 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 ### Google Maps が表示されない
 
-- API キーが正しく設定されているか確認
-- Google Cloud Console で Maps SDK が有効化されているか確認
-- API キーの制限設定を確認
+- `.env` と `android/local.properties` にAPIキーが正しく設定されているか確認
+- Google Cloud Console で Maps SDK for Android/iOS が有効化されているか確認
+- iOS の場合、`--dart-define=Maps_API_KEY=...` を指定して起動
 
 ### Supabase 接続エラー
 
-- `.env` ファイルの `SUPABASE_URL` と `SUPABASE_ANON_KEY` が正しいか確認
-- Supabase プロジェクトが起動しているか確認
-- RLS (Row Level Security) ポリシーが正しく設定されているか確認
-
-### 通知が届かない
-
-- iOS: Settings → Notifications でアプリの通知許可を確認
-- Android: アプリの通知権限を確認
-- バックグラウンド制限が有効になっていないか確認
+- `.env` の `SUPABASE_URL` と `SUPABASE_ANON_KEY` が正しいか確認
+- Supabase ダッシュボードでテーブルとRLSポリシーが作成されているか確認
 
 ## ライセンス
 
