@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 
 class CompanySearchPage extends ConsumerStatefulWidget {
@@ -34,22 +35,11 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
     final companyList = ref.watch(companyListProvider(_query));
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
+        title: CompanySearchBar(
           controller: _searchCtl,
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: '企業名で検索',
-            border: InputBorder.none,
-          ),
+          hintText: '企業名で検索',
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchCtl.clear();
-            },
-          ),
-        ],
       ),
       body: companyList.when(
         data: (companies) {

@@ -32,21 +32,24 @@ class UsersYuutais extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  // Constructor for testing with custom executor
+  AppDatabase.forTesting(super.executor);
+
   @override
   int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-        },
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.addColumn(usersYuutais, usersYuutais.notifyBeforeDays);
-            await m.addColumn(usersYuutais, usersYuutais.notifyAtHour);
-          }
-        },
-      );
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(usersYuutais, usersYuutais.notifyBeforeDays);
+        await m.addColumn(usersYuutais, usersYuutais.notifyAtHour);
+      }
+    },
+  );
 }
 
 LazyDatabase _openConnection() {
