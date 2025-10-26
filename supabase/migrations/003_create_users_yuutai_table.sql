@@ -36,7 +36,7 @@ BEGIN
     NEW.updated_at = now();
     RETURN NEW;
 END;
-$ language 'plpgsql';
+$ LANGUAGE 'plpgsql';
 
 CREATE TRIGGER update_users_yuutai_updated_at
     BEFORE UPDATE ON users_yuutai
