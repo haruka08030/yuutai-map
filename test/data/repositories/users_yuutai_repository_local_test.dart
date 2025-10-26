@@ -203,7 +203,7 @@ void main() {
         );
 
         // Act
-        await repository.toggleUsed(benefitId, true);
+        await repository.toggleUsed(benefitId, true, scheduleReminders: false);
 
         // Assert
         final results = await repository.getActive();
@@ -224,7 +224,7 @@ void main() {
             );
 
         // Act
-        await repository.toggleUsed(benefitId, false);
+        await repository.toggleUsed(benefitId, false, scheduleReminders: false);
 
         // Assert
         final results = await repository.getActive();
@@ -246,7 +246,7 @@ void main() {
         );
 
         // Act
-        await repository.softDelete(benefitId);
+        await repository.softDelete(benefitId, scheduleReminders: false);
 
         // Assert
         final results = await repository.getActive();
@@ -265,7 +265,7 @@ void main() {
         );
 
         // Act
-        await repository.softDelete(benefitId);
+        await repository.softDelete(benefitId, scheduleReminders: false);
 
         // Assert
         final allRecords = await database.select(database.usersYuutais).get();
@@ -369,7 +369,7 @@ void main() {
 
       test('should not return deleted benefits in search', () async {
         // Arrange
-        await repository.softDelete('id-1');
+        await repository.softDelete('id-1', scheduleReminders: false);
 
         // Act
         final results = await repository.search('McDonald');
@@ -380,7 +380,7 @@ void main() {
 
       test('should return used benefits in search', () async {
         // Arrange
-        await repository.toggleUsed('id-1', true);
+        await repository.toggleUsed('id-1', true, scheduleReminders: false);
 
         // Act
         final results = await repository.search('McDonald');
