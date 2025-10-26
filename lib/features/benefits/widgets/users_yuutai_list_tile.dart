@@ -149,61 +149,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
           ),
         ],
       ),
-      child: ListTile(
-        leading: Checkbox(
-          value: benefit.isUsed,
-          onChanged: (v) async {
-            await HapticFeedback.lightImpact();
-            repo.toggleUsed(benefit.id, v ?? false);
-          },
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          activeColor: Colors.deepPurple,
-        ),
-        title: Text(
-          benefit.title,
-          style: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            decoration: benefit.isUsed ? TextDecoration.lineThrough : null,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 5),
-            if (benefit.expireOn != null)
-              Text(
-                _formatExpireDate(benefit.expireOn!),
-                style: TextStyle(
-                  color: const Color(0xffafafaf),
-                  fontSize: 14,
-                  decoration: benefit.isUsed
-                      ? TextDecoration.lineThrough
-                      : null,
-                ),
-              ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0x1a7990f8),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  subtitle!,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.deepPurple,
-                    decoration: benefit.isUsed
-                        ? TextDecoration.lineThrough
-                        : null,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
+      child: InkWell(
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -211,6 +157,92 @@ class UsersYuutaiListTile extends ConsumerWidget {
             ),
           );
         },
+        child: Builder(
+          builder: (context) {
+            final hasSubtitle = benefit.expireOn != null || subtitle != null;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                crossAxisAlignment: hasSubtitle
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.center,
+                children: [
+                  // チェックボックス
+                  Checkbox(
+                    value: benefit.isUsed,
+                    onChanged: (v) async {
+                      await HapticFeedback.lightImpact();
+                      repo.toggleUsed(benefit.id, v ?? false);
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    activeColor: Colors.deepPurple,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  const SizedBox(width: 8),
+                  // コンテンツ
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // タイトル（企業名）
+                        Text(
+                          benefit.title,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                            decoration:
+                                benefit.isUsed ? TextDecoration.lineThrough : null,
+                          ),
+                        ),
+                        // 期限日
+                        if (benefit.expireOn != null) ...[
+                          const SizedBox(height: 5),
+                          Text(
+                            _formatExpireDate(benefit.expireOn!),
+                            style: TextStyle(
+                              color: const Color(0xffafafaf),
+                              fontSize: 14,
+                              decoration: benefit.isUsed
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        ],
+                        // 優待内容
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 5),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0x1a7990f8),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              subtitle!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.deepPurple,
+                                decoration: benefit.isUsed
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -6,7 +6,7 @@ class CompanySearchBar extends StatelessWidget {
     this.controller,
     this.onChanged,
     this.onSubmitted,
-    this.hintText = 'Search for your task...',
+    this.hintText = '優待を検索',
     this.autofocus = false,
   });
 
@@ -43,7 +43,10 @@ class CompanySearchBar extends StatelessWidget {
           // 左の虫眼鏡（線が細いのでCustomPaintで再現）
           prefixIcon: const _MagnifierIcon(),
           // アイコンとテキストの間隔をスクショ寄りに
-          prefixIconConstraints: const BoxConstraints(minWidth: 38, minHeight: 20),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 38,
+            minHeight: 20,
+          ),
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           filled: true,

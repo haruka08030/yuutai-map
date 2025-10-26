@@ -51,7 +51,14 @@ class UsersYuutaiPage extends ConsumerWidget {
         }
         return ListView.separated(
           itemCount: items.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(
+              height: 1,
+              thickness: 0.5,
+              color: Color(0xFFE0E0E0),
+            ),
+          ),
           itemBuilder: (context, index) {
             final b = items[index];
             return UsersYuutaiListTile(

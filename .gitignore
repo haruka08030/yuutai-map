@@ -39,8 +39,16 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# .env file
-/.env
+# .env files (all variants)
+.env
+*.env
+.env.*
+**/.env
+**/.env.*
 
 # secrets
 data_importer/serviceAccountKey.json
+
+# Android local properties (contains API keys)
+android/local.properties
+**/local.properties

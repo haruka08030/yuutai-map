@@ -41,22 +41,19 @@ class _MainPageState extends ConsumerState<MainPage> {
     });
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  AppBar? _buildAppBar(BuildContext context) {
     if (_selectedIndex == 0) {
       return AppBar(
         title: CompanySearchBar(
           controller: _searchController,
         ),
       );
+    } else if (_selectedIndex == 1) {
+      // 地図タブではAppBarを非表示
+      return null;
     } else {
-      String title = '';
-      if (_selectedIndex == 1) {
-        title = 'マップ';
-      } else if (_selectedIndex == 2) {
-        title = '設定';
-      }
       return AppBar(
-        title: Text(title),
+        title: const Text(''),
       );
     }
   }
