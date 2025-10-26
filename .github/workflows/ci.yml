@@ -26,11 +26,9 @@ jobs:
 
       - name: Verify formatting
         run: flutter format --set-exit-if-changed .
-        continue-on-error: true
 
       - name: Analyze project source
         run: flutter analyze
-        continue-on-error: true
 
       - name: Run tests
         run: flutter test --coverage
@@ -61,9 +59,8 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --release --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
-        continue-on-error: true
-
-      - name: Upload APK artifact
+      - name: Build APK
+        run: flutter build apk --release --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
         uses: actions/upload-artifact@v3
         with:
           name: android-apk
@@ -90,4 +87,3 @@ jobs:
 
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
-        continue-on-error: true

@@ -204,21 +204,22 @@ void main() {
     group('business logic validation', () {
       test('should handle past expiry dates', () {
         // Arrange
-        final pastDate = DateTime.now().subtract(const Duration(days: 1));
+        final now = DateTime.now();
+        final pastDate = now.subtract(const Duration(days: 1));
         final benefit = UsersYuutai(
           id: 'test-id',
           title: 'Expired Benefit',
           expireOn: pastDate,
         );
-
         // Assert
         expect(benefit.expireOn, isNotNull);
-        expect(benefit.expireOn!.isBefore(DateTime.now()), true);
+        expect(benefit.expireOn!.isBefore(now), true);
       });
 
       test('should handle future expiry dates', () {
         // Arrange
-        final futureDate = DateTime.now().add(const Duration(days: 30));
+        final now = DateTime.now();
+        final futureDate = now.add(const Duration(days: 30));
         final benefit = UsersYuutai(
           id: 'test-id',
           title: 'Future Benefit',
@@ -227,7 +228,7 @@ void main() {
 
         // Assert
         expect(benefit.expireOn, isNotNull);
-        expect(benefit.expireOn!.isAfter(DateTime.now()), true);
+        expect(benefit.expireOn!.isAfter(now), true);
       });
 
       test('should accept valid notifyAtHour range (0-23)', () {
