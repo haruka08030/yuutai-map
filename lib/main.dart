@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,8 +28,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shareholder Benefit App',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      title: 'yuutai-map',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       home: const AuthGate(),
     );
   }

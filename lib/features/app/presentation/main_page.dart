@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
@@ -15,7 +16,6 @@ class MainPage extends ConsumerStatefulWidget {
 
 class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
-  bool _isSearching = false;
   String _searchQuery = '';
   final _searchController = TextEditingController();
 
@@ -41,51 +41,19 @@ class _MainPageState extends ConsumerState<MainPage> {
     });
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    if (_isSearching) {
+  AppBar? _buildAppBar(BuildContext context) {
+    if (_selectedIndex == 0) {
       return AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            setState(() {
-              _isSearching = false;
-              _searchQuery = '';
-              _searchController.clear();
-            });
-          },
-        ),
-        title: TextField(
+        title: CompanySearchBar(
           controller: _searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Search...',
-            border: InputBorder.none,
-          ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-            },
-          ),
-        ],
       );
+    } else if (_selectedIndex == 1) {
+      // 地図タブではAppBarを非表示
+      return null;
     } else {
       return AppBar(
-        title: const Text('All'),
-        actions: [
-          if (_selectedIndex ==
-              0) // Only show search button on the benefits page
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                setState(() {
-                  _isSearching = true;
-                });
-              },
-            ),
-        ],
+        title: const Text(''),
       );
     }
   }

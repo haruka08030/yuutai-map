@@ -13,13 +13,15 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
 
   @override
   Stream<List<domain.UsersYuutai>> watchActive() {
-    final query = (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()));
+    final query = (_db.select(_db.usersYuutais)
+      ..where((tbl) => tbl.deletedAt.isNull() & tbl.isUsed.equals(false)));
     return query.watch().map(_rowsToEntities);
   }
 
   @override
   Future<List<domain.UsersYuutai>> getActive() async {
-    final rows = await (_db.select(_db.usersYuutais)..where((tbl) => tbl.deletedAt.isNull()))
+    final rows = await (_db.select(_db.usersYuutais)
+          ..where((tbl) => tbl.deletedAt.isNull() & tbl.isUsed.equals(false)))
         .get();
     return _rowsToEntities(rows);
   }
@@ -53,7 +55,7 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
   }
 
   @override
-  Future<void> toggleUsed(String id, bool isUsed) async {
+  Future<void> toggleUsed(String id, bool isUsed, {bool scheduleReminders = true}) async {
     final now = DateTime.now();
     await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
       db.UsersYuutaisCompanion(
@@ -62,14 +64,14 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
       ),
     );
 
-    if (isUsed) {
+    if (isUsed && scheduleReminders) {
       // 使ったら通知を止める
       await NotificationService.instance.cancelAllFor(id);
     }
   }
 
   @override
-  Future<void> softDelete(String id) async {
+  Future<void> softDelete(String id, {bool scheduleReminders = true}) async {
     final now = DateTime.now();
     await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
       db.UsersYuutaisCompanion(
@@ -77,7 +79,9 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
         updatedAt: d.Value(now),
       ),
     );
-    await NotificationService.instance.cancelAllFor(id);
+    if (scheduleReminders) {
+      await NotificationService.instance.cancelAllFor(id);
+    }
   }
 
   @override
