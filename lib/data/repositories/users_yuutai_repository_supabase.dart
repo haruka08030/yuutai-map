@@ -61,7 +61,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
   }
 
   @override
-  Future<void> toggleUsed(String id, bool isUsed) async {
+  Future<void> toggleUsed(String id, bool isUsed, {bool scheduleReminders = true}) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
@@ -74,13 +74,13 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .eq('id', id)
         .eq('user_id', _user!.id);
 
-    if (isUsed) {
+    if (isUsed && scheduleReminders) {
       await NotificationService.instance.cancelAllFor(id);
     }
   }
 
   @override
-  Future<void> softDelete(String id) async {
+  Future<void> softDelete(String id, {bool scheduleReminders = true}) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
@@ -89,7 +89,9 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .delete()
         .eq('id', id)
         .eq('user_id', _user!.id);
-    await NotificationService.instance.cancelAllFor(id);
+    if (scheduleReminders) {
+      await NotificationService.instance.cancelAllFor(id);
+    }
   }
 
   @override
