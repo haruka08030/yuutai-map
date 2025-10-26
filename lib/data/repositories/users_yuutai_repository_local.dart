@@ -55,7 +55,7 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
   }
 
   @override
-  Future<void> toggleUsed(String id, bool isUsed) async {
+  Future<void> toggleUsed(String id, bool isUsed, {bool scheduleReminders = true}) async {
     final now = DateTime.now();
     await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
       db.UsersYuutaisCompanion(
@@ -64,14 +64,14 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
       ),
     );
 
-    if (isUsed) {
+    if (isUsed && scheduleReminders) {
       // 使ったら通知を止める
       await NotificationService.instance.cancelAllFor(id);
     }
   }
 
   @override
-  Future<void> softDelete(String id) async {
+  Future<void> softDelete(String id, {bool scheduleReminders = true}) async {
     final now = DateTime.now();
     await (_db.update(_db.usersYuutais)..where((tbl) => tbl.id.equals(id))).write(
       db.UsersYuutaisCompanion(
@@ -79,7 +79,9 @@ class UsersYuutaiRepositoryLocal implements UsersYuutaiRepository {
         updatedAt: d.Value(now),
       ),
     );
-    await NotificationService.instance.cancelAllFor(id);
+    if (scheduleReminders) {
+      await NotificationService.instance.cancelAllFor(id);
+    }
   }
 
   @override
