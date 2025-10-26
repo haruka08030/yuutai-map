@@ -37,6 +37,12 @@ class AuthOptions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ゲストモードの場合はMainPageを表示
+    final isGuest = ref.watch(isGuestProvider);
+    if (isGuest) {
+      return const MainPage();
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -78,11 +84,6 @@ class AuthOptions extends ConsumerWidget {
                 TextButton(
                   onPressed: () {
                     ref.read(isGuestProvider.notifier).state = true;
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const MainPage(),
-                      ),
-                    );
                   },
                   child: const Text('ゲストとして利用する'),
                 ),
