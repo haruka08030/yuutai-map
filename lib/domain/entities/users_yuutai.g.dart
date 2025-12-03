@@ -9,16 +9,16 @@ part of 'users_yuutai.dart';
 _UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
   id: json['id'] as String,
   title: json['title'] as String,
-  brandId: json['brandId'] as String?,
-  companyId: json['companyId'] as String?,
-  benefitText: json['benefitText'] as String?,
+  brandId: json['brand_id'] as String?,
+  companyId: json['company_id'] as String?,
+  benefitText: json['benefit_text'] as String?,
   notes: json['notes'] as String?,
-  notifyBeforeDays: (json['notifyBeforeDays'] as num?)?.toInt(),
-  notifyAtHour: (json['notifyAtHour'] as num?)?.toInt(),
-  expireOn: json['expireOn'] == null
+  notifyBeforeDays: (json['notify_before_days'] as num?)?.toInt(),
+  notifyAtHour: (json['notify_at_hour'] as num?)?.toInt(),
+  expireOn: json['expire_on'] == null
       ? null
-      : DateTime.parse(json['expireOn'] as String),
-  isUsed: json['isUsed'] as bool? ?? false,
+      : DateTime.parse(json['expire_on'] as String),
+  isUsed: json['is_used'] as bool? ?? false,
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -28,13 +28,13 @@ Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'brandId': instance.brandId,
-      'companyId': instance.companyId,
-      'benefitText': instance.benefitText,
+      'brand_id': instance.brandId,
+      'company_id': instance.companyId,
+      'benefit_text': instance.benefitText,
       'notes': instance.notes,
-      'notifyBeforeDays': instance.notifyBeforeDays,
-      'notifyAtHour': instance.notifyAtHour,
-      'expireOn': instance.expireOn?.toIso8601String(),
-      'isUsed': instance.isUsed,
+      'notify_before_days': instance.notifyBeforeDays,
+      'notify_at_hour': instance.notifyAtHour,
+      'expire_on': instance.expireOn?.toIso8601String(),
+      'is_used': instance.isUsed,
       'tags': instance.tags,
     };
