@@ -4,17 +4,18 @@ part 'users_yuutai.g.dart';
 
 @freezed
 abstract class UsersYuutai with _$UsersYuutai {
+  @JsonSerializable(fieldRename: FieldRename.snake) 
   const factory UsersYuutai({
-    required String id, // UUID
-    required String title, // 企業名（表示用）
+    required String id,
+    required String title,
     String? brandId,
     String? companyId,
-    String? benefitText, // 優待内容（3000円分など）
-    String? notes, // 自由記入メモ
-    int? notifyBeforeDays, // 期限の何日前に通知するか（null=デフォルト）
-    int? notifyAtHour, // 通知する時刻（時のみ、0-23, null=9時）
-    DateTime? expireOn, // 期限日（UTC基準で保存）
-    @Default(false) bool isUsed, // 使用済み
+    String? benefitText,
+    String? notes,
+    int? notifyBeforeDays,
+    int? notifyAtHour,
+    DateTime? expireOn,
+    @Default(false) bool isUsed,
     @Default([]) List<String> tags,
   }) = _UsersYuutai;
 

@@ -15,15 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UsersYuutai {
 
- String get id;// UUID
- String get title;// 企業名（表示用）
- String? get brandId; String? get companyId; String? get benefitText;// 優待内容（3000円分など）
- String? get notes;// 自由記入メモ
- int? get notifyBeforeDays;// 期限の何日前に通知するか（null=デフォルト）
- int? get notifyAtHour;// 通知する時刻（時のみ、0-23, null=9時）
- DateTime? get expireOn;// 期限日（JST基準）
- bool get isUsed;// 使用済み
- List<String> get tags;
+ String get id; String get title; String? get brandId; String? get companyId; String? get benefitText; String? get notes; int? get notifyBeforeDays; int? get notifyAtHour; DateTime? get expireOn; bool get isUsed; List<String> get tags;
 /// Create a copy of UsersYuutai
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -224,32 +216,23 @@ return $default(_that.id,_that.title,_that.brandId,_that.companyId,_that.benefit
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _UsersYuutai implements UsersYuutai {
   const _UsersYuutai({required this.id, required this.title, this.brandId, this.companyId, this.benefitText, this.notes, this.notifyBeforeDays, this.notifyAtHour, this.expireOn, this.isUsed = false, final  List<String> tags = const []}): _tags = tags;
   factory _UsersYuutai.fromJson(Map<String, dynamic> json) => _$UsersYuutaiFromJson(json);
 
 @override final  String id;
-// UUID
 @override final  String title;
-// 企業名（表示用）
 @override final  String? brandId;
 @override final  String? companyId;
 @override final  String? benefitText;
-// 優待内容（3000円分など）
 @override final  String? notes;
-// 自由記入メモ
 @override final  int? notifyBeforeDays;
-// 期限の何日前に通知するか（null=デフォルト）
 @override final  int? notifyAtHour;
-// 通知する時刻（時のみ、0-23, null=9時）
 @override final  DateTime? expireOn;
-// 期限日（JST基準）
 @override@JsonKey() final  bool isUsed;
-// 使用済み
  final  List<String> _tags;
-// 使用済み
 @override@JsonKey() List<String> get tags {
   if (_tags is EqualUnmodifiableListView) return _tags;
   // ignore: implicit_dynamic_type
