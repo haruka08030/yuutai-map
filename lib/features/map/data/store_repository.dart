@@ -19,8 +19,8 @@ class Store {
     return Store(
       id: map['id'] as int,
       name: map['name'] as String,
-      latitude: (map['latitude'] as num).toDouble(),
-      longitude: (map['longitude'] as num).toDouble(),
+      latitude: (map['lat'] as num).toDouble(),
+      longitude: (map['lng'] as num).toDouble(),
     );
   }
 }
@@ -38,7 +38,7 @@ class StoreRepository {
       return [];
     }
 
-    var query = _client.from('stores').select('id, name, latitude, longitude');
+    var query = _client.from('stores').select('id, name, lat, lng');
 
     if (brandId != null) {
       query = query.eq('store_brand', brandId);

@@ -3,20 +3,15 @@ part 'users_yuutai.freezed.dart';
 part 'users_yuutai.g.dart';
 
 @freezed
-abstract class UsersYuutai with _$UsersYuutai {
-  @JsonSerializable(fieldRename: FieldRename.snake) 
+class UsersYuutai with _$UsersYuutai {
   const factory UsersYuutai({
-    required String id,
-    required String title,
-    String? brandId,
-    String? companyId,
-    String? benefitText,
-    String? notes,
-    int? notifyBeforeDays,
-    int? notifyAtHour,
-    DateTime? expireOn,
-    @Default(false) bool isUsed,
-    @Default([]) List<String> tags,
+    int? id,
+    @JsonKey(name: 'company_name') @Default('') String companyName,
+    @JsonKey(name: 'company_id') int? companyId,
+    @JsonKey(name: 'benefit_detail') String? benefitDetail,
+    @JsonKey(name: 'expiry_date') DateTime? expiryDate,
+    @Default('active') String status,
+    @JsonKey(name: 'alert_enabled') @Default(false) bool alertEnabled,
   }) = _UsersYuutai;
 
   factory UsersYuutai.fromJson(Map<String, dynamic> json) =>

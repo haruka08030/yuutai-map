@@ -74,10 +74,9 @@ class _MapPageState extends ConsumerState<MapPage> {
     final Set<Marker> markers = {};
 
     for (final benefit in benefits) {
-      if (benefit.brandId != null || benefit.companyId != null) {
+      if (benefit.companyId != null) {
         final stores = await storeRepo.getStores(
-          brandId: benefit.brandId,
-          companyId: benefit.companyId,
+          companyId: benefit.companyId.toString(),
         );
 
         for (final store in stores) {

@@ -19,27 +19,24 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
-  late final TextEditingController _memoCtl;
   DateTime? _expireOn;
-  int? _notifyBeforeDays;
+  bool _alertEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    _titleCtl = TextEditingController(text: widget.existing?.title ?? '');
+    _titleCtl = TextEditingController(text: widget.existing?.companyName ?? '');
     _benefitContentCtl = TextEditingController(
-      text: widget.existing?.benefitText ?? '',
+      text: widget.existing?.benefitDetail ?? '',
     );
-    _memoCtl = TextEditingController(text: widget.existing?.notes ?? '');
-    _expireOn = widget.existing?.expireOn?.toLocal();
-    _notifyBeforeDays = widget.existing?.notifyBeforeDays;
+    _expireOn = widget.existing?.expiryDate?.toLocal();
+    _alertEnabled = widget.existing?.alertEnabled ?? false;
   }
 
   @override
   void dispose() {
     _titleCtl.dispose();
     _benefitContentCtl.dispose();
-    _memoCtl.dispose();
     super.dispose();
   }
 
@@ -126,54 +123,20 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     return '$dateStr $tail';
   }
 
-  Future<void> _pickReminderOffset() async {
-    final choices = <(String, int?)>[
-      ('設定しない', null),
-      ('当日', 0),
-      ('1日前', 1),
-      ('7日前', 7),
-      ('30日前', 30),
-    ];
-    final sel = await showModalBottomSheet<int?>(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final c in choices)
-              ListTile(
-                title: Text(c.$1),
-                trailing:
-                    ((_notifyBeforeDays == null && c.$2 == null) ||
-                        (_notifyBeforeDays == c.$2))
-                    ? const Icon(Icons.check)
-                    : null,
-                onTap: () => Navigator.of(ctx).pop(c.$2),
-              ),
-          ],
-        ),
-      ),
-    );
-    if (sel != null || _notifyBeforeDays != sel) {
-      setState(() => _notifyBeforeDays = sel);
-    }
-  }
-
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final repo = ref.read(usersYuutaiRepositoryProvider);
     final existing = widget.existing;
 
     final entity = UsersYuutai(
-      id: existing?.id ?? '',
-      title: _titleCtl.text.trim(),
-      benefitText: _benefitContentCtl.text.trim().isEmpty
+      id: existing?.id,
+      companyName: _titleCtl.text.trim(),
+      benefitDetail: _benefitContentCtl.text.trim().isEmpty
           ? null
           : _benefitContentCtl.text.trim(),
-      notes: _memoCtl.text.trim().isEmpty ? null : _memoCtl.text.trim(),
-      expireOn: _expireOn?.toUtc(),
-      notifyBeforeDays: _notifyBeforeDays,
-      isUsed: existing?.isUsed ?? false,
+      expiryDate: _expireOn, // toUtc handled by Supabase/Json? DateTime is usually ISO string.
+      alertEnabled: _alertEnabled,
+      status: existing?.status ?? 'active',
     );
 
     await repo.upsert(entity, scheduleReminders: true);
@@ -264,47 +227,14 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('リマインダー'),
-            subtitle: Text(() {
-              final v = _notifyBeforeDays;
-              if (v == null) return '未設定';
-              if (v == 0) return '当日';
-              return '$v日前';
-            }()),
-            trailing: TextButton(
-              onPressed: _pickReminderOffset,
-              child: const Text('選択'),
+            subtitle: Text(_alertEnabled ? '有効 (7日前)' : '無効'),
+            trailing: Switch(
+              value: _alertEnabled,
+              onChanged: (v) => setState(() => _alertEnabled = v),
             ),
-            onTap: _pickReminderOffset,
           ),
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 4),
-            child: Text(
-              'メモ',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.color
-                    ?.withValues(alpha: 0.8),
-              ),
-            ),
-          ),
-          TextFormField(
-            controller: _memoCtl,
-            decoration: const InputDecoration(
-              hintText: '自由に記入できます',
-              isDense: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
-            ),
-            maxLines: 3,
-          ),
+          // Or we may add a "メモ" field.
         ],
       ),
     );
