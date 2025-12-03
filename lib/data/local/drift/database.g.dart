@@ -168,7 +168,7 @@ class $UsersYuutaisTable extends UsersYuutais
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'users_yuutai';
+  static const String $name = 'users_yuutais';
   @override
   VerificationContext validateIntegrity(
     Insertable<UsersYuutai> instance, {
