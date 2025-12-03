@@ -23,8 +23,8 @@ class UsersYuutaiPage extends ConsumerWidget {
         if (searchQuery.isNotEmpty) {
           items = items.where((benefit) {
             final query = searchQuery.toLowerCase();
-            final title = benefit.title.toLowerCase();
-            final benefitText = benefit.benefitText?.toLowerCase() ?? '';
+            final title = benefit.companyName.toLowerCase();
+            final benefitText = benefit.benefitDetail?.toLowerCase() ?? '';
             return title.contains(query) || benefitText.contains(query);
           }).toList();
         }
@@ -59,8 +59,8 @@ class UsersYuutaiPage extends ConsumerWidget {
             final b = items[index];
             return UsersYuutaiListTile(
               benefit: b,
-              subtitle: (b.benefitText?.isNotEmpty ?? false)
-                  ? b.benefitText
+              subtitle: (b.benefitDetail?.isNotEmpty ?? false)
+                  ? b.benefitDetail
                   : null,
             );
           },

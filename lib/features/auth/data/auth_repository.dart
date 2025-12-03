@@ -47,6 +47,10 @@ class AuthRepository {
     );
   }
 
+  Future<void> signInAnonymously() async {
+    await _client.auth.signInAnonymously();
+  }
+
   Future<void> signOut() async {
     await _client.auth.signOut();
   }

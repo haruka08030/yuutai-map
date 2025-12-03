@@ -34,13 +34,15 @@ class NotificationService {
   }
 
   Future<void> reschedulePresetReminders(UsersYuutai b) async {
-    await cancelAllFor(b.id);
+    if (b.id == null) return;
+    final idStr = b.id.toString();
+    await cancelAllFor(idStr);
 
-    if (b.isUsed) {
+    if (b.status == 'used') {
       return;
     }
 
-    final expireOn = b.expireOn;
+    final expireOn = b.expiryDate;
     if (expireOn == null) {
       return;
     }
@@ -50,14 +52,19 @@ class NotificationService {
       return;
     }
 
-    final presetDays = [1, 3, 7, 30];
-    final notifyAtHour = b.notifyAtHour ?? 9;
+    // Fixed preset logic or use alertEnabled?
+    // GEMINI.md says "alert_enabled (bool)".
+    // UsersYuutai entity has alertEnabled.
+    // If alertEnabled is false, return.
+    if (!b.alertEnabled) return;
+
+    // What about notifyBeforeDays? It was removed from entity.
+    // Let's assume a default reminder policy if alertEnabled is true.
+    // e.g. 7 days before.
+    final presetDays = [7]; 
+    final notifyAtHour = 9;
 
     for (final days in presetDays) {
-      if (b.notifyBeforeDays != null && b.notifyBeforeDays != days) {
-        continue;
-      }
-
       final scheduledAt = expireOn.subtract(Duration(days: days));
       if (scheduledAt.isBefore(now)) {
         continue;
@@ -81,10 +88,10 @@ class NotificationService {
       await _plugin.zonedSchedule(
         b.id.hashCode + days,
         '優待の期限が近づいています',
-        '「${b.title}」の期限が$days日後です。',
+        '「${b.companyName}」の期限が$days日後です。',
         scheduledDate,
         notificationDetails,
-        payload: b.id,
+        payload: idStr,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }

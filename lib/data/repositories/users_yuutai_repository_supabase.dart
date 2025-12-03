@@ -27,6 +27,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .from(_tableName)
         .stream(primaryKey: ['id'])
         .eq('user_id', _user!.id)
+        .map((rows) => rows.where((r) => r['status'] == 'active').toList())
         .map(_rowsToEntities);
   }
 
@@ -38,7 +39,8 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     final rows = await _supabase
         .from(_tableName)
         .select()
-        .eq('user_id', _user!.id);
+        .eq('user_id', _user!.id)
+        .eq('status', 'active');
     return _rowsToEntities(rows);
   }
 
@@ -53,44 +55,53 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
 
     final data = b.toJson();
     data['user_id'] = _user!.id;
-    await _supabase.from(_tableName).upsert(data);
+    // Remove id if null to let DB auto-increment
+    if (data['id'] == null) {
+      data.remove('id');
+    }
+    
+    final res = await _supabase.from(_tableName).upsert(data).select().single();
+    final inserted = domain.UsersYuutai.fromJson(res);
 
     if (scheduleReminders) {
-      await NotificationService.instance.reschedulePresetReminders(b);
+      await NotificationService.instance.reschedulePresetReminders(inserted);
     }
   }
 
   @override
-  Future<void> toggleUsed(String id, bool isUsed, {bool scheduleReminders = true}) async {
+  Future<void> toggleUsed(int id, bool isUsed, {bool scheduleReminders = true}) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
+    final status = isUsed ? 'used' : 'active';
     await _supabase
         .from(_tableName)
         .update({
-          'is_used': isUsed,
-          'updated_at': DateTime.now().toIso8601String(),
+          'status': status,
         })
         .eq('id', id)
         .eq('user_id', _user!.id);
 
     if (isUsed && scheduleReminders) {
-      await NotificationService.instance.cancelAllFor(id);
+      await NotificationService.instance.cancelAllFor(id.toString());
     }
   }
 
   @override
-  Future<void> softDelete(String id, {bool scheduleReminders = true}) async {
+  Future<void> softDelete(int id, {bool scheduleReminders = true}) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
+    // Actually delete as per new schema, or maybe just delete row?
+    // GEMINI.md says "Status: active, used, expired". No "deleted"?
+    // But repository interface says softDelete. Let's delete the row for now as per previous impl.
     await _supabase
         .from(_tableName)
         .delete()
         .eq('id', id)
         .eq('user_id', _user!.id);
     if (scheduleReminders) {
-      await NotificationService.instance.cancelAllFor(id);
+      await NotificationService.instance.cancelAllFor(id.toString());
     }
   }
 
@@ -103,7 +114,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .from(_tableName)
         .select()
         .eq('user_id', _user!.id)
-        .textSearch('title', query);
+        .textSearch('company_name', query);
     return _rowsToEntities(rows);
   }
 
