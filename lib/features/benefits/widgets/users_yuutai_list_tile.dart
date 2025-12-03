@@ -55,7 +55,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                 context: context,
                 builder: (ctx) => AlertDialog(
                   title: const Text('削除しますか？'),
-                  content: Text('「${benefit.title}」を削除します。取り消せません。'),
+                  content: Text('「${benefit.companyName}」を削除します。取り消せません。'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
@@ -71,9 +71,9 @@ class UsersYuutaiListTile extends ConsumerWidget {
                   ],
                 ),
               );
-              if (ok == true) {
+              if (ok == true && benefit.id != null) {
                 await HapticFeedback.heavyImpact();
-                await repo.softDelete(benefit.id);
+                await repo.softDelete(benefit.id!);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -116,7 +116,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                 context: context,
                 builder: (ctx) => AlertDialog(
                   title: const Text('削除しますか？'),
-                  content: Text('「${benefit.title}」を削除します。取り消せません。'),
+                  content: Text('「${benefit.companyName}」を削除します。取り消せません。'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
@@ -132,9 +132,9 @@ class UsersYuutaiListTile extends ConsumerWidget {
                   ],
                 ),
               );
-              if (ok == true) {
+              if (ok == true && benefit.id != null) {
                 await HapticFeedback.heavyImpact();
-                await repo.softDelete(benefit.id);
+                await repo.softDelete(benefit.id!);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -159,7 +159,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
         },
         child: Builder(
           builder: (context) {
-            final hasSubtitle = benefit.expireOn != null || subtitle != null;
+            final hasSubtitle = benefit.expiryDate != null || subtitle != null;
+            final isUsed = benefit.status == 'used';
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
@@ -169,10 +170,11 @@ class UsersYuutaiListTile extends ConsumerWidget {
                 children: [
                   // チェックボックス
                   Checkbox(
-                    value: benefit.isUsed,
+                    value: isUsed,
                     onChanged: (v) async {
+                      if (benefit.id == null) return;
                       await HapticFeedback.lightImpact();
-                      repo.toggleUsed(benefit.id, v ?? false);
+                      repo.toggleUsed(benefit.id!, v ?? false);
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -189,23 +191,23 @@ class UsersYuutaiListTile extends ConsumerWidget {
                       children: [
                         // タイトル（企業名）
                         Text(
-                          benefit.title,
+                          benefit.companyName,
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w500,
                             decoration:
-                                benefit.isUsed ? TextDecoration.lineThrough : null,
+                                isUsed ? TextDecoration.lineThrough : null,
                           ),
                         ),
                         // 期限日
-                        if (benefit.expireOn != null) ...[
+                        if (benefit.expiryDate != null) ...[
                           const SizedBox(height: 5),
                           Text(
-                            _formatExpireDate(benefit.expireOn!),
+                            _formatExpireDate(benefit.expiryDate!),
                             style: TextStyle(
                               color: const Color(0xffafafaf),
                               fontSize: 14,
-                              decoration: benefit.isUsed
+                              decoration: isUsed
                                   ? TextDecoration.lineThrough
                                   : null,
                             ),
@@ -228,7 +230,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.deepPurple,
-                                decoration: benefit.isUsed
+                                decoration: isUsed
                                     ? TextDecoration.lineThrough
                                     : null,
                               ),

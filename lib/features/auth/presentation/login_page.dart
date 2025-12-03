@@ -73,6 +73,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  Future<void> _signInAnonymously() async {
+    setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(authRepositoryProvider).signInAnonymously();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   Future<void> _showForgotPasswordDialog() async {
     final emailController = TextEditingController();
     await showDialog(
@@ -203,6 +223,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                 ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: _isLoading ? null : _signInAnonymously,
+                child: const Text('ゲストとして利用する'),
               ),
               const SizedBox(height: 24),
               TextButton(
