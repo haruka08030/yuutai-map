@@ -68,13 +68,13 @@ class UsersYuutaiRepositoryFacade implements UsersYuutaiRepository {
   }
 
   @override
-  Future<void> toggleUsed(String id, bool isUsed) {
-    return _repository.toggleUsed(id, isUsed);
+  Future<void> toggleUsed(String id, bool isUsed, {bool scheduleReminders = true}) {
+    return _repository.toggleUsed(id, isUsed, scheduleReminders: scheduleReminders);
   }
 
   @override
-  Future<void> softDelete(String id) {
-    return _repository.softDelete(id);
+  Future<void> softDelete(String id, {bool scheduleReminders = true}) {
+    return _repository.softDelete(id, scheduleReminders: scheduleReminders);
   }
 
   @override
