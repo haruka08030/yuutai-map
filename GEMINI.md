@@ -24,7 +24,7 @@ To develop a Flutter-based mobile application that helps users manage shareholde
 
 ### 2.4. Notifications
 - **Expiration Reminders:** Schedule local notifications to remind users about expiring benefits.
-- **Configurable Timing:** Users can set how many days in advance they wish to be notified.
+- **Configurable Timing:** Users can select multiple reminder timings (e.g., 30 days before, 7 days before, on the day) and set a custom day for notifications.
 
 ## 3. Architecture & Guiding Principles
 
@@ -43,6 +43,8 @@ To develop a Flutter-based mobile application that helps users manage shareholde
   - **Supabase-Only Persistence:** All user-specific application data **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift for user data.
   - **Manual Calculations:** Business logic for benefit value/quantity deduction will **not** be implemented automatically. This is managed by the user manually editing text fields.
   - **Manual Status Flow:** A benefit's status (`active` -> `used`) must be changed explicitly by user action (e.g., tapping a "Mark as Used" button).
+  - **タスクを開始と言ったら’IMPROVEMENTS.md’を参照して自走して
+  - **’IMPROVEMENTS.md’の内容を定期的に確認して、タスクを追加する
 
 ## 4. Database Schema (Supabase)
 
@@ -73,7 +75,7 @@ To develop a Flutter-based mobile application that helps users manage shareholde
 - `expiry_date` (date, nullable): Expiration date.
 - `status` (text): `active`, `used`, `expired`. Corresponds to the `BenefitStatus` enum in Dart.
 - `alert_enabled` (bool): Notification toggle.
-- `notify_days_before` (int, nullable): How many days before expiry to notify the user.
+- `notify_days_before` (int[], nullable): An array of integers representing the days before expiry to send a notification.
 
 ## 5. Project Structure
 ```text

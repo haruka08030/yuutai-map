@@ -21,18 +21,13 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
   late final TextEditingController _notesCtl;
-  late final TextEditingController _customDayCtl;
 
   DateTime? _expireOn;
-  bool _alertEnabled = false;
 
-  // New state for multi-select notifications
-  final Map<int, bool> _predefinedDays = {
-    30: false,
-    7: false,
-    0: false, // For "On the day"
-  };
+  // State for multi-select notifications
+  final Map<int, bool> _selectedPredefinedDays = {30: false, 7: false, 0: false};
   bool _customDayEnabled = false;
+  String _customDayValue = '';
 
   @override
   void initState() {
@@ -42,17 +37,17 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
         TextEditingController(text: widget.existing?.benefitDetail ?? '');
     _notesCtl = TextEditingController(text: widget.existing?.notes ?? '');
     _expireOn = widget.existing?.expiryDate?.toLocal();
-    _alertEnabled = widget.existing?.alertEnabled ?? false;
-    _customDayCtl = TextEditingController();
 
     // Initialize notification days state from existing data
-    final existingDays = widget.existing?.notifyDaysBefore ?? [7]; // Default to 7
-    for (final day in existingDays) {
-      if (_predefinedDays.containsKey(day)) {
-        _predefinedDays[day] = true;
-      } else {
-        _customDayEnabled = true;
-        _customDayCtl.text = day.toString();
+    final existingDays = widget.existing?.notifyDaysBefore ?? [];
+    if (widget.existing?.alertEnabled == true && existingDays.isNotEmpty) {
+      for (final day in existingDays) {
+        if (_selectedPredefinedDays.containsKey(day)) {
+          _selectedPredefinedDays[day] = true;
+        } else {
+          _customDayEnabled = true;
+          _customDayValue = day.toString();
+        }
       }
     }
   }
@@ -62,8 +57,126 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     _titleCtl.dispose();
     _benefitContentCtl.dispose();
     _notesCtl.dispose();
-    _customDayCtl.dispose();
     super.dispose();
+  }
+
+  String _buildReminderSubtitle() {
+    final List<String> parts = [];
+    _selectedPredefinedDays.forEach((day, selected) {
+      if (selected) {
+        parts.add(day == 0 ? '当日' : '$day日前');
+      }
+    });
+    if (_customDayEnabled && _customDayValue.isNotEmpty) {
+      parts.add('$_customDayValue日前 (カスタム)');
+    }
+
+    if (parts.isEmpty) return 'なし';
+    return parts.join(', ');
+  }
+
+  Future<void> _openReminderPicker() async {
+    final tempSelectedDays = Map<int, bool>.from(_selectedPredefinedDays);
+    bool tempCustomEnabled = _customDayEnabled;
+    final tempCustomCtl = TextEditingController(text: _customDayValue);
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                  bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // Clear selections
+                            setDialogState(() {
+                              tempSelectedDays.updateAll((key, value) => false);
+                              tempCustomEnabled = false;
+                              tempCustomCtl.clear();
+                            });
+                          },
+                          child: const Text('クリア'),
+                        ),
+                        FilledButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedPredefinedDays.clear();
+                              _selectedPredefinedDays.addAll(tempSelectedDays);
+                              _customDayEnabled = tempCustomEnabled;
+                              _customDayValue = tempCustomCtl.text;
+                            });
+                            Navigator.of(dialogContext).pop();
+                          },
+                          child: const Text('決定'),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    ...tempSelectedDays.entries.map((entry) {
+                      return CheckboxListTile(
+                        title:
+                            Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
+                        value: entry.value,
+                        onChanged: (bool? value) {
+                          setDialogState(() {
+                            tempSelectedDays[entry.key] = value!;
+                          });
+                        },
+                      );
+                    }).toList(),
+                    CheckboxListTile(
+                      title: Row(
+                        children: [
+                          const Text('カスタム:'),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 60,
+                            child: TextFormField(
+                              controller: tempCustomCtl,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              textAlign: TextAlign.center,
+                              decoration:
+                                  const InputDecoration(isDense: true),
+                              enabled: tempCustomEnabled,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('日前'),
+                        ],
+                      ),
+                      value: tempCustomEnabled,
+                      onChanged: (bool? value) {
+                        setDialogState(() {
+                          tempCustomEnabled = value!;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _openExpireSheet() async {
@@ -71,12 +184,6 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: true,
-      enableDrag: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
       builder: (ctx) {
         final now = DateTime.now();
         DateTime today(DateTime d) => DateTime(d.year, d.month, d.day);
@@ -84,7 +191,6 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
         return StatefulBuilder(
           builder: (ctx, setLocalState) {
             return SafeArea(
-              top: false,
               child: Padding(
                 padding: EdgeInsets.only(
                   left: 16,
@@ -94,16 +200,14 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Spacer(),
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(),
                           child: const Text('キャンセル'),
                         ),
-                        const SizedBox(width: 4),
                         FilledButton(
                           onPressed: () {
                             setState(() => _expireOn = pending);
@@ -113,7 +217,6 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
                     CalendarDatePicker(
                       initialDate: pending ?? today(now),
                       firstDate: today(now),
@@ -137,16 +240,10 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     final fmt = DateFormat('yyyy/MM/dd (E)', 'ja');
     final dateStr = fmt.format(d);
     final today = DateTime.now();
-    final dd = DateTime(
-      d.year,
-      d.month,
-      d.day,
-    ).difference(DateTime(today.year, today.month, today.day)).inDays;
-    final tail = dd < 0
-        ? '・期限切れ'
-        : dd == 0
-            ? '・本日'
-            : '・残り$dd日';
+    final dd = DateTime(d.year, d.month, d.day)
+        .difference(DateTime(today.year, today.month, today.day))
+        .inDays;
+    final tail = dd < 0 ? '・期限切れ' : (dd == 0 ? '・本日' : '・残り$dd日');
     return '$dateStr $tail';
   }
 
@@ -155,15 +252,14 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     final repo = ref.read(usersYuutaiRepositoryProvider);
     final existing = widget.existing;
 
-    // Assemble the list of notification days from the UI state
     final List<int> notifyDays = [];
-    _predefinedDays.forEach((day, isSelected) {
+    _selectedPredefinedDays.forEach((day, isSelected) {
       if (isSelected) {
         notifyDays.add(day);
       }
     });
     if (_customDayEnabled) {
-      final customDay = int.tryParse(_customDayCtl.text);
+      final customDay = int.tryParse(_customDayValue);
       if (customDay != null) {
         notifyDays.add(customDay);
       }
@@ -177,12 +273,15 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           : _benefitContentCtl.text.trim(),
       notes: _notesCtl.text.trim().isEmpty ? null : _notesCtl.text.trim(),
       expiryDate: _expireOn,
-      alertEnabled: _alertEnabled,
+      alertEnabled: notifyDays.isNotEmpty, // Set alertEnabled based on selection
       status: existing?.status ?? BenefitStatus.active,
-      notifyDaysBefore: notifyDays, // Use the new list
+      notifyDaysBefore: notifyDays,
     );
 
     await repo.upsert(entity, scheduleReminders: true);
+
+    ref.invalidate(activeUsersYuutaiProvider);
+
     await HapticFeedback.mediumImpact();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -252,6 +351,8 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
             decoration: const InputDecoration(
               labelText: 'メモ',
               hintText: '自由記述',
+              border: OutlineInputBorder(),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
             maxLines: 3,
           ),
@@ -278,64 +379,15 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('リマインダー'),
-            trailing: Switch(
-              value: _alertEnabled,
-              onChanged: (v) => setState(() => _alertEnabled = v),
-            ),
-            onTap: () => setState(() => _alertEnabled = !_alertEnabled),
+            title: const Text('通知タイミング'),
+            subtitle: Text(_buildReminderSubtitle()),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _openReminderPicker,
           ),
-          if (_alertEnabled)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ..._predefinedDays.entries.map((entry) {
-                  return CheckboxListTile(
-                    title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
-                    value: entry.value,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _predefinedDays[entry.key] = value!;
-                      });
-                    },
-                  );
-                }).toList(),
-                CheckboxListTile(
-                  title: Row(
-                    children: [
-                      const Text('カスタム:'),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 60,
-                        child: TextFormField(
-                          controller: _customDayCtl,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          textAlign: TextAlign.center,
-                          decoration: const InputDecoration(
-                            isDense: true,
-                          ),
-                          enabled: _customDayEnabled,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text('日前'),
-                    ],
-                  ),
-                  value: _customDayEnabled,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _customDayEnabled = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
           const SizedBox(height: 8),
         ],
       ),
     );
   }
 }
+

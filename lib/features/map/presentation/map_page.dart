@@ -21,9 +21,12 @@ class _MapPageState extends ConsumerState<MapPage> {
   Position? _currentPosition;
   bool _isLoading = true;
   String? _errorMessage;
+
+  // Filter state
   bool _showAllStores = false;
-  List<String> _availableCategories = [];
   Set<String> _selectedCategories = {};
+
+  List<String> _availableCategories = [];
 
   @override
   void initState() {
@@ -37,22 +40,15 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   Future<void> _init() async {
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
+      setState(() => _isLoading = true);
       await _determinePosition();
       await _fetchAvailableCategories();
       await _fetchStores();
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
+      setState(() => _errorMessage = e.toString());
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -60,9 +56,9 @@ class _MapPageState extends ConsumerState<MapPage> {
   Future<void> _fetchAvailableCategories() async {
     final storeRepo = ref.read(storeRepositoryProvider);
     final categories = await storeRepo.getAvailableCategories();
-    setState(() {
-      _availableCategories = categories;
-    });
+    if (mounted) {
+      setState(() => _availableCategories = categories);
+    }
   }
 
   Future<void> _determinePosition() async {
@@ -95,17 +91,14 @@ class _MapPageState extends ConsumerState<MapPage> {
     final Set<Marker> markers = {};
 
     if (_showAllStores) {
-      final stores = await storeRepo.getStores(
-        categories: _selectedCategories.toList(),
-      );
+      final stores =
+          await storeRepo.getStores(categories: _selectedCategories.toList());
       for (final store in stores) {
-        markers.add(
-          Marker(
-            markerId: MarkerId(store.id.toString()),
-            position: LatLng(store.latitude, store.longitude),
-            infoWindow: InfoWindow(title: store.name),
-          ),
-        );
+        markers.add(Marker(
+          markerId: MarkerId(store.id.toString()),
+          position: LatLng(store.latitude, store.longitude),
+          infoWindow: InfoWindow(title: store.name),
+        ));
       }
     } else {
       final benefits =
@@ -116,106 +109,178 @@ class _MapPageState extends ConsumerState<MapPage> {
             companyId: benefit.companyId.toString(),
             categories: _selectedCategories.toList(),
           );
-
           for (final store in stores) {
-            markers.add(
-              Marker(
-                markerId: MarkerId(store.id.toString()),
-                position: LatLng(store.latitude, store.longitude),
-                infoWindow: InfoWindow(title: store.name),
-              ),
-            );
+            markers.add(Marker(
+              markerId: MarkerId(store.id.toString()),
+              position: LatLng(store.latitude, store.longitude),
+              infoWindow: InfoWindow(title: store.name),
+            ));
           }
         }
       }
     }
 
     if (mounted) {
-      setState(() {
-        _markers = markers;
-      });
+      setState(() => _markers = markers);
+    }
+  }
+
+  Future<void> _showFilterSheet() async {
+    bool tempShowAll = _showAllStores;
+    Set<String> tempSelectedCategories = Set<String>.from(_selectedCategories);
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            final isGuest = ref.watch(isGuestProvider);
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('フィルター',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    const Divider(height: 24),
+                    if (!isGuest)
+                      SwitchListTile(
+                        title: const Text('すべての店舗を表示'),
+                        subtitle: const Text('オフにすると保有優待の店舗のみ表示'),
+                        value: tempShowAll,
+                        onChanged: (value) =>
+                            setDialogState(() => tempShowAll = value),
+                      ),
+                    Text('カテゴリ',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _availableCategories.map((category) {
+                        return FilterChip(
+                          label: Text(category),
+                          selected: tempSelectedCategories.contains(category),
+                          onSelected: (selected) {
+                            setDialogState(() {
+                              if (selected) {
+                                tempSelectedCategories.add(category);
+                              } else {
+                                tempSelectedCategories.remove(category);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          setState(() {
+                            _showAllStores = tempShowAll;
+                            _selectedCategories = tempSelectedCategories;
+                          });
+                          _fetchStores();
+                          Navigator.of(dialogContext).pop();
+                        },
+                        child: const Text('適用'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _goToCurrentLocation() async {
+    final GoogleMapController controller = await _controller.future;
+    try {
+      await _determinePosition();
+      if (_currentPosition != null && mounted) {
+        await controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(
+                  _currentPosition!.latitude, _currentPosition!.longitude),
+              zoom: 14.5,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('現在地の取得に失敗しました: ${e.toString()}')),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isGuest = ref.watch(isGuestProvider);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null) {
       return Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(_errorMessage!),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: _init, child: const Text('リトライ'))
-        ],
-      ));
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_errorMessage!),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: _init, child: const Text('リトライ'))
+          ],
+        ),
+      );
     }
 
-    return Stack(
-      children: [
-        GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: _currentPosition != null
-                ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-                : const LatLng(35.6895, 139.6917), // Default to Tokyo
-            zoom: 14,
-          ),
-          onMapCreated: (GoogleMapController controller) {
+    return Scaffold(
+      body: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+          target: _currentPosition != null
+              ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
+              : const LatLng(35.6895, 139.6917), // Default to Tokyo
+          zoom: 14,
+        ),
+        onMapCreated: (GoogleMapController controller) {
+          if (!_controller.isCompleted) {
             _controller.complete(controller);
-          },
-          markers: _markers,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-        ),
-        Positioned(
-          top: 16,
-          left: 16,
-          right: 16,
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (!isGuest)
-                FilterChip(
-                  label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
-                  selected: _showAllStores,
-                  onSelected: (selected) {
-                    if (mounted) {
-                      setState(() {
-                        _showAllStores = selected;
-                      });
-                    }
-                    _fetchStores();
-                  },
-                ),
-              ..._availableCategories.map((category) {
-                return FilterChip(
-                  label: Text(category),
-                  selected: _selectedCategories.contains(category),
-                  onSelected: (selected) {
-                    if (mounted) {
-                      setState(() {
-                        if (selected) {
-                          _selectedCategories.add(category);
-                        } else {
-                          _selectedCategories.remove(category);
-                        }
-                      });
-                    }
-                    _fetchStores();
-                  },
-                );
-              }),
-            ],
+          }
+        },
+        markers: _markers,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: false, // Disable default button
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'location_fab',
+            onPressed: _goToCurrentLocation,
+            child: const Icon(Icons.my_location),
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'filter_fab',
+            onPressed: _showFilterSheet,
+            child: const Icon(Icons.filter_list),
+          ),
+        ],
+      ),
     );
   }
 }
