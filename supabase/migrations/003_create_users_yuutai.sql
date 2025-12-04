@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS users_yuutai (
     expiry_date DATE,
     status TEXT DEFAULT 'active', -- active, used, expired
     alert_enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    notes TEXT
 );
 
 -- Create indexes

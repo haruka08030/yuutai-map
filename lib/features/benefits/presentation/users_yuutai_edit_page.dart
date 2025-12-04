@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/app/routing/slide_right_route.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
@@ -19,6 +20,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
+  late final TextEditingController _notesCtl;
   DateTime? _expireOn;
   bool _alertEnabled = false;
 
@@ -29,6 +31,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     _benefitContentCtl = TextEditingController(
       text: widget.existing?.benefitDetail ?? '',
     );
+    _notesCtl = TextEditingController(text: widget.existing?.notes ?? '');
     _expireOn = widget.existing?.expiryDate?.toLocal();
     _alertEnabled = widget.existing?.alertEnabled ?? false;
   }
@@ -37,6 +40,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   void dispose() {
     _titleCtl.dispose();
     _benefitContentCtl.dispose();
+    _notesCtl.dispose();
     super.dispose();
   }
 
@@ -134,9 +138,11 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
       benefitDetail: _benefitContentCtl.text.trim().isEmpty
           ? null
           : _benefitContentCtl.text.trim(),
+      notes:
+          _notesCtl.text.trim().isEmpty ? null : _notesCtl.text.trim(),
       expiryDate: _expireOn, // toUtc handled by Supabase/Json? DateTime is usually ISO string.
       alertEnabled: _alertEnabled,
-      status: existing?.status ?? 'active',
+      status: existing?.status ?? BenefitStatus.active,
     );
 
     await repo.upsert(entity, scheduleReminders: true);
@@ -202,6 +208,15 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
               hintText: '例: 3000円分の割引券',
               isDense: true,
             ),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _notesCtl,
+            decoration: const InputDecoration(
+              labelText: 'メモ',
+              hintText: '自由記述',
+            ),
+            maxLines: 3,
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,

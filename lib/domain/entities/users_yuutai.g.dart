@@ -14,8 +14,11 @@ _UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
   expiryDate: json['expiry_date'] == null
       ? null
       : DateTime.parse(json['expiry_date'] as String),
-  status: json['status'] as String? ?? 'active',
+  status:
+      $enumDecodeNullable(_$BenefitStatusEnumMap, json['status']) ??
+      BenefitStatus.active,
   alertEnabled: json['alert_enabled'] as bool? ?? false,
+  notes: json['notes'] as String?,
 );
 
 Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
@@ -25,6 +28,13 @@ Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
       'company_id': instance.companyId,
       'benefit_detail': instance.benefitDetail,
       'expiry_date': instance.expiryDate?.toIso8601String(),
-      'status': instance.status,
+      'status': _$BenefitStatusEnumMap[instance.status]!,
       'alert_enabled': instance.alertEnabled,
+      'notes': instance.notes,
     };
+
+const _$BenefitStatusEnumMap = {
+  BenefitStatus.active: 'active',
+  BenefitStatus.used: 'used',
+  BenefitStatus.expired: 'expired',
+};
