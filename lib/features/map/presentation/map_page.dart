@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -231,7 +232,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoadingIndicator();
     }
 
     if (_errorMessage != null) {

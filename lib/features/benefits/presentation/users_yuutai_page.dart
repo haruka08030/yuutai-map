@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart'; // New Import
 
 class UsersYuutaiPage extends ConsumerWidget {
   const UsersYuutaiPage({super.key, required this.searchQuery});
@@ -14,7 +16,10 @@ class UsersYuutaiPage extends ConsumerWidget {
     final asyncBenefits = ref.watch(activeUsersYuutaiProvider);
 
     return asyncBenefits.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+        itemCount: 8, // Display 8 skeleton tiles
+        itemBuilder: (_, __) => const UsersYuutaiSkeletonTile(),
+      ),
       error: (err, stack) => Center(child: Text('エラー: $err')),
       data: (data) {
         var items = data;

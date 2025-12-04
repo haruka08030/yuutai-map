@@ -5,6 +5,7 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -19,7 +20,7 @@ class SettingsPage extends ConsumerWidget {
           ? const AuthOptionsPage()
           : user != null
               ? AccountInfoPage(user: user)
-              : const Center(child: CircularProgressIndicator()),
+              : const AppLoadingIndicator(),
     );
   }
 }

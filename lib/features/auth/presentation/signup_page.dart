@@ -6,6 +6,7 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart'; // New import
+import 'package:flutter_stock/app/widgets/loading_elevated_button.dart'; // New Import
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -175,9 +176,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               const SizedBox(height: 8),
               PasswordStrengthIndicator(password: _password),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _signUpWithEmail,
-                child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('登録する'),
+              LoadingElevatedButton( // New Widget
+                onPressed: _signUpWithEmail,
+                isLoading: _isLoading,
+                child: const Text('登録する'),
               ),
               const SizedBox(height: 24),
               const Row(
@@ -215,7 +217,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               TextButton(
                 onPressed: _isLoading ? null : () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
                   );
                 },
                 child: const Text('すでにアカウントをお持ちですか？ ログイン'),
