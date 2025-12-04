@@ -7,34 +7,36 @@ part of 'users_yuutai.dart';
 // **************************************************************************
 
 _UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
-  id: json['id'] as String,
-  title: json['title'] as String,
-  brandId: json['brandId'] as String?,
-  companyId: json['companyId'] as String?,
-  benefitText: json['benefitText'] as String?,
-  notes: json['notes'] as String?,
-  notifyBeforeDays: (json['notifyBeforeDays'] as num?)?.toInt(),
-  notifyAtHour: (json['notifyAtHour'] as num?)?.toInt(),
-  expireOn: json['expireOn'] == null
+  id: (json['id'] as num?)?.toInt(),
+  companyName: json['company_name'] as String? ?? '',
+  companyId: (json['company_id'] as num?)?.toInt(),
+  benefitDetail: json['benefit_detail'] as String?,
+  expiryDate: json['expiry_date'] == null
       ? null
-      : DateTime.parse(json['expireOn'] as String),
-  isUsed: json['isUsed'] as bool? ?? false,
-  tags:
-      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
+      : DateTime.parse(json['expiry_date'] as String),
+  status:
+      $enumDecodeNullable(_$BenefitStatusEnumMap, json['status']) ??
+      BenefitStatus.active,
+  alertEnabled: json['alert_enabled'] as bool? ?? false,
+  notes: json['notes'] as String?,
+  notifyDaysBefore: (json['notify_days_before'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'title': instance.title,
-      'brandId': instance.brandId,
-      'companyId': instance.companyId,
-      'benefitText': instance.benefitText,
+      'company_name': instance.companyName,
+      'company_id': instance.companyId,
+      'benefit_detail': instance.benefitDetail,
+      'expiry_date': instance.expiryDate?.toIso8601String(),
+      'status': _$BenefitStatusEnumMap[instance.status]!,
+      'alert_enabled': instance.alertEnabled,
       'notes': instance.notes,
-      'notifyBeforeDays': instance.notifyBeforeDays,
-      'notifyAtHour': instance.notifyAtHour,
-      'expireOn': instance.expireOn?.toIso8601String(),
-      'isUsed': instance.isUsed,
-      'tags': instance.tags,
+      'notify_days_before': instance.notifyDaysBefore,
     };
+
+const _$BenefitStatusEnumMap = {
+  BenefitStatus.active: 'active',
+  BenefitStatus.used: 'used',
+  BenefitStatus.expired: 'expired',
+};
