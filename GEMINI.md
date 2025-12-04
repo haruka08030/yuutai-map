@@ -1,76 +1,92 @@
 # Project: Yuutai Map
 
-## Purpose
-This agent is responsible for the development of "Yuutai Map," a Flutter-based mobile application designed to manage shareholder benefits and visualize eligible store locations on a map. The primary objective is to reduce the "decision-making cost" for users and prevent opportunity losses (expiration, forgetting to use) by making benefits visible and accessible.
+## 1. Purpose
+To develop a Flutter-based mobile application that helps users manage shareholder benefits ("yuutai") and visualize eligible store locations on a map, reducing decision-making costs and preventing opportunity losses.
 
-## Capabilities
-- **Flutter Development:** Write, modify, and refactor Dart code for cross-platform mobile applications.
-- **State Management:** Implement robust state management using **Riverpod** (ConsumerWidget, Providers).
-- **Backend Integration (Supabase):**
-  - **Auth:** Implement **Anonymous Login** for guest users and social login (Google/Apple) for registered users.
-  - **Database:** Manage PostgreSQL schemas and Row Level Security (RLS).
-  - **Edge Functions:** Implement backend logic where necessary.
-- **Map Integration:** Implement map visualization using **Google Maps Platform** (Maps SDK for Flutter).
-- **Architecture:** Adhere to Clean Architecture (Data, Domain, Presentation layers) and the Repository pattern.
+## 2. Core Features
 
-## Limitations
-- **Data Persistence Strategy:**
-  - **Do NOT use local databases (e.g., SQLite/Drift).**
-  - All data (including guest data) must be stored in Supabase.
-  - Use Supabase Anonymous Auth for guest users; link to a permanent account later if the user registers.
-- **Business Logic Constraints:**
-  - **No Automatic Calculation:** Do not implement logic to automatically deduct amounts or counts. The remaining balance is managed by the user manually editing the `benefit_detail` text field (e.g., changing "5 tickets left" to "4 tickets left").
-  - **Status Flow:** Status changes (active -> used) are manual. Users must explicitly click a "Finished" button.
-- **Scope:** Do not modify files outside the `flutter_stock` directory.
+### 2.1. Benefit Management
+- **CRUD Operations:** Users can add, view, edit, and delete their yuutai holdings.
+- **List View:** Display owned benefits in a list or card format.
+- **Manual Balance Tracking:** The `benefit_detail` and `notes` fields serve as free-text memos for users to manually track remaining values or quantities (e.g., "4 tickets left").
+- **Status Control:** Users manually transition benefits between `active`, `used`, and `expired` states.
 
-## Database Schema (Supabase)
-**public.companies (Master Data/Admin Managed)**
+### 2.2. Map Visualization
+- **Store Pinning:** Display all eligible stores from the `stores` table on a map.
+- **Filtering:**
+    - **By Ownership:** Toggle between viewing all stores vs. only stores associated with the user's currently held benefits.
+    - **By Category:** Filter stores by their `category_tag` (e.g., "Restaurant", "Retail").
+
+### 2.3. Authentication
+- **Standard Login:** Email and password authentication.
+- **Social Login:** Sign-in with Google and Apple for simplified access.
+- **Anonymous (Guest) Login:** Allow users to use the app without creating a permanent account.
+
+### 2.4. Notifications
+- **Expiration Reminders:** Schedule local notifications to remind users about expiring benefits.
+- **Configurable Timing:** Users can set how many days in advance they wish to be notified.
+
+## 3. Architecture & Guiding Principles
+
+- **Tech Stack:**
+  - **Framework:** Flutter
+  - **State Management:** Riverpod
+  - **Backend:** Supabase (Auth, PostgreSQL, Edge Functions)
+  - **Mapping:** Google Maps Platform
+  - **Modeling:** Freezed
+
+- **Architecture:**
+  - Adhere strictly to **Clean Architecture** principles (Data, Domain, Presentation layers).
+  - Use the **Repository Pattern** to abstract data sources.
+
+- **Development Rules & Limitations:**
+  - **Supabase-Only Persistence:** All application data, including guest data, **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift.
+  - **Manual Calculations:** Business logic for benefit value/quantity deduction will **not** be implemented automatically. This is managed by the user manually editing text fields.
+  - **Manual Status Flow:** A benefit's status (`active` -> `used`) must be changed explicitly by user action (e.g., tapping a "Mark as Used" button).
+
+## 4. Database Schema (Supabase)
+
+### public.companies (Master Data)
 - `id` (int8, PK): Auto-increment.
 - `name` (text): Company name.
 - `stock_code` (text): Stock ticker symbol.
 - `official_url` (text): URL to official site.
 - `logo_url` (text): URL to company logo.
 
-**public.stores (Map Data)**
+### public.stores (Map Data)
 - `id` (int8, PK): Auto-increment.
 - `company_id` (int8, FK): Links to `companies`.
 - `store_brand` (text): Store brand name.
 - `name` (text): Store name.
 - `address` (text): Store address.
 - `lat` / `lng` (float8): Coordinates.
-- `geog` (geography): PostGIS location data for radius search.
+- `geog` (geography): PostGIS location data.
 - `category_tag` (text): Filtering tag.
 
-**public.users_yuutai (User Holdings)**
+### public.users_yuutai (User Holdings)
 - `id` (int8, PK): Auto-increment.
 - `user_id` (uuid, FK): Links to `auth.users`.
-- `company_id` (int8, FK, Nullable): Links to `companies` (if selected from master).
-- `company_name` (text): Display name (or manual input).
+- `company_id` (int8, FK, Nullable): Links to `companies`.
+- `company_name` (text): Display name (manual input or from master).
 - `benefit_detail` (text): **Free-text memo** for managing remaining balance/value.
-- `notes` (text, nullable): General-purpose notes field.
-- `expiry_date` (date): Expiration date.
-- `status` (text): `active`, `used`, `expired`.
+- `notes` (text, nullable): General-purpose user notes.
+- `expiry_date` (date, nullable): Expiration date.
+- `status` (text): `active`, `used`, `expired`. Corresponds to the `BenefitStatus` enum in Dart.
 - `alert_enabled` (bool): Notification toggle.
+- `notify_days_before` (int, nullable): How many days before expiry to notify the user.
 
-## Project Structure
+## 5. Project Structure
 ```text
 flutter_stock/
 ├── lib/
-│   ├── app/                  # App-wide configurations (routing/GoRouter, theme)
-│   ├── core/                 # Core utilities (notifications, validators, formatters)
-│   ├── data/                 # Data layer
-│   │   ├── repositories/     # Repository implementations
-│   │   └── supabase/         # Remote data sources (Supabase Client)
-│   ├── domain/               # Domain layer
-│   │   ├── entities/         # Data models (Freezed classes)
-│   │   └── repositories/     # Repository interfaces
-│   ├── features/             # Feature modules
-│   │   ├── auth/             # Authentication (Anon & Social)
-│   │   ├── benefits/         # Benefits (CRUD, Manual Edit, List)
-│   │   ├── map/              # Map visualization & Pin logic
-│   │   └── settings/         # Settings & Data Request Form
+│   ├── app/                  # App-wide configurations (routing, theme)
+│   ├── core/                 # Core utilities (notifications, validators)
+│   ├── data/                 # Data layer (Repositories, Supabase client)
+│   ├── domain/               # Domain layer (Entities, Repository interfaces)
+│   ├── features/             # Feature modules (by feature)
 │   └── main.dart             # Entry point
-├── supabase/                 # Migrations and Edge Functions
-├── GEMINI.md                 # System Prompt & Rules (This file)
-├── IMPROVEMENTS.md           # Improvement plan & task tracker
-└── analysis_options.yaml     # Linting rules
+├── supabase/                 # Supabase migrations and edge functions
+├── test/                     # Unit and widget tests
+├── IMPROVEMENTS.md           # Task backlog and improvement plan
+└── GEMINI.md                 # This file
+```

@@ -1,29 +1,6 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/domain/entities/store.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-class Store {
-  Store({
-    required this.id,
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  final int id;
-  final String name;
-  final double latitude;
-  final double longitude;
-
-  factory Store.fromMap(Map<String, dynamic> map) {
-    return Store(
-      id: map['id'] as int,
-      name: map['name'] as String,
-      latitude: (map['lat'] as num).toDouble(),
-      longitude: (map['lng'] as num).toDouble(),
-    );
-  }
-}
 
 class StoreRepository {
   StoreRepository(this._client);
@@ -34,10 +11,6 @@ class StoreRepository {
     String? brandId,
     String? companyId,
   }) async {
-    if (brandId == null && companyId == null) {
-      return [];
-    }
-
     var query = _client.from('stores').select('id, name, lat, lng');
 
     if (brandId != null) {
@@ -49,7 +22,7 @@ class StoreRepository {
 
     final res = await query;
 
-    return res.map((map) => Store.fromMap(map)).toList();
+    return res.map((map) => Store.fromJson(map)).toList();
   }
 }
 
