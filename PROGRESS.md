@@ -33,3 +33,18 @@
   - Modified the app's startup flow to present an initial choice screen (`InitialAuthChoicePage`).
   - Users can now explicitly choose to log in, sign up, or proceed in guest mode upon app launch.
   - `AuthGate` now directs unauthenticated users to this choice screen, and authenticated users directly to the main app.
+
+---
+
+## 2025-12-03 (Features & Fixes)
+
+- **Enhanced Notification Feature:**
+  - Upgraded notification system to allow multiple, configurable reminders for a single benefit.
+  - Database schema for `users_yuutai` was updated (`notify_days_before` is now an integer array).
+  - Refactored the benefit edit page with a new UI, moving notification choices into a modal bottom sheet for a cleaner user experience.
+  - Updated notification service to handle scheduling and cancellation of multiple reminders.
+- **Improved List View UX:**
+  - Fixed a bug causing a time lag for new/updated items to appear in the benefit list.
+  - Refactored benefit list page to use Riverpod's `StreamProvider` for more robust and immediate state updates.
+- **UI Polish:**
+  - Added a border to the memo field and adjusted its label behavior for better visual clarity.
