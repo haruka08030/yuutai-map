@@ -2,6 +2,8 @@
 
 This plan outlines key areas for improving the Yuutai Map application, focusing on code quality, consistency, and maintainability.
 
+---
+
 ## Next Up
 
 ---
@@ -26,5 +28,3 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 ### 3. Cleanup
 -   **TODO Comments:** Search for `// TODO` in the codebase. Convert the oldest/most critical one into a task.
 -   **Unused Imports:** Run cleanup command or manually check for unused files.
-
----
