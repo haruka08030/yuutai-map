@@ -28,6 +28,10 @@ class _MapPageState extends ConsumerState<MapPage> {
   @override
   void initState() {
     super.initState();
+    final isGuest = ref.read(isGuestProvider);
+    if (isGuest) {
+      _showAllStores = true;
+    }
     _init();
   }
 
@@ -130,6 +134,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = ref.watch(isGuestProvider);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -171,16 +176,17 @@ class _MapPageState extends ConsumerState<MapPage> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              FilterChip(
-                label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
-                selected: _showAllStores,
-                onSelected: (selected) {
-                  setState(() {
-                    _showAllStores = selected;
-                  });
-                  _fetchStores();
-                },
-              ),
+              if (!isGuest)
+                FilterChip(
+                  label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
+                  selected: _showAllStores,
+                  onSelected: (selected) {
+                    setState(() {
+                      _showAllStores = selected;
+                    });
+                    _fetchStores();
+                  },
+                ),
               ..._availableCategories.map((category) {
                 return FilterChip(
                   label: Text(category),
@@ -202,5 +208,3 @@ class _MapPageState extends ConsumerState<MapPage> {
         ),
       ],
     );
-  }
-}
