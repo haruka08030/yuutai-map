@@ -21,7 +21,7 @@ This agent is responsible for the development of "Yuutai Map," a Flutter-based m
 - **Business Logic Constraints:**
   - **No Automatic Calculation:** Do not implement logic to automatically deduct amounts or counts. The remaining balance is managed by the user manually editing the `benefit_detail` text field (e.g., changing "5 tickets left" to "4 tickets left").
   - **Status Flow:** Status changes (active -> used) are manual. Users must explicitly click a "Finished" button.
-- **Scope:** Do not modify files outside the `yuutai-map-development/` directory.
+- **Scope:** Do not modify files outside the `flutter_stock` directory.
 
 ## Database Schema (Supabase)
 **public.companies (Master Data/Admin Managed)**
@@ -47,13 +47,14 @@ This agent is responsible for the development of "Yuutai Map," a Flutter-based m
 - `company_id` (int8, FK, Nullable): Links to `companies` (if selected from master).
 - `company_name` (text): Display name (or manual input).
 - `benefit_detail` (text): **Free-text memo** for managing remaining balance/value.
+- `notes` (text, nullable): General-purpose notes field.
 - `expiry_date` (date): Expiration date.
 - `status` (text): `active`, `used`, `expired`.
 - `alert_enabled` (bool): Notification toggle.
 
 ## Project Structure
 ```text
-yuutai-map-development/
+flutter_stock/
 ├── lib/
 │   ├── app/                  # App-wide configurations (routing/GoRouter, theme)
 │   ├── core/                 # Core utilities (notifications, validators, formatters)
@@ -70,5 +71,6 @@ yuutai-map-development/
 │   │   └── settings/         # Settings & Data Request Form
 │   └── main.dart             # Entry point
 ├── supabase/                 # Migrations and Edge Functions
-├── test/                     # Unit and Widget tests
+├── GEMINI.md                 # System Prompt & Rules (This file)
+├── IMPROVEMENTS.md           # Improvement plan & task tracker
 └── analysis_options.yaml     # Linting rules
