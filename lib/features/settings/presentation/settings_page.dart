@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
+import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -65,6 +66,7 @@ class AccountInfoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider); // Watch current theme
     return Center(
       child: ConstrainedBox( // New
         constraints: const BoxConstraints(maxWidth: 600.0), // New
@@ -73,6 +75,14 @@ class AccountInfoPage extends ConsumerWidget {
           children: [
             Text('メールアドレス: ${user.email}'),
             const SizedBox(height: 24),
+            SwitchListTile(
+              title: const Text('ダークモード'),
+              value: themeMode == ThemeMode.dark,
+              onChanged: (isOn) {
+                ref.read(themeProvider.notifier).setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
+              },
+            ),
+            const SizedBox(height: 24), // Add spacing
             ElevatedButton(
               onPressed: () async {
                 await ref.read(authRepositoryProvider).signOut();

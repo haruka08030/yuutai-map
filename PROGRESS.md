@@ -72,3 +72,14 @@
   - Implemented responsive navigation for `MainPage`, switching between `BottomNavigationBar` and `NavigationRail` based on screen width for better tablet/landscape support.
   - Ensured no problematic fixed heights were used on core navigation pages (`MainPage`, `UsersYuutaiPage`, `MapPage`, `SettingsPage`).
   - Added max-width constraints (600px) to form-heavy pages (`LoginPage`, `SignUpPage`, `UsersYuutaiEditPage`) and setting sub-widgets (`AuthOptionsPage`, `AccountInfoPage`) to prevent content from stretching too wide on large screens.
+
+---
+
+## 2025-12-03 (Settings Enhancement)
+
+- **Enhanced Settings Screen:**
+  - Implemented Dark Mode toggle in `SettingsPage` to allow users to switch between light and dark themes.
+  - Set up `ThemeProvider` with `shared_preferences` for persisting theme preference across app launches and sessions.
+  - Defined a basic dark theme in `app_theme.dart`.
+  - Integrated `ThemeProvider` into `MaterialApp` to dynamically apply the selected theme.
+
