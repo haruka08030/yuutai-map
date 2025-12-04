@@ -21,23 +21,40 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
   late final TextEditingController _notesCtl;
-  late final TextEditingController _notifyDaysCtl;
+  late final TextEditingController _customDayCtl;
+
   DateTime? _expireOn;
   bool _alertEnabled = false;
+
+  // New state for multi-select notifications
+  final Map<int, bool> _predefinedDays = {
+    30: false,
+    7: false,
+    0: false, // For "On the day"
+  };
+  bool _customDayEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _titleCtl = TextEditingController(text: widget.existing?.companyName ?? '');
-    _benefitContentCtl = TextEditingController(
-      text: widget.existing?.benefitDetail ?? '',
-    );
+    _benefitContentCtl =
+        TextEditingController(text: widget.existing?.benefitDetail ?? '');
     _notesCtl = TextEditingController(text: widget.existing?.notes ?? '');
     _expireOn = widget.existing?.expiryDate?.toLocal();
     _alertEnabled = widget.existing?.alertEnabled ?? false;
-    _notifyDaysCtl = TextEditingController(
-      text: widget.existing?.notifyDaysBefore?.toString() ?? '7',
-    );
+    _customDayCtl = TextEditingController();
+
+    // Initialize notification days state from existing data
+    final existingDays = widget.existing?.notifyDaysBefore ?? [7]; // Default to 7
+    for (final day in existingDays) {
+      if (_predefinedDays.containsKey(day)) {
+        _predefinedDays[day] = true;
+      } else {
+        _customDayEnabled = true;
+        _customDayCtl.text = day.toString();
+      }
+    }
   }
 
   @override
@@ -45,11 +62,12 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     _titleCtl.dispose();
     _benefitContentCtl.dispose();
     _notesCtl.dispose();
-    _notifyDaysCtl.dispose();
+    _customDayCtl.dispose();
     super.dispose();
   }
 
   Future<void> _openExpireSheet() async {
+    // ... (This method remains the same)
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -127,8 +145,8 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     final tail = dd < 0
         ? '・期限切れ'
         : dd == 0
-        ? '・本日'
-        : '・残り$dd日';
+            ? '・本日'
+            : '・残り$dd日';
     return '$dateStr $tail';
   }
 
@@ -137,18 +155,31 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     final repo = ref.read(usersYuutaiRepositoryProvider);
     final existing = widget.existing;
 
+    // Assemble the list of notification days from the UI state
+    final List<int> notifyDays = [];
+    _predefinedDays.forEach((day, isSelected) {
+      if (isSelected) {
+        notifyDays.add(day);
+      }
+    });
+    if (_customDayEnabled) {
+      final customDay = int.tryParse(_customDayCtl.text);
+      if (customDay != null) {
+        notifyDays.add(customDay);
+      }
+    }
+
     final entity = UsersYuutai(
       id: existing?.id,
       companyName: _titleCtl.text.trim(),
       benefitDetail: _benefitContentCtl.text.trim().isEmpty
           ? null
           : _benefitContentCtl.text.trim(),
-      notes:
-          _notesCtl.text.trim().isEmpty ? null : _notesCtl.text.trim(),
-      expiryDate: _expireOn, // toUtc handled by Supabase/Json? DateTime is usually ISO string.
+      notes: _notesCtl.text.trim().isEmpty ? null : _notesCtl.text.trim(),
+      expiryDate: _expireOn,
       alertEnabled: _alertEnabled,
       status: existing?.status ?? BenefitStatus.active,
-      notifyDaysBefore: int.tryParse(_notifyDaysCtl.text),
+      notifyDaysBefore: notifyDays, // Use the new list
     );
 
     await repo.upsert(entity, scheduleReminders: true);
@@ -248,9 +279,6 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('リマインダー'),
-            subtitle: Text(_alertEnabled
-                ? '${_notifyDaysCtl.text} 日前に通知'
-                : '無効'),
             trailing: Switch(
               value: _alertEnabled,
               onChanged: (v) => setState(() => _alertEnabled = v),
@@ -258,31 +286,54 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
             onTap: () => setState(() => _alertEnabled = !_alertEnabled),
           ),
           if (_alertEnabled)
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-              child: Row(
-                children: [
-                  const Text('有効期限の'),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 60,
-                    child: TextFormField(
-                      controller: _notifyDaysCtl,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        isDense: true,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ..._predefinedDays.entries.map((entry) {
+                  return CheckboxListTile(
+                    title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
+                    value: entry.value,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _predefinedDays[entry.key] = value!;
+                      });
+                    },
+                  );
+                }).toList(),
+                CheckboxListTile(
+                  title: Row(
+                    children: [
+                      const Text('カスタム:'),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: 60,
+                        child: TextFormField(
+                          controller: _customDayCtl,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            isDense: true,
+                          ),
+                          enabled: _customDayEnabled,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      const Text('日前'),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  const Text('日前に通知'),
-                ],
-              ),
+                  value: _customDayEnabled,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _customDayEnabled = value!;
+                    });
+                  },
+                ),
+              ],
             ),
           const SizedBox(height: 8),
-          // Or we may add a "メモ" field.
         ],
       ),
     );

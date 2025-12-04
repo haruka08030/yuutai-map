@@ -24,3 +24,12 @@
   - Streamlined `AuthGate` to always show the main application screen, with UI adapting based on login state.
 - **Backend Configuration:**
   - As anonymous logins are no longer used, it is recommended to **disable** this feature in the Supabase project settings for improved security.
+
+---
+
+## 2025-12-03 (UI/UX Adjustment)
+
+- **Re-introduced Initial Choice Screen:**
+  - Modified the app's startup flow to present an initial choice screen (`InitialAuthChoicePage`).
+  - Users can now explicitly choose to log in, sign up, or proceed in guest mode upon app launch.
+  - `AuthGate` now directs unauthenticated users to this choice screen, and authenticated users directly to the main app.
