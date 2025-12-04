@@ -5,7 +5,7 @@ part 'users_yuutai.freezed.dart';
 part 'users_yuutai.g.dart';
 
 @freezed
-class UsersYuutai with _$UsersYuutai {
+abstract class UsersYuutai with _$UsersYuutai {
   const UsersYuutai._();
 
   const factory UsersYuutai({
