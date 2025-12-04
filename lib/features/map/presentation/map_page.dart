@@ -21,6 +21,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   Position? _currentPosition;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _showAllStores = false;
 
   @override
   void initState() {
@@ -30,6 +31,10 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   Future<void> _init() async {
     try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
       await _determinePosition();
       await _fetchStores();
     } catch (e) {
@@ -73,20 +78,33 @@ class _MapPageState extends ConsumerState<MapPage> {
     final storeRepo = ref.read(storeRepositoryProvider);
     final Set<Marker> markers = {};
 
-    for (final benefit in benefits) {
-      if (benefit.companyId != null) {
-        final stores = await storeRepo.getStores(
-          companyId: benefit.companyId.toString(),
+    if (_showAllStores) {
+      final stores = await storeRepo.getStores();
+      for (final store in stores) {
+        markers.add(
+          Marker(
+            markerId: MarkerId(store.id.toString()),
+            position: LatLng(store.latitude, store.longitude),
+            infoWindow: InfoWindow(title: store.name),
+          ),
         );
-
-        for (final store in stores) {
-          markers.add(
-            Marker(
-              markerId: MarkerId(store.id.toString()),
-              position: LatLng(store.latitude, store.longitude),
-              infoWindow: InfoWindow(title: store.name),
-            ),
+      }
+    } else {
+      for (final benefit in benefits) {
+        if (benefit.companyId != null) {
+          final stores = await storeRepo.getStores(
+            companyId: benefit.companyId.toString(),
           );
+
+          for (final store in stores) {
+            markers.add(
+              Marker(
+                markerId: MarkerId(store.id.toString()),
+                position: LatLng(store.latitude, store.longitude),
+                infoWindow: InfoWindow(title: store.name),
+              ),
+            );
+          }
         }
       }
     }
@@ -103,23 +121,49 @@ class _MapPageState extends ConsumerState<MapPage> {
     }
 
     if (_errorMessage != null) {
-      return Center(child: Text(_errorMessage!));
+      return Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(_errorMessage!),
+          const SizedBox(height: 16),
+          ElevatedButton(onPressed: _init, child: const Text('リトライ'))
+        ],
+      ));
     }
 
-    return GoogleMap(
-      mapType: MapType.normal,
-      initialCameraPosition: CameraPosition(
-        target: _currentPosition != null
-            ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-            : const LatLng(35.6895, 139.6917), // Default to Tokyo
-        zoom: 14,
-      ),
-      onMapCreated: (GoogleMapController controller) {
-        _controller.complete(controller);
-      },
-      markers: _markers,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
+    return Stack(
+      children: [
+        GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: CameraPosition(
+            target: _currentPosition != null
+                ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
+                : const LatLng(35.6895, 139.6917), // Default to Tokyo
+            zoom: 14,
+          ),
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          markers: _markers,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+        ),
+        Positioned(
+          top: 16,
+          left: 16,
+          child: FilterChip(
+            label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
+            selected: _showAllStores,
+            onSelected: (selected) {
+              setState(() {
+                _showAllStores = selected;
+              });
+              _fetchStores();
+            },
+          ),
+        ),
+      ],
     );
   }
 }
