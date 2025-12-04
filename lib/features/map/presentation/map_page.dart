@@ -22,6 +22,8 @@ class _MapPageState extends ConsumerState<MapPage> {
   bool _isLoading = true;
   String? _errorMessage;
   bool _showAllStores = false;
+  List<String> _availableCategories = [];
+  Set<String> _selectedCategories = {};
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         _errorMessage = null;
       });
       await _determinePosition();
+      await _fetchAvailableCategories();
       await _fetchStores();
     } catch (e) {
       setState(() {
@@ -46,6 +49,14 @@ class _MapPageState extends ConsumerState<MapPage> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _fetchAvailableCategories() async {
+    final storeRepo = ref.read(storeRepositoryProvider);
+    final categories = await storeRepo.getAvailableCategories();
+    setState(() {
+      _availableCategories = categories;
+    });
   }
 
   Future<void> _determinePosition() async {
@@ -74,12 +85,13 @@ class _MapPageState extends ConsumerState<MapPage> {
   }
 
   Future<void> _fetchStores() async {
-    final benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
     final storeRepo = ref.read(storeRepositoryProvider);
     final Set<Marker> markers = {};
 
     if (_showAllStores) {
-      final stores = await storeRepo.getStores();
+      final stores = await storeRepo.getStores(
+        categories: _selectedCategories.toList(),
+      );
       for (final store in stores) {
         markers.add(
           Marker(
@@ -90,10 +102,12 @@ class _MapPageState extends ConsumerState<MapPage> {
         );
       }
     } else {
+      final benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
       for (final benefit in benefits) {
         if (benefit.companyId != null) {
           final stores = await storeRepo.getStores(
             companyId: benefit.companyId.toString(),
+            categories: _selectedCategories.toList(),
           );
 
           for (final store in stores) {
@@ -152,15 +166,38 @@ class _MapPageState extends ConsumerState<MapPage> {
         Positioned(
           top: 16,
           left: 16,
-          child: FilterChip(
-            label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
-            selected: _showAllStores,
-            onSelected: (selected) {
-              setState(() {
-                _showAllStores = selected;
-              });
-              _fetchStores();
-            },
+          right: 16,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilterChip(
+                label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
+                selected: _showAllStores,
+                onSelected: (selected) {
+                  setState(() {
+                    _showAllStores = selected;
+                  });
+                  _fetchStores();
+                },
+              ),
+              ..._availableCategories.map((category) {
+                return FilterChip(
+                  label: Text(category),
+                  selected: _selectedCategories.contains(category),
+                  onSelected: (selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedCategories.add(category);
+                      } else {
+                        _selectedCategories.remove(category);
+                      }
+                    });
+                    _fetchStores();
+                  },
+                );
+              }),
+            ],
           ),
         ),
       ],

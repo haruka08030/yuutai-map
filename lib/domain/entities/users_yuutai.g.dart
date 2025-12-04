@@ -19,6 +19,7 @@ _UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
       BenefitStatus.active,
   alertEnabled: json['alert_enabled'] as bool? ?? false,
   notes: json['notes'] as String?,
+  notifyDaysBefore: (json['notify_days_before'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
@@ -31,6 +32,7 @@ Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
       'status': _$BenefitStatusEnumMap[instance.status]!,
       'alert_enabled': instance.alertEnabled,
       'notes': instance.notes,
+      'notify_days_before': instance.notifyDaysBefore,
     };
 
 const _$BenefitStatusEnumMap = {
