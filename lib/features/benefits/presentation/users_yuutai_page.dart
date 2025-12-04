@@ -11,15 +11,13 @@ class UsersYuutaiPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.watch(usersYuutaiRepositoryProvider);
+    final asyncBenefits = ref.watch(activeUsersYuutaiProvider);
 
-    return StreamBuilder<List<UsersYuutai>>(
-      stream: repo.watchActive(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        var items = snapshot.data ?? const [];
+    return asyncBenefits.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('エラー: $err')),
+      data: (data) {
+        var items = data;
         if (searchQuery.isNotEmpty) {
           items = items.where((benefit) {
             final query = searchQuery.toLowerCase();
@@ -49,6 +47,7 @@ class UsersYuutaiPage extends ConsumerWidget {
             ),
           );
         }
+
         return ListView.separated(
           itemCount: items.length,
           separatorBuilder: (_, _) => const Padding(
