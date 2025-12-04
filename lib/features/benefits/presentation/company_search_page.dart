@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class CompanySearchPage extends ConsumerStatefulWidget {
   const CompanySearchPage({super.key});
@@ -65,7 +66,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const AppLoadingIndicator(),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
     );
