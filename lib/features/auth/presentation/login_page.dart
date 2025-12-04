@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
+import 'package:flutter_stock/app/widgets/loading_elevated_button.dart'; // New Import
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -197,11 +198,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 },
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _signInWithEmail,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('ログイン'),
+              LoadingElevatedButton( // New Widget
+                onPressed: _signInWithEmail,
+                isLoading: _isLoading,
+                child: const Text('ログイン'),
               ),
               const SizedBox(height: 12),
               TextButton(

@@ -75,6 +75,17 @@
 
 ---
 
+## 2025-12-03 (Loading States & UI)
+
+- **Unified Loading States (IMPROVEMENTS.md #1):**
+  - Created `AppLoadingIndicator` widget for consistent full-screen/page-level loading states.
+  - Replaced inline `CircularProgressIndicator` usages with `AppLoadingIndicator` in `UsersYuutaiPage`, `CompanySearchPage`, `MapPage`, `AuthGate`, and `SettingsPage`.
+  - Implemented skeleton loading for `UsersYuutaiPage` to enhance user experience during data fetching.
+  - Created `LoadingElevatedButton` widget for consistent button loading states.
+  - Replaced `ElevatedButton` usages with `LoadingElevatedButton` in `LoginPage` and `SignUpPage`.
+
+---
+
 ## 2025-12-03 (Settings Enhancement)
 
 - **Enhanced Settings Screen:**

@@ -6,15 +6,7 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 
 ## Next Up
 
-### 1. ローディング状態の統一
--   **Task:** ローディング状態を統一する
--   **Reason:** コンポーネントの見た目を一貫させる
--   **Sub-tasks:**
-    -   一貫性のないローディングUIを統一する
-    -   スケルトンローディングを追加する
-    -   ボタンのローディング状態を追加する
-
-### 2. テーマシステムの整理
+### 1. テーマシステムの整理
 -   **Task:** テーマシステムを整理する
 -   **Reason:** コンポーネントの見た目を一貫させる
 -   **Sub-tasks:**
@@ -22,7 +14,7 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   セカンダリ・ターシャリカラーを定義する
     -   ダークモードを対応する ✅
 
-### 3. フォームUX改善
+### 2. フォームUX改善
 -   **Task:** フォームUXを改善する
 -   **Reason:** ユーザーエクスペリエンスを向上させる
 -   **Sub-tasks:**
@@ -30,7 +22,7 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   リアルタイムバリデーションを実装する
     -   必須フィールドのマーキングを追加する
 
-### 4. MapPageのリファクタリング
+### 3. MapPageのリファクタリング
 -   **Task:** MapPageのロジックをProviderに分離する
 -   **Reason:** UIコンポーネントからビジネスロジック（位置情報取得、データフェッチ、マーカー作成）を切り離し、コードの可読性、保守性、テスト容易性を向上させるため
 -   **Sub-tasks:**
@@ -38,35 +30,34 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   MapPage 内にある _fetchStores, _determinePosition 等のロジックをプロバイダーへ移動する
     -   UI側を ref.watch で状態を購読する形に修正する
 
-### 5. データ削除の一貫性確保
--   **Task:** リポジトリの削除メソッドの実装と命名を統一する
+### 4. データ削除の一貫性確保
+-   **Task:** リポジトリの削除メソッドの命名を統一する
 -   **Reason:** softDelete という名前でありながら物理削除（完全削除）を行っている現状の矛盾を解消し、意図しないデータ消失や混乱を防ぐため
 -   **Sub-tasks:**
     -   物理削除で統一する場合は、メソッド名を delete に変更する
-    -   論理削除を採用する場合は、DBに deleted_at カラムを追加し、実装を update に変更する（および取得クエリにフィルタを追加する）
 
-### 6. テーマシステムの改善（ハードコード色の排除）
+### 5. テーマシステムの改善（ハードコード色の排除）
 -   **Task:** ハードコードされた色定義を AppTheme に集約する
 -   **Reason:** ダークモード対応の準備を整えるとともに、アプリ全体でデザインの一貫性を保ちやすくするため
 -   **Sub-tasks:**
     -   AppTheme にカスタムカラー定義（ThemeExtensionなど）を追加する
     -   CompanySearchBar や UsersYuutaiListTile 内の直書きされた色コードを Theme.of(context) 経由の参照に置き換える
 
-### 7. 通知サービスのDI（依存性注入）化
+### 6. 通知サービスのDI（依存性注入）化
 -   **Task:** NotificationService のシングルトン利用を廃止しProvider経由にする
 -   **Reason:** グローバルなシングルトンへの依存をなくし、ユニットテストやモックへの差し替えを容易にするため
 -   **Sub-tasks:**
     -   NotificationService 内の static instance を削除または非推奨にする
     -   usersYuutaiRepository や main.dart などで直接インスタンスを参照している箇所を、Riverpodの Provider 経由に変更する
 
-### 8. UI/UXの改善
+### 7. UI/UXの改善
 -   **Task:** 検索バーとリスト表示のUXを改善する
 -   **Reason:** ユーザーの操作性を向上させ、アプリの挙動をよりスムーズに見せるため
 -   **Sub-tasks:**
     -   検索バー (CompanySearchBar) にテキスト消去用のクリアボタン（×）を追加する
     -   優待リスト (UsersYuutaiPage) 更新時に一瞬ローディングが表示される「ちらつき」を、skipLoadingOnReload 等を活用して防止する
 
-### 9. マップ描画のパフォーマンス改善
+### 8. マップ描画のパフォーマンス改善
 -   **Task:** マップマーカーのクラスタリングを導入する
 -   **Reason:** 店舗数が増加した際にマップの描画負荷が高まり、動作が重くなるのを防ぐため
 -   **Sub-tasks:**
