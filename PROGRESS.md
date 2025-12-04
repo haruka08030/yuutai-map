@@ -63,3 +63,12 @@
 - **Error Fixes:**
   - Resolved `Future already completed` crash on map by adding `!_controller.isCompleted` check.
   - Fixed build error by removing incompatible `uiLocalNotificationDateInterpretation` parameter.
+
+---
+
+## 2025-12-03 (Responsive Design)
+
+- **Improved Responsive Design (IMPROVEMENTS.md #4):**
+  - Implemented responsive navigation for `MainPage`, switching between `BottomNavigationBar` and `NavigationRail` based on screen width for better tablet/landscape support.
+  - Ensured no problematic fixed heights were used on core navigation pages (`MainPage`, `UsersYuutaiPage`, `MapPage`, `SettingsPage`).
+  - Added max-width constraints (600px) to form-heavy pages (`LoginPage`, `SignUpPage`, `UsersYuutaiEditPage`) and setting sub-widgets (`AuthOptionsPage`, `AccountInfoPage`) to prevent content from stretching too wide on large screens.
