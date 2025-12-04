@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
@@ -40,6 +43,25 @@ class AuthRepository {
     );
   }
 
+  Future<void> signInWithApple() async {
+    final rawNonce = _client.auth.generateRawNonce();
+    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      nonce: hashedNonce,
+    );
+
+    await _client.auth.signInWithIdToken(
+      provider: OAuthProvider.apple,
+      idToken: credential.identityToken!,
+      nonce: rawNonce,
+    );
+  }
+
   Future<void> resetPasswordForEmail({required String email}) async {
     await _client.auth.resetPasswordForEmail(
       email,
@@ -66,5 +88,3 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 final authStateChangesProvider = StreamProvider<AuthState>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 });
-
-final isGuestProvider = StateProvider<bool>((ref) => false);
