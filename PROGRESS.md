@@ -48,3 +48,18 @@
   - Refactored benefit list page to use Riverpod's `StreamProvider` for more robust and immediate state updates.
 - **UI Polish:**
   - Added a border to the memo field and adjusted its label behavior for better visual clarity.
+
+---
+
+## 2025-12-03 (Form Validation & UI)
+
+- **Improved Form Validation (IMPROVEMENTS.md #1):**
+  - Implemented real-time validation (`AutovalidateMode.onUserInteraction`) for Signup, Login, and Benefit Edit forms.
+  - Added a password strength indicator to the Signup form for better user feedback.
+  - Made email validation stricter by adjusting the regex.
+- **Map UI Refinement:**
+  - Refactored map filter UI to use a modal bottom sheet, cleaning up the main map view.
+  - Replaced the default Google Maps current location button with a custom `FloatingActionButton` to avoid overlap with modals and provide layout control.
+- **Error Fixes:**
+  - Resolved `Future already completed` crash on map by adding `!_controller.isCompleted` check.
+  - Fixed build error by removing incompatible `uiLocalNotificationDateInterpretation` parameter.

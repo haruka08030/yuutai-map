@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart'; // New import
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -19,6 +20,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  String _password = ''; // State variable for password strength indicator
 
   @override
   void dispose() {
@@ -69,7 +71,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     setState(() => _isLoading = true);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
-    } on AuthException catch (e) {
+    }
+    on AuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message)),
@@ -93,7 +96,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithApple();
-    } on AuthException catch (e) {
+    }
+    on AuthException catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
@@ -116,6 +120,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -149,6 +154,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                 controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'パスワード'),
                 obscureText: true,
+                onChanged: (value) {
+                  setState(() {
+                    _password = value;
+                  });
+                },
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'パスワードを入力してください';
@@ -159,6 +169,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 8),
+              PasswordStrengthIndicator(password: _password),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _signUpWithEmail,

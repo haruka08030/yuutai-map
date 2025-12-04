@@ -321,6 +321,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   Widget _buildFormList({EdgeInsets? padding}) {
     return Form(
       key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: ListView(
         padding: padding ?? const EdgeInsets.all(16),
         children: [
