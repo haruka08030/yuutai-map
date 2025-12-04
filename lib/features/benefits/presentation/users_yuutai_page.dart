@@ -23,15 +23,15 @@ class UsersYuutaiPage extends ConsumerWidget {
         if (searchQuery.isNotEmpty) {
           items = items.where((benefit) {
             final query = searchQuery.toLowerCase();
-            final title = benefit.title.toLowerCase();
-            final benefitText = benefit.benefitText?.toLowerCase() ?? '';
+            final title = benefit.companyName.toLowerCase();
+            final benefitText = benefit.benefitDetail?.toLowerCase() ?? '';
             return title.contains(query) || benefitText.contains(query);
           }).toList();
         }
 
         if (items.isEmpty) {
           if (searchQuery.isNotEmpty) {
-            return const Center(child: Text('No results found.'));
+            return const Center(child: Text('該当する優待が見つかりません。'));
           }
           final cs = Theme.of(context).colorScheme;
           final fg = cs.onSurface.withAlpha(165);
@@ -53,18 +53,14 @@ class UsersYuutaiPage extends ConsumerWidget {
           itemCount: items.length,
           separatorBuilder: (_, _) => const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(
-              height: 1,
-              thickness: 0.5,
-              color: Color(0xFFE0E0E0),
-            ),
+            child: Divider(height: 1, thickness: 0.5, color: Color(0xFFE0E0E0)),
           ),
           itemBuilder: (context, index) {
             final b = items[index];
             return UsersYuutaiListTile(
               benefit: b,
-              subtitle: (b.benefitText?.isNotEmpty ?? false)
-                  ? b.benefitText
+              subtitle: (b.benefitDetail?.isNotEmpty ?? false)
+                  ? b.benefitDetail
                   : null,
             );
           },

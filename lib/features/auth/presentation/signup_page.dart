@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -87,6 +88,26 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     }
   }
 
+  Future<void> _signInWithApple() async {
+    setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(authRepositoryProvider).signInWithApple();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,6 +185,17 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   foregroundColor: Colors.black,
                 ),
               ),
+              const SizedBox(height: 12),
+              if (Platform.isIOS || Platform.isMacOS)
+                ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _signInWithApple,
+                  icon: const Icon(Icons.apple),
+                  label: const Text('Appleで登録'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               const SizedBox(height: 24),
               TextButton(
                 onPressed: _isLoading ? null : () {

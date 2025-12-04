@@ -1,21 +1,23 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_stock/domain/entities/benefit_status.dart';
+
 part 'users_yuutai.freezed.dart';
 part 'users_yuutai.g.dart';
 
 @freezed
-abstract class UsersYuutai with _$UsersYuutai {
+class UsersYuutai with _$UsersYuutai {
+  const UsersYuutai._();
+
   const factory UsersYuutai({
-    required String id, // UUID
-    required String title, // 企業名（表示用）
-    String? brandId,
-    String? companyId,
-    String? benefitText, // 優待内容（3000円分など）
-    String? notes, // 自由記入メモ
-    int? notifyBeforeDays, // 期限の何日前に通知するか（null=デフォルト）
-    int? notifyAtHour, // 通知する時刻（時のみ、0-23, null=9時）
-    DateTime? expireOn, // 期限日（UTC基準で保存）
-    @Default(false) bool isUsed, // 使用済み
-    @Default([]) List<String> tags,
+    int? id,
+    @JsonKey(name: 'company_name') @Default('') String companyName,
+    @JsonKey(name: 'company_id') int? companyId,
+    @JsonKey(name: 'benefit_detail') String? benefitDetail,
+    @JsonKey(name: 'expiry_date') DateTime? expiryDate,
+    @Default(BenefitStatus.active) BenefitStatus status,
+    @JsonKey(name: 'alert_enabled') @Default(false) bool alertEnabled,
+    String? notes,
+    @JsonKey(name: 'notify_days_before') int? notifyDaysBefore,
   }) = _UsersYuutai;
 
   factory UsersYuutai.fromJson(Map<String, dynamic> json) =>

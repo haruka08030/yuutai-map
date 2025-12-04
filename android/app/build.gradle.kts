@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.File
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -34,7 +37,7 @@ android {
 
         // Read MAPS_API_KEY from local.properties
         val localProperties = File(rootProject.projectDir, "local.properties")
-        val properties = java.util.Properties()
+        val properties = Properties()
         if (localProperties.exists()) {
             localProperties.inputStream().use { properties.load(it) }
         }
