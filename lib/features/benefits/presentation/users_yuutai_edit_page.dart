@@ -314,7 +314,12 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
         title: Text(widget.existing == null ? '優待を追加' : '優待を編集'),
         actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check))],
       ),
-      body: _buildFormList(),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600.0),
+          child: _buildFormList(),
+        ),
+      ),
     );
   }
 
