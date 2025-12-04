@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UsersYuutai {
 
- int? get id;@JsonKey(name: 'company_name') String get companyName;@JsonKey(name: 'company_id') int? get companyId;@JsonKey(name: 'benefit_detail') String? get benefitDetail;@JsonKey(name: 'expiry_date') DateTime? get expiryDate; BenefitStatus get status;@JsonKey(name: 'alert_enabled') bool get alertEnabled; String? get notes;@JsonKey(name: 'notify_days_before') int? get notifyDaysBefore;
+ int? get id;@JsonKey(name: 'company_name') String get companyName;@JsonKey(name: 'company_id') int? get companyId;@JsonKey(name: 'benefit_detail') String? get benefitDetail;@JsonKey(name: 'expiry_date') DateTime? get expiryDate; BenefitStatus get status;@JsonKey(name: 'alert_enabled') bool get alertEnabled; String? get notes;@JsonKey(name: 'notify_days_before') List<int>? get notifyDaysBefore;
 /// Create a copy of UsersYuutai
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,12 +28,12 @@ $UsersYuutaiCopyWith<UsersYuutai> get copyWith => _$UsersYuutaiCopyWithImpl<User
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsersYuutai&&(identical(other.id, id) || other.id == id)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitDetail, benefitDetail) || other.benefitDetail == benefitDetail)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate)&&(identical(other.status, status) || other.status == status)&&(identical(other.alertEnabled, alertEnabled) || other.alertEnabled == alertEnabled)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.notifyDaysBefore, notifyDaysBefore) || other.notifyDaysBefore == notifyDaysBefore));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsersYuutai&&(identical(other.id, id) || other.id == id)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitDetail, benefitDetail) || other.benefitDetail == benefitDetail)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate)&&(identical(other.status, status) || other.status == status)&&(identical(other.alertEnabled, alertEnabled) || other.alertEnabled == alertEnabled)&&(identical(other.notes, notes) || other.notes == notes)&&const DeepCollectionEquality().equals(other.notifyDaysBefore, notifyDaysBefore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,companyName,companyId,benefitDetail,expiryDate,status,alertEnabled,notes,notifyDaysBefore);
+int get hashCode => Object.hash(runtimeType,id,companyName,companyId,benefitDetail,expiryDate,status,alertEnabled,notes,const DeepCollectionEquality().hash(notifyDaysBefore));
 
 @override
 String toString() {
@@ -48,7 +48,7 @@ abstract mixin class $UsersYuutaiCopyWith<$Res>  {
   factory $UsersYuutaiCopyWith(UsersYuutai value, $Res Function(UsersYuutai) _then) = _$UsersYuutaiCopyWithImpl;
 @useResult
 $Res call({
- int? id,@JsonKey(name: 'company_name') String companyName,@JsonKey(name: 'company_id') int? companyId,@JsonKey(name: 'benefit_detail') String? benefitDetail,@JsonKey(name: 'expiry_date') DateTime? expiryDate, BenefitStatus status,@JsonKey(name: 'alert_enabled') bool alertEnabled, String? notes,@JsonKey(name: 'notify_days_before') int? notifyDaysBefore
+ int? id,@JsonKey(name: 'company_name') String companyName,@JsonKey(name: 'company_id') int? companyId,@JsonKey(name: 'benefit_detail') String? benefitDetail,@JsonKey(name: 'expiry_date') DateTime? expiryDate, BenefitStatus status,@JsonKey(name: 'alert_enabled') bool alertEnabled, String? notes,@JsonKey(name: 'notify_days_before') List<int>? notifyDaysBefore
 });
 
 
@@ -76,7 +76,7 @@ as DateTime?,status: null == status ? _self.status : status // ignore: cast_null
 as BenefitStatus,alertEnabled: null == alertEnabled ? _self.alertEnabled : alertEnabled // ignore: cast_nullable_to_non_nullable
 as bool,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String?,notifyDaysBefore: freezed == notifyDaysBefore ? _self.notifyDaysBefore : notifyDaysBefore // ignore: cast_nullable_to_non_nullable
-as int?,
+as List<int>?,
   ));
 }
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  int? notifyDaysBefore)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  List<int>? notifyDaysBefore)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UsersYuutai() when $default != null:
 return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_that.expiryDate,_that.status,_that.alertEnabled,_that.notes,_that.notifyDaysBefore);case _:
@@ -182,7 +182,7 @@ return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  int? notifyDaysBefore)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  List<int>? notifyDaysBefore)  $default,) {final _that = this;
 switch (_that) {
 case _UsersYuutai():
 return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_that.expiryDate,_that.status,_that.alertEnabled,_that.notes,_that.notifyDaysBefore);case _:
@@ -202,7 +202,7 @@ return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  int? notifyDaysBefore)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'company_name')  String companyName, @JsonKey(name: 'company_id')  int? companyId, @JsonKey(name: 'benefit_detail')  String? benefitDetail, @JsonKey(name: 'expiry_date')  DateTime? expiryDate,  BenefitStatus status, @JsonKey(name: 'alert_enabled')  bool alertEnabled,  String? notes, @JsonKey(name: 'notify_days_before')  List<int>? notifyDaysBefore)?  $default,) {final _that = this;
 switch (_that) {
 case _UsersYuutai() when $default != null:
 return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_that.expiryDate,_that.status,_that.alertEnabled,_that.notes,_that.notifyDaysBefore);case _:
@@ -217,7 +217,7 @@ return $default(_that.id,_that.companyName,_that.companyId,_that.benefitDetail,_
 @JsonSerializable()
 
 class _UsersYuutai extends UsersYuutai {
-  const _UsersYuutai({this.id, @JsonKey(name: 'company_name') this.companyName = '', @JsonKey(name: 'company_id') this.companyId, @JsonKey(name: 'benefit_detail') this.benefitDetail, @JsonKey(name: 'expiry_date') this.expiryDate, this.status = BenefitStatus.active, @JsonKey(name: 'alert_enabled') this.alertEnabled = false, this.notes, @JsonKey(name: 'notify_days_before') this.notifyDaysBefore}): super._();
+  const _UsersYuutai({this.id, @JsonKey(name: 'company_name') this.companyName = '', @JsonKey(name: 'company_id') this.companyId, @JsonKey(name: 'benefit_detail') this.benefitDetail, @JsonKey(name: 'expiry_date') this.expiryDate, this.status = BenefitStatus.active, @JsonKey(name: 'alert_enabled') this.alertEnabled = false, this.notes, @JsonKey(name: 'notify_days_before') final  List<int>? notifyDaysBefore}): _notifyDaysBefore = notifyDaysBefore,super._();
   factory _UsersYuutai.fromJson(Map<String, dynamic> json) => _$UsersYuutaiFromJson(json);
 
 @override final  int? id;
@@ -228,7 +228,15 @@ class _UsersYuutai extends UsersYuutai {
 @override@JsonKey() final  BenefitStatus status;
 @override@JsonKey(name: 'alert_enabled') final  bool alertEnabled;
 @override final  String? notes;
-@override@JsonKey(name: 'notify_days_before') final  int? notifyDaysBefore;
+ final  List<int>? _notifyDaysBefore;
+@override@JsonKey(name: 'notify_days_before') List<int>? get notifyDaysBefore {
+  final value = _notifyDaysBefore;
+  if (value == null) return null;
+  if (_notifyDaysBefore is EqualUnmodifiableListView) return _notifyDaysBefore;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 
 /// Create a copy of UsersYuutai
 /// with the given fields replaced by the non-null parameter values.
@@ -243,12 +251,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsersYuutai&&(identical(other.id, id) || other.id == id)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitDetail, benefitDetail) || other.benefitDetail == benefitDetail)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate)&&(identical(other.status, status) || other.status == status)&&(identical(other.alertEnabled, alertEnabled) || other.alertEnabled == alertEnabled)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.notifyDaysBefore, notifyDaysBefore) || other.notifyDaysBefore == notifyDaysBefore));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsersYuutai&&(identical(other.id, id) || other.id == id)&&(identical(other.companyName, companyName) || other.companyName == companyName)&&(identical(other.companyId, companyId) || other.companyId == companyId)&&(identical(other.benefitDetail, benefitDetail) || other.benefitDetail == benefitDetail)&&(identical(other.expiryDate, expiryDate) || other.expiryDate == expiryDate)&&(identical(other.status, status) || other.status == status)&&(identical(other.alertEnabled, alertEnabled) || other.alertEnabled == alertEnabled)&&(identical(other.notes, notes) || other.notes == notes)&&const DeepCollectionEquality().equals(other._notifyDaysBefore, _notifyDaysBefore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,companyName,companyId,benefitDetail,expiryDate,status,alertEnabled,notes,notifyDaysBefore);
+int get hashCode => Object.hash(runtimeType,id,companyName,companyId,benefitDetail,expiryDate,status,alertEnabled,notes,const DeepCollectionEquality().hash(_notifyDaysBefore));
 
 @override
 String toString() {
@@ -263,7 +271,7 @@ abstract mixin class _$UsersYuutaiCopyWith<$Res> implements $UsersYuutaiCopyWith
   factory _$UsersYuutaiCopyWith(_UsersYuutai value, $Res Function(_UsersYuutai) _then) = __$UsersYuutaiCopyWithImpl;
 @override @useResult
 $Res call({
- int? id,@JsonKey(name: 'company_name') String companyName,@JsonKey(name: 'company_id') int? companyId,@JsonKey(name: 'benefit_detail') String? benefitDetail,@JsonKey(name: 'expiry_date') DateTime? expiryDate, BenefitStatus status,@JsonKey(name: 'alert_enabled') bool alertEnabled, String? notes,@JsonKey(name: 'notify_days_before') int? notifyDaysBefore
+ int? id,@JsonKey(name: 'company_name') String companyName,@JsonKey(name: 'company_id') int? companyId,@JsonKey(name: 'benefit_detail') String? benefitDetail,@JsonKey(name: 'expiry_date') DateTime? expiryDate, BenefitStatus status,@JsonKey(name: 'alert_enabled') bool alertEnabled, String? notes,@JsonKey(name: 'notify_days_before') List<int>? notifyDaysBefore
 });
 
 
@@ -290,8 +298,8 @@ as String?,expiryDate: freezed == expiryDate ? _self.expiryDate : expiryDate // 
 as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as BenefitStatus,alertEnabled: null == alertEnabled ? _self.alertEnabled : alertEnabled // ignore: cast_nullable_to_non_nullable
 as bool,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
-as String?,notifyDaysBefore: freezed == notifyDaysBefore ? _self.notifyDaysBefore : notifyDaysBefore // ignore: cast_nullable_to_non_nullable
-as int?,
+as String?,notifyDaysBefore: freezed == notifyDaysBefore ? _self._notifyDaysBefore : notifyDaysBefore // ignore: cast_nullable_to_non_nullable
+as List<int>?,
   ));
 }
 

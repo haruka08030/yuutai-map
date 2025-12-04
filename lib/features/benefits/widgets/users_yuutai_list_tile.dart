@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
-import 'package/flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 
 import 'package:intl/intl.dart';
 

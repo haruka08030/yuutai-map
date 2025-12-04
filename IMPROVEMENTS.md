@@ -2,8 +2,49 @@
 
 This plan outlines key areas for improving the Yuutai Map application, focusing on code quality, consistency, and maintainability.
 
+---
+
 ## Next Up
 
+### 1. フォームバリデーション改善
+-   **Task:** フォームバリデーションを改善する
+-   **Reason:** ユーザーエクスペリエンスを向上させる
+-   **Sub-tasks:**
+    -   リアルタイムバリデーションを実装する
+    -   パスワード強度インジケーターを追加する
+    -   メールのバリデーションを厳格にする
+
+### 2. ローディング状態の統一
+-   **Task:** ローディング状態を統一する
+-   **Reason:** コンポーネントの見た目を一貫させる
+-   **Sub-tasks:**
+    -   一貫性のないローディングUIを統一する
+    -   スケルトンローディングを追加する
+    -   ボタンのローディング状態を追加する
+
+### 3. テーマシステムの整理
+-   **Task:** テーマシステムを整理する
+-   **Reason:** コンポーネントの見た目を一貫させる
+-   **Sub-tasks:**
+    -   ハードコードされた色をまとめる
+    -   セカンダリ・ターシャリカラーを定義する
+    -   ダークモードを対応する
+
+### 4. レスポンシブデザイン
+-   **Task:** レスポンシブデザインを改善する
+-   **Reason:** ユーザーエクスペリエンスを向上させる
+-   **Sub-tasks:**
+    -   タブレット・ランドスケープ対応を追加する
+    -   固定高さの使用を避ける
+    -   大画面での最大幅制約を追加する
+
+### 5. フォームUX改善
+-   **Task:** フォームUXを改善する
+-   **Reason:** ユーザーエクスペリエンスを向上させる
+-   **Sub-tasks:**
+    -   パスワード表示切替を追加する
+    -   リアルタイムバリデーションを実装する
+    -   必須フィールドのマーキングを追加する
 ---
 
 ## ✅ Completed
@@ -26,5 +67,3 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 ### 3. Cleanup
 -   **TODO Comments:** Search for `// TODO` in the codebase. Convert the oldest/most critical one into a task.
 -   **Unused Imports:** Run cleanup command or manually check for unused files.
-
----
