@@ -39,7 +39,7 @@ class NotificationService {
     final idStr = b.id.toString();
     await cancelAllFor(idStr);
 
-    if (b.status == BenefitStatus.used) {
+    if (b.status == BenefitStatus.used || !b.alertEnabled) {
       return;
     }
 
@@ -53,43 +53,48 @@ class NotificationService {
       return;
     }
 
-    if (!b.alertEnabled) return;
-
-    final days = b.notifyDaysBefore;
-    if (days == null || days <= 0) {
+    final daysList = b.notifyDaysBefore;
+    if (daysList == null || daysList.isEmpty) {
       return;
     }
     
     final notifyAtHour = 9;
 
-    final scheduledAt = expireOn.subtract(Duration(days: days));
-    if (scheduledAt.isBefore(now)) {
-      return;
+    for (final day in daysList) {
+      if (day < 0) continue; // Do not schedule for negative days
+
+      final scheduledAt = expireOn.subtract(Duration(days: day));
+      if (scheduledAt.isBefore(now)) {
+        continue; // Do not schedule for past dates
+      }
+
+      final notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          'benefit-reminder-$day',
+          '期限リマインダー ($day日前)',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      );
+
+      final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
+        scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
+        tz.local,
+      );
+      
+      // Create a unique ID for each notification to avoid collisions
+      final notificationId = (b.id! * 1000) + day;
+
+      await _plugin.zonedSchedule(
+        notificationId,
+        '優待の期限が近づいています',
+        '「${b.companyName}」の期限が${day == 0 ? "本日" : "$day日後"}です。',
+        scheduledDate,
+        notificationDetails,
+        payload: idStr, // Use the same payload to group notifications by benefit
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
     }
-
-    final notificationDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'benefit-reminder-$days',
-        '期限リマインダー ($days日前)',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-      ),
-      iOS: const DarwinNotificationDetails(),
-    );
-
-    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
-      scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
-      tz.local,
-    );
-
-    await _plugin.zonedSchedule(
-      b.id.hashCode, // Use a single ID per benefit
-      '優待の期限が近づいています',
-      '「${b.companyName}」の期限が$days日後です。',
-      scheduledDate,
-      notificationDetails,
-      payload: idStr,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    );
   }
 }
