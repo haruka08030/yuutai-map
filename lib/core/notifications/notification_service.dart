@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -34,13 +35,15 @@ class NotificationService {
   }
 
   Future<void> reschedulePresetReminders(UsersYuutai b) async {
-    await cancelAllFor(b.id);
+    if (b.id == null) return;
+    final idStr = b.id.toString();
+    await cancelAllFor(idStr);
 
-    if (b.isUsed) {
+    if (b.status == BenefitStatus.used) {
       return;
     }
 
-    final expireOn = b.expireOn;
+    final expireOn = b.expiryDate;
     if (expireOn == null) {
       return;
     }
@@ -50,43 +53,43 @@ class NotificationService {
       return;
     }
 
-    final presetDays = [1, 3, 7, 30];
-    final notifyAtHour = b.notifyAtHour ?? 9;
+    if (!b.alertEnabled) return;
 
-    for (final days in presetDays) {
-      if (b.notifyBeforeDays != null && b.notifyBeforeDays != days) {
-        continue;
-      }
-
-      final scheduledAt = expireOn.subtract(Duration(days: days));
-      if (scheduledAt.isBefore(now)) {
-        continue;
-      }
-
-      final notificationDetails = NotificationDetails(
-        android: AndroidNotificationDetails(
-          'benefit-reminder-$days',
-          '期限リマインダー ($days日前)',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        ),
-        iOS: const DarwinNotificationDetails(),
-      );
-
-      final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
-        scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
-        tz.local,
-      );
-
-      await _plugin.zonedSchedule(
-        b.id.hashCode + days,
-        '優待の期限が近づいています',
-        '「${b.title}」の期限が$days日後です。',
-        scheduledDate,
-        notificationDetails,
-        payload: b.id,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
+    final days = b.notifyDaysBefore;
+    if (days == null || days <= 0) {
+      return;
     }
+    
+    final notifyAtHour = 9;
+
+    final scheduledAt = expireOn.subtract(Duration(days: days));
+    if (scheduledAt.isBefore(now)) {
+      return;
+    }
+
+    final notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'benefit-reminder-$days',
+        '期限リマインダー ($days日前)',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+      ),
+      iOS: const DarwinNotificationDetails(),
+    );
+
+    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(
+      scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
+      tz.local,
+    );
+
+    await _plugin.zonedSchedule(
+      b.id.hashCode, // Use a single ID per benefit
+      '優待の期限が近づいています',
+      '「${b.companyName}」の期限が$days日後です。',
+      scheduledDate,
+      notificationDetails,
+      payload: idStr,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
   }
 }

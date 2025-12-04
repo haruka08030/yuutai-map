@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -58,6 +59,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(authRepositoryProvider).signInWithApple();
     } on AuthException catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
@@ -204,6 +225,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   foregroundColor: Colors.black,
                 ),
               ),
+              const SizedBox(height: 12),
+              if (Platform.isIOS || Platform.isMacOS)
+                ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _signInWithApple,
+                  icon: const Icon(Icons.apple),
+                  label: const Text('Appleでログイン'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               const SizedBox(height: 24),
               TextButton(
                 onPressed: _isLoading
