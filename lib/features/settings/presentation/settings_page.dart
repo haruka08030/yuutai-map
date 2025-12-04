@@ -29,27 +29,30 @@ class AuthOptionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-            child: const Text('ログイン'),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SignUpPage()),
-              );
-            },
-            child: const Text('新規登録'),
-          ),
-        ],
+      child: ConstrainedBox( // New
+        constraints: const BoxConstraints(maxWidth: 600.0), // New
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text('ログイン'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const SignUpPage()),
+                );
+              },
+              child: const Text('新規登録'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -63,18 +66,21 @@ class AccountInfoPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('メールアドレス: ${user.email}'),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              await ref.read(authRepositoryProvider).signOut();
-            },
-            child: const Text('ログアウト'),
-          ),
-        ],
+      child: ConstrainedBox( // New
+        constraints: const BoxConstraints(maxWidth: 600.0), // New
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('メールアドレス: ${user.email}'),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                await ref.read(authRepositoryProvider).signOut();
+              },
+              child: const Text('ログアウト'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -6,7 +6,7 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 
 ## Next Up
 
-### 2. ローディング状態の統一
+### 1. ローディング状態の統一
 -   **Task:** ローディング状態を統一する
 -   **Reason:** コンポーネントの見た目を一貫させる
 -   **Sub-tasks:**
@@ -14,7 +14,7 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   スケルトンローディングを追加する
     -   ボタンのローディング状態を追加する
 
-### 3. テーマシステムの整理
+### 2. テーマシステムの整理
 -   **Task:** テーマシステムを整理する
 -   **Reason:** コンポーネントの見た目を一貫させる
 -   **Sub-tasks:**
@@ -22,21 +22,14 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   セカンダリ・ターシャリカラーを定義する
     -   ダークモードを対応する
 
-### 4. レスポンシブデザイン
--   **Task:** レスポンシブデザインを改善する
--   **Reason:** ユーザーエクスペリエンスを向上させる
--   **Sub-tasks:**
-    -   タブレット・ランドスケープ対応を追加する
-    -   固定高さの使用を避ける
-    -   大画面での最大幅制約を追加する
-
-### 5. フォームUX改善
+### 3. フォームUX改善
 -   **Task:** フォームUXを改善する
 -   **Reason:** ユーザーエクスペリエンスを向上させる
 -   **Sub-tasks:**
     -   パスワード表示切替を追加する
     -   リアルタイムバリデーションを実装する
     -   必須フィールドのマーキングを追加する
+
 ---
 
 ## ✅ Completed
@@ -48,6 +41,14 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   リアルタイムバリデーションを実装する
     -   パスワード強度インジケーターを追加する
     -   メールのバリデーションを厳格にする
+
+### 2. レスポンシブデザイン
+-   **Task:** レスポンシブデザインを改善する
+-   **Reason:** ユーザーエクスペリエンスを向上させる
+-   **Sub-tasks:**
+    -   タブレット・ランドスケープ対応を追加する
+    -   固定高さの使用を避ける
+    -   大画面での最大幅制約を追加する
 
 ---
 
