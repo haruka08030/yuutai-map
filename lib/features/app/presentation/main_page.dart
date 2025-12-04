@@ -60,6 +60,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = ref.watch(isGuestProvider);
     final List<Widget> widgetOptions = <Widget>[
       UsersYuutaiPage(searchQuery: _searchQuery),
       const MapPage(),
@@ -68,7 +69,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
     return Scaffold(
       appBar: _buildAppBar(context),
-      drawer: ref.watch(isGuestProvider)
+      drawer: isGuest
           ? null
           : Drawer(
               child: ListView(
@@ -102,9 +103,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton:
-          _selectedIndex ==
-              0 // Only show FAB on the benefits page
+      floatingActionButton: _selectedIndex == 0 && !isGuest
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.of(context).push(
