@@ -21,7 +21,7 @@ class StoreRepository {
       query = query.eq('company_id', companyId);
     }
     if (categories != null && categories.isNotEmpty) {
-      query = query.in_('category_tag', categories);
+      query = query.filter('category_tag', 'in', categories);
     }
 
     final res = await query;
