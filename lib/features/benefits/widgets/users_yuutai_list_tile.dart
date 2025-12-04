@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package/flutter_stock/domain/entities/users_yuutai.dart';
 
 import 'package:intl/intl.dart';
 
@@ -160,7 +161,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
         child: Builder(
           builder: (context) {
             final hasSubtitle = benefit.expiryDate != null || subtitle != null;
-            final isUsed = benefit.status == 'used';
+            final isUsed = benefit.status == BenefitStatus.used;
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
@@ -174,7 +175,9 @@ class UsersYuutaiListTile extends ConsumerWidget {
                     onChanged: (v) async {
                       if (benefit.id == null) return;
                       await HapticFeedback.lightImpact();
-                      repo.toggleUsed(benefit.id!, v ?? false);
+                      final newStatus =
+                          v ?? false ? BenefitStatus.used : BenefitStatus.active;
+                      repo.updateStatus(benefit.id!, newStatus);
                     },
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
