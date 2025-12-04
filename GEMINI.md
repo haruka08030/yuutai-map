@@ -6,7 +6,7 @@ To develop a Flutter-based mobile application that helps users manage shareholde
 ## 2. Core Features
 
 ### 2.1. Benefit Management
-- **CRUD Operations:** Users can add, view, edit, and delete their yuutai holdings.
+- **CRUD Operations:** Registered users can add, view, edit, and delete their yuutai holdings.
 - **List View:** Display owned benefits in a list or card format.
 - **Manual Balance Tracking:** The `benefit_detail` and `notes` fields serve as free-text memos for users to manually track remaining values or quantities (e.g., "4 tickets left").
 - **Status Control:** Users manually transition benefits between `active`, `used`, and `expired` states.
@@ -14,17 +14,17 @@ To develop a Flutter-based mobile application that helps users manage shareholde
 ### 2.2. Map Visualization
 - **Store Pinning:** Display all eligible stores from the `stores` table on a map.
 - **Filtering:**
-    - **By Ownership:** Toggle between viewing all stores vs. only stores associated with the user's currently held benefits.
+    - **By Ownership:** For registered users, toggle between viewing all stores vs. only stores associated with their currently held benefits. This filter is hidden for guest users.
     - **By Category:** Filter stores by their `category_tag` (e.g., "Restaurant", "Retail").
 
 ### 2.3. Authentication
 - **Standard Login:** Email and password authentication.
 - **Social Login:** Sign-in with Google and Apple for simplified access.
-- **Anonymous (Guest) Login:** Allow users to use the app without creating a permanent account.
+- **Guest Mode:** Users can use the app without an account. In guest mode, users have read-only access to browse map data. Account registration is required to manage personal benefits.
 
 ### 2.4. Notifications
 - **Expiration Reminders:** Schedule local notifications to remind users about expiring benefits.
-- **Configurable Timing:** Users can set how many days in advance they wish to be notified.
+- **Configurable Timing:** Users can select multiple reminder timings (e.g., 30 days before, 7 days before, on the day) and set a custom day for notifications.
 
 ## 3. Architecture & Guiding Principles
 
@@ -40,9 +40,11 @@ To develop a Flutter-based mobile application that helps users manage shareholde
   - Use the **Repository Pattern** to abstract data sources.
 
 - **Development Rules & Limitations:**
-  - **Supabase-Only Persistence:** All application data, including guest data, **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift.
+  - **Supabase-Only Persistence:** All user-specific application data **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift for user data.
   - **Manual Calculations:** Business logic for benefit value/quantity deduction will **not** be implemented automatically. This is managed by the user manually editing text fields.
   - **Manual Status Flow:** A benefit's status (`active` -> `used`) must be changed explicitly by user action (e.g., tapping a "Mark as Used" button).
+  - **タスクを開始と言ったら’IMPROVEMENTS.md’を参照して自走して
+  - **’IMPROVEMENTS.md’の内容を定期的に確認して、タスクを追加する
 
 ## 4. Database Schema (Supabase)
 
@@ -73,7 +75,7 @@ To develop a Flutter-based mobile application that helps users manage shareholde
 - `expiry_date` (date, nullable): Expiration date.
 - `status` (text): `active`, `used`, `expired`. Corresponds to the `BenefitStatus` enum in Dart.
 - `alert_enabled` (bool): Notification toggle.
-- `notify_days_before` (int, nullable): How many days before expiry to notify the user.
+- `notify_days_before` (int[], nullable): An array of integers representing the days before expiry to send a notification.
 
 ## 5. Project Structure
 ```text
