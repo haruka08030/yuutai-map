@@ -6,14 +6,6 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 
 ## Next Up
 
-### 1. フォームバリデーション改善
--   **Task:** フォームバリデーションを改善する
--   **Reason:** ユーザーエクスペリエンスを向上させる
--   **Sub-tasks:**
-    -   リアルタイムバリデーションを実装する
-    -   パスワード強度インジケーターを追加する
-    -   メールのバリデーションを厳格にする
-
 ### 2. ローディング状態の統一
 -   **Task:** ローディング状態を統一する
 -   **Reason:** コンポーネントの見た目を一貫させる
@@ -48,6 +40,14 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 ---
 
 ## ✅ Completed
+
+### 1. フォームバリデーション改善
+-   **Task:** フォームバリデーションを改善する
+-   **Reason:** ユーザーエクスペリエンスを向上させる
+-   **Sub-tasks:**
+    -   リアルタイムバリデーションを実装する
+    -   パスワード強度インジケーターを追加する
+    -   メールのバリデーションを厳格にする
 
 ---
 
