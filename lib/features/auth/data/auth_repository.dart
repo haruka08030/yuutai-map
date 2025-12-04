@@ -69,10 +69,6 @@ class AuthRepository {
     );
   }
 
-  Future<void> signInAnonymously() async {
-    await _client.auth.signInAnonymously();
-  }
-
   Future<void> signOut() async {
     await _client.auth.signOut();
   }
@@ -92,5 +88,5 @@ final authStateChangesProvider = StreamProvider<AuthState>((ref) {
 final isGuestProvider = Provider<bool>((ref) {
   ref.watch(authStateChangesProvider);
   final user = ref.read(authRepositoryProvider).currentUser;
-  return user?.isAnonymous ?? false;
+  return user == null;
 });
