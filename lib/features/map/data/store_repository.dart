@@ -36,7 +36,7 @@ class StoreRepository {
         .where((tag) => tag != null && tag.isNotEmpty)
         .toSet() // Use a Set to get unique values
         .toList();
-    return categories;
+    return categories.whereType<String>().toList();
   }
 }
 

@@ -88,3 +88,9 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 final authStateChangesProvider = StreamProvider<AuthState>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 });
+
+final isGuestProvider = Provider<bool>((ref) {
+  ref.watch(authStateChangesProvider);
+  final user = ref.read(authRepositoryProvider).currentUser;
+  return user?.isAnonymous ?? false;
+});
