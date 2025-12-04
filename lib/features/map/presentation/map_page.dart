@@ -1,8 +1,8 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
@@ -49,9 +49,11 @@ class _MapPageState extends ConsumerState<MapPage> {
         _errorMessage = e.toString();
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -106,7 +108,8 @@ class _MapPageState extends ConsumerState<MapPage> {
         );
       }
     } else {
-      final benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
+      final benefits =
+          await ref.read(usersYuutaiRepositoryProvider).getActive();
       for (final benefit in benefits) {
         if (benefit.companyId != null) {
           final stores = await storeRepo.getStores(
@@ -127,9 +130,11 @@ class _MapPageState extends ConsumerState<MapPage> {
       }
     }
 
-    setState(() {
-      _markers = markers;
-    });
+    if (mounted) {
+      setState(() {
+        _markers = markers;
+      });
+    }
   }
 
   @override
@@ -181,9 +186,11 @@ class _MapPageState extends ConsumerState<MapPage> {
                   label: Text(_showAllStores ? 'すべての店舗' : '保有優待の店舗'),
                   selected: _showAllStores,
                   onSelected: (selected) {
-                    setState(() {
-                      _showAllStores = selected;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _showAllStores = selected;
+                      });
+                    }
                     _fetchStores();
                   },
                 ),
@@ -192,13 +199,15 @@ class _MapPageState extends ConsumerState<MapPage> {
                   label: Text(category),
                   selected: _selectedCategories.contains(category),
                   onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _selectedCategories.add(category);
-                      } else {
-                        _selectedCategories.remove(category);
-                      }
-                    });
+                    if (mounted) {
+                      setState(() {
+                        if (selected) {
+                          _selectedCategories.add(category);
+                        } else {
+                          _selectedCategories.remove(category);
+                        }
+                      });
+                    }
                     _fetchStores();
                   },
                 );
@@ -208,3 +217,5 @@ class _MapPageState extends ConsumerState<MapPage> {
         ),
       ],
     );
+  }
+}

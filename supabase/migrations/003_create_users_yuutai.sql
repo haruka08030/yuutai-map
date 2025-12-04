@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users_yuutai (
     status TEXT DEFAULT 'active', -- active, used, expired
     alert_enabled BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    notes TEXT
+    notes TEXT,
+    notify_days_before INTEGER[] DEFAULT '{}'
 );
 
 -- Create indexes
