@@ -94,3 +94,11 @@
   - Defined a basic dark theme in `app_theme.dart`.
   - Integrated `ThemeProvider` into `MaterialApp` to dynamically apply the selected theme.
 
+---
+
+## 2025-12-03 (Theming & Colors)
+
+- **Organized Theme System (IMPROVEMENTS.md #1):**
+  - Consolidated hardcoded colors by creating static getters in `AppTheme` that provide theme-dependent colors (light/dark mode equivalents).
+  - Replaced direct `Color()` usages with `AppTheme` references in `UsersYuutaiListTile`, `UsersYuutaiPage`, and `CompanySearchBar` for improved theming consistency.
+

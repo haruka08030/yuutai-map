@@ -6,6 +6,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart'; // New Import
 
 import 'package:intl/intl.dart';
 
@@ -182,7 +183,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    activeColor: Colors.deepPurple,
+                    activeColor: Theme.of(context).colorScheme.primary, // Themed primary color
                     visualDensity: VisualDensity.compact,
                   ),
                   const SizedBox(width: 8),
@@ -208,7 +209,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                           Text(
                             _formatExpireDate(benefit.expiryDate!),
                             style: TextStyle(
-                              color: const Color(0xffafafaf),
+                              color: AppTheme.secondaryTextColor(context), // Themed color
                               fontSize: 14,
                               decoration: isUsed
                                   ? TextDecoration.lineThrough
@@ -225,14 +226,14 @@ class UsersYuutaiListTile extends ConsumerWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0x1a7990f8),
+                              color: AppTheme.benefitChipBackgroundColor(context), // Themed color
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               subtitle!,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.deepPurple,
+                                color: Theme.of(context).colorScheme.primary, // Themed primary color
                                 decoration: isUsed
                                     ? TextDecoration.lineThrough
                                     : null,

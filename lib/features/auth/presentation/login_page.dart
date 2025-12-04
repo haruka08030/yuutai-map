@@ -166,94 +166,96 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'メールアドレスを入力してください';
-                  }
-                  if (!emailRegex.hasMatch(value)) {
-                    return '有効なメールアドレスを入力してください';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'パスワード'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'パスワードを入力してください';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              LoadingElevatedButton( // New Widget
-                onPressed: _signInWithEmail,
-                isLoading: _isLoading,
-                child: const Text('ログイン'),
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: _isLoading ? null : _showForgotPasswordDialog,
-                child: const Text('パスワードを忘れましたか？'),
-              ),
-              const SizedBox(height: 12),
-              const Row(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('または'),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'メールアドレスを入力してください';
+                      }
+                      if (!emailRegex.hasMatch(value)) {
+                        return '有効なメールアドレスを入力してください';
+                      }
+                      return null;
+                    },
                   ),
-                  Expanded(child: Divider()),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'パスワード'),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'パスワードを入力してください';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  LoadingElevatedButton( // New Widget
+                    onPressed: _signInWithEmail,
+                    isLoading: _isLoading,
+                    child: const Text('ログイン'),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: _isLoading ? null : _showForgotPasswordDialog,
+                    child: const Text('パスワードを忘れましたか？'),
+                  ),
+                  const SizedBox(height: 12),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text('または'),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: _isLoading ? null : _signInWithGoogle,
+                    icon: const Icon(Icons.g_mobiledata), // Placeholder icon
+                    label: const Text('Googleでログイン'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (Platform.isIOS || Platform.isMacOS)
+                    ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _signInWithApple,
+                      icon: const Icon(Icons.apple),
+                      label: const Text('Appleでログイン'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const SignUpPage(),
+                              ),
+                            );
+                          },
+                    child: const Text('アカウントをお持ちでないですか？ 新規登録'),
+                  ),
                 ],
               ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _isLoading ? null : _signInWithGoogle,
-                icon: const Icon(Icons.g_mobiledata), // Placeholder icon
-                label: const Text('Googleでログイン'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (Platform.isIOS || Platform.isMacOS)
-                ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _signInWithApple,
-                  icon: const Icon(Icons.apple),
-                  label: const Text('Appleでログイン'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              const SizedBox(height: 24),
-              TextButton(
-                onPressed: _isLoading
-                    ? null
-                    : () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const SignUpPage(),
-                          ),
-                        );
-                      },
-                child: const Text('アカウントをお持ちでないですか？ 新規登録'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
