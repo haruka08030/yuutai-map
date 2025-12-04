@@ -21,6 +21,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   late final TextEditingController _titleCtl;
   late final TextEditingController _benefitContentCtl;
   late final TextEditingController _notesCtl;
+  late final TextEditingController _notifyDaysCtl;
   DateTime? _expireOn;
   bool _alertEnabled = false;
 
@@ -34,6 +35,9 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     _notesCtl = TextEditingController(text: widget.existing?.notes ?? '');
     _expireOn = widget.existing?.expiryDate?.toLocal();
     _alertEnabled = widget.existing?.alertEnabled ?? false;
+    _notifyDaysCtl = TextEditingController(
+      text: widget.existing?.notifyDaysBefore?.toString() ?? '7',
+    );
   }
 
   @override
@@ -41,6 +45,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     _titleCtl.dispose();
     _benefitContentCtl.dispose();
     _notesCtl.dispose();
+    _notifyDaysCtl.dispose();
     super.dispose();
   }
 
@@ -143,6 +148,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
       expiryDate: _expireOn, // toUtc handled by Supabase/Json? DateTime is usually ISO string.
       alertEnabled: _alertEnabled,
       status: existing?.status ?? BenefitStatus.active,
+      notifyDaysBefore: int.tryParse(_notifyDaysCtl.text),
     );
 
     await repo.upsert(entity, scheduleReminders: true);
@@ -242,12 +248,39 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('リマインダー'),
-            subtitle: Text(_alertEnabled ? '有効 (7日前)' : '無効'),
+            subtitle: Text(_alertEnabled
+                ? '${_notifyDaysCtl.text} 日前に通知'
+                : '無効'),
             trailing: Switch(
               value: _alertEnabled,
               onChanged: (v) => setState(() => _alertEnabled = v),
             ),
+            onTap: () => setState(() => _alertEnabled = !_alertEnabled),
           ),
+          if (_alertEnabled)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: Row(
+                children: [
+                  const Text('有効期限の'),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 60,
+                    child: TextFormField(
+                      controller: _notifyDaysCtl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('日前に通知'),
+                ],
+              ),
+            ),
           const SizedBox(height: 8),
           // Or we may add a "メモ" field.
         ],

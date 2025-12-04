@@ -10,6 +10,7 @@ class StoreRepository {
   Future<List<Store>> getStores({
     String? brandId,
     String? companyId,
+    List<String>? categories,
   }) async {
     var query = _client.from('stores').select('id, name, lat, lng');
 
@@ -19,10 +20,23 @@ class StoreRepository {
     if (companyId != null) {
       query = query.eq('company_id', companyId);
     }
+    if (categories != null && categories.isNotEmpty) {
+      query = query.in_('category_tag', categories);
+    }
 
     final res = await query;
 
     return res.map((map) => Store.fromJson(map)).toList();
+  }
+
+  Future<List<String>> getAvailableCategories() async {
+    final res = await _client.from('stores').select('category_tag');
+    final categories = res
+        .map((row) => row['category_tag'] as String?)
+        .where((tag) => tag != null && tag.isNotEmpty)
+        .toSet() // Use a Set to get unique values
+        .toList();
+    return categories;
   }
 }
 

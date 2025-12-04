@@ -16,10 +16,6 @@ class AuthGate extends ConsumerWidget {
       data: (state) {
         final session = state.session;
         if (session != null) {
-          // User is logged in, ensure guest mode is off
-          Future.microtask(
-            () => ref.read(isGuestProvider.notifier).state = false,
-          );
           return const MainPage();
         }
         return const AuthOptions();
@@ -37,12 +33,6 @@ class AuthOptions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ゲストモードの場合はMainPageを表示
-    final isGuest = ref.watch(isGuestProvider);
-    if (isGuest) {
-      return const MainPage();
-    }
-
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -83,7 +73,7 @@ class AuthOptions extends ConsumerWidget {
                 const SizedBox(height: 24),
                 TextButton(
                   onPressed: () {
-                    ref.read(isGuestProvider.notifier).state = true;
+                    ref.read(authRepositoryProvider).signInAnonymously();
                   },
                   child: const Text('ゲストとして利用する'),
                 ),

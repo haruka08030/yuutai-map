@@ -17,6 +17,7 @@ class UsersYuutai with _$UsersYuutai {
     @Default(BenefitStatus.active) BenefitStatus status,
     @JsonKey(name: 'alert_enabled') @Default(false) bool alertEnabled,
     String? notes,
+    @JsonKey(name: 'notify_days_before') int? notifyDaysBefore,
   }) = _UsersYuutai;
 
   factory UsersYuutai.fromJson(Map<String, dynamic> json) =>
