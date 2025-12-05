@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart'; // New Import
 
-class CompanySearchBar extends StatelessWidget {
+class CompanySearchBar extends StatefulWidget {
   const CompanySearchBar({
     super.key,
     this.controller,
@@ -18,6 +18,47 @@ class CompanySearchBar extends StatelessWidget {
   final bool autofocus;
 
   @override
+  State<CompanySearchBar> createState() => _CompanySearchBarState();
+}
+
+class _CompanySearchBarState extends State<CompanySearchBar> {
+  late TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = widget.controller ?? TextEditingController();
+    _textController.addListener(_onTextChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant CompanySearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller?.removeListener(_onTextChanged);
+      _textController.removeListener(_onTextChanged);
+      _textController = widget.controller ?? TextEditingController();
+      _textController.addListener(_onTextChanged);
+    }
+  }
+
+  void _onTextChanged() {
+    setState(() {}); // Rebuild to update suffixIcon visibility
+    if (widget.onChanged != null) {
+      widget.onChanged!(_textController.text);
+    }
+  }
+
+  @override
+  void dispose() {
+    _textController.removeListener(_onTextChanged);
+    if (widget.controller == null) {
+      _textController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // スクショの雰囲気に合わせた色味
     final borderColor = AppTheme.dividerColor(context);
@@ -31,15 +72,15 @@ class CompanySearchBar extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints.tightFor(height: 40), // 背丈は控えめ
       child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        onSubmitted: onSubmitted,
-        autofocus: autofocus,
+        controller: _textController,
+        // onChanged is handled by _onTextChanged listener
+        onSubmitted: widget.onSubmitted,
+        autofocus: widget.autofocus,
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.center,
         style: const TextStyle(height: 1.2), // 行間を詰めて中央寄せ
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: widget.hintText,
           hintStyle: TextStyle(color: placeholderColor),
           // 左の虫眼鏡（線が細いのでCustomPaintで再現）
           prefixIcon: const _MagnifierIcon(),
@@ -48,6 +89,17 @@ class CompanySearchBar extends StatelessWidget {
             minWidth: 38,
             minHeight: 20,
           ),
+          suffixIcon: _textController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: placeholderColor),
+                  onPressed: () {
+                    _textController.clear();
+                    if (widget.onChanged != null) {
+                      widget.onChanged!('');
+                    }
+                  },
+                )
+              : null,
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           filled: true,
