@@ -32,7 +32,13 @@ class PasswordStrengthIndicator extends StatelessWidget {
     double progress;
     String text;
 
-    final appColors = Theme.of(context).extension<AppColors>()!;
+    final appColors = Theme.of(context).extension<AppColors>();
+    if (appColors == null) {
+      throw FlutterError(
+        'AppColors extension is not registered in the theme. '
+        'Ensure ThemeData includes AppColors extension.',
+      );
+    }
 
     switch (strength) {
       case PasswordStrength.none:

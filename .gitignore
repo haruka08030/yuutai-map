@@ -52,3 +52,7 @@ data_importer/serviceAccountKey.json
 # Android local properties (contains API keys)
 android/local.properties
 **/local.properties
+
+GEMINI.md
+IMPROVEMENTS.md
+PROGRESS.md

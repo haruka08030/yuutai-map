@@ -141,12 +141,14 @@ class _MainPageState extends ConsumerState<MainPage> {
                   children: [
                     DrawerHeader(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).extension<AppColors>()!.drawerHeaderBackground,
+                        color: Theme.of(context).extension<AppColors>()?.drawerHeaderBackground ?? 
+                               Theme.of(context).primaryColor,
                       ),
                       child: Text(
                         'メニュー',
                         style: TextStyle(
-                          color: Theme.of(context).extension<AppColors>()!.drawerHeaderForeground,
+                          color: Theme.of(context).extension<AppColors>()?.drawerHeaderForeground ?? 
+                                 Theme.of(context).colorScheme.onPrimary,
                           fontSize: 24,
                         ),
                       ),
