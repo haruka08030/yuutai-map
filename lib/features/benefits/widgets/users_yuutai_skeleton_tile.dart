@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class UsersYuutaiSkeletonTile extends StatelessWidget {
   const UsersYuutaiSkeletonTile({super.key});
@@ -15,7 +16,7 @@ class UsersYuutaiSkeletonTile extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).extension<AppColors>()!.skeletonBase,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -30,14 +31,14 @@ class UsersYuutaiSkeletonTile extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   height: 17,
-                  color: Colors.grey[300],
+                  color: Theme.of(context).extension<AppColors>()!.skeletonBase,
                 ),
                 const SizedBox(height: 5),
                 // Expiry date placeholder
                 Container(
                   width: 100,
                   height: 14,
-                  color: Colors.grey[300],
+                  color: Theme.of(context).extension<AppColors>()!.skeletonBase,
                 ),
                 const SizedBox(height: 5),
                 // Subtitle placeholder (benefit detail)
@@ -45,7 +46,7 @@ class UsersYuutaiSkeletonTile extends StatelessWidget {
                   width: 150,
                   height: 18,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: Theme.of(context).extension<AppColors>()!.skeletonBase,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),

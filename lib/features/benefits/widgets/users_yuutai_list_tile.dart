@@ -33,8 +33,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
         motion: const DrawerMotion(),
         children: [
           SlidableAction(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).extension<AppColors>()!.editActionBackground,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
             icon: Icons.edit,
             label: '編集',
             onPressed: (_) async {
@@ -46,8 +46,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
             },
           ),
           SlidableAction(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).extension<AppColors>()!.deleteActionBackground,
+            foregroundColor: Theme.of(context).extension<AppColors>()!.deleteActionForeground,
             icon: Icons.delete,
             label: '削除',
             onPressed: (_) async {
@@ -65,7 +65,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                     ),
                     FilledButton(
                       style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Theme.of(context).extension<AppColors>()!.deleteActionBackground,
                       ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),
@@ -94,8 +94,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
         motion: const DrawerMotion(),
         children: [
           SlidableAction(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).extension<AppColors>()!.editActionBackground,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
             icon: Icons.edit,
             label: '編集',
             onPressed: (_) async {
@@ -107,8 +107,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
             },
           ),
           SlidableAction(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).extension<AppColors>()!.deleteActionBackground,
+            foregroundColor: Theme.of(context).extension<AppColors>()!.deleteActionForeground,
             icon: Icons.delete,
             label: '削除',
             onPressed: (_) async {
@@ -126,7 +126,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                     ),
                     FilledButton(
                       style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Theme.of(context).extension<AppColors>()!.deleteActionBackground,
                       ),
                       onPressed: () => Navigator.of(ctx).pop(true),
                       child: const Text('削除'),

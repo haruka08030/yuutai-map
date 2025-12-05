@@ -20,11 +20,11 @@ class LoadingElevatedButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: style,
       child: isLoading
-          ? const SizedBox(
+          ? SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 strokeWidth: 2,
               ),
             )
