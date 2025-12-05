@@ -10,7 +10,8 @@ final usersYuutaiRepositoryProvider = Provider<UsersYuutaiRepository>((ref) {
   );
 });
 
-final activeUsersYuutaiProvider = StreamProvider<List<UsersYuutai>>((ref) {
+final activeUsersYuutaiProvider =
+    StreamProvider<List<UsersYuutai>>((ref) {
   final repo = ref.watch(usersYuutaiRepositoryProvider);
   return repo.watchActive();
-});
+}, skipLoadingOnReload: true);
