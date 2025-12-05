@@ -43,8 +43,10 @@ To develop a Flutter-based mobile application that helps users manage shareholde
   - **Supabase-Only Persistence:** All user-specific application data **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift for user data.
   - **Manual Calculations:** Business logic for benefit value/quantity deduction will **not** be implemented automatically. This is managed by the user manually editing text fields.
   - **Manual Status Flow:** A benefit's status (`active` -> `used`) must be changed explicitly by user action (e.g., tapping a "Mark as Used" button).
-  - **タスクを開始と言ったら’IMPROVEMENTS.md’を参照して自走して
-  - **’IMPROVEMENTS.md’の内容を定期的に確認して、タスクを追加する
+  - タスクを開始と言ったら’IMPROVEMENTS.md’を参照して自走して
+  - ’IMPROVEMENTS.md’の内容を定期的に確認して、タスクを追加する
+  - ナビゲーションアイテムのラベルは不要
+  
 
 ## 4. Database Schema (Supabase)
 
