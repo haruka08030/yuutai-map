@@ -72,3 +72,33 @@
   - Implemented responsive navigation for `MainPage`, switching between `BottomNavigationBar` and `NavigationRail` based on screen width for better tablet/landscape support.
   - Ensured no problematic fixed heights were used on core navigation pages (`MainPage`, `UsersYuutaiPage`, `MapPage`, `SettingsPage`).
   - Added max-width constraints (600px) to form-heavy pages (`LoginPage`, `SignUpPage`, `UsersYuutaiEditPage`) and setting sub-widgets (`AuthOptionsPage`, `AccountInfoPage`) to prevent content from stretching too wide on large screens.
+
+---
+
+## 2025-12-03 (Loading States & UI)
+
+- **Unified Loading States (IMPROVEMENTS.md #1):**
+  - Created `AppLoadingIndicator` widget for consistent full-screen/page-level loading states.
+  - Replaced inline `CircularProgressIndicator` usages with `AppLoadingIndicator` in `UsersYuutaiPage`, `CompanySearchPage`, `MapPage`, `AuthGate`, and `SettingsPage`.
+  - Implemented skeleton loading for `UsersYuutaiPage` to enhance user experience during data fetching.
+  - Created `LoadingElevatedButton` widget for consistent button loading states.
+  - Replaced `ElevatedButton` usages with `LoadingElevatedButton` in `LoginPage` and `SignUpPage`.
+
+---
+
+## 2025-12-03 (Settings Enhancement)
+
+- **Enhanced Settings Screen:**
+  - Implemented Dark Mode toggle in `SettingsPage` to allow users to switch between light and dark themes.
+  - Set up `ThemeProvider` with `shared_preferences` for persisting theme preference across app launches and sessions.
+  - Defined a basic dark theme in `app_theme.dart`.
+  - Integrated `ThemeProvider` into `MaterialApp` to dynamically apply the selected theme.
+
+---
+
+## 2025-12-03 (Theming & Colors)
+
+- **Organized Theme System (IMPROVEMENTS.md #1):**
+  - Consolidated hardcoded colors by creating static getters in `AppTheme` that provide theme-dependent colors (light/dark mode equivalents).
+  - Replaced direct `Color()` usages with `AppTheme` references in `UsersYuutaiListTile`, `UsersYuutaiPage`, and `CompanySearchBar` for improved theming consistency.
+

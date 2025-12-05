@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/app/presentation/main_page.dart';
-import 'package:flutter_stock/features/auth/presentation/initial_auth_choice_page.dart'; // New import
+import 'package:flutter_stock/features/auth/presentation/initial_auth_choice_page.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
@@ -21,8 +22,7 @@ class AuthGate extends ConsumerWidget {
         // User is not logged in, show initial choice screen
         return const InitialAuthChoicePage();
       },
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () => const AppLoadingIndicator(),
       error: (error, stackTrace) =>
           Scaffold(body: Center(child: Text('エラーが発生しました: $error'))),
     );

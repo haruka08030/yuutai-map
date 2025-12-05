@@ -6,49 +6,64 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
 
 ## Next Up
 
-### 1. ローディング状態の統一
--   **Task:** ローディング状態を統一する
--   **Reason:** コンポーネントの見た目を一貫させる
--   **Sub-tasks:**
-    -   一貫性のないローディングUIを統一する
-    -   スケルトンローディングを追加する
-    -   ボタンのローディング状態を追加する
-
-### 2. テーマシステムの整理
+### 1. テーマシステムの整理
 -   **Task:** テーマシステムを整理する
 -   **Reason:** コンポーネントの見た目を一貫させる
 -   **Sub-tasks:**
-    -   ハードコードされた色をまとめる
     -   セカンダリ・ターシャリカラーを定義する
-    -   ダークモードを対応する
 
-### 3. フォームUX改善
--   **Task:** フォームUXを改善する
--   **Reason:** ユーザーエクスペリエンスを向上させる
+### 2. MapPageのリファクタリング
+-   **Task:** MapPageのロジックをProviderに分離する
+-   **Reason:** UIコンポーネントからビジネスロジック（位置情報取得、データフェッチ、マーカー作成）を切り離し、コードの可読性、保守性、テスト容易性を向上させるため
 -   **Sub-tasks:**
-    -   パスワード表示切替を追加する
-    -   リアルタイムバリデーションを実装する
-    -   必須フィールドのマーキングを追加する
+    -   MapStateNotifier (または MapController) プロバイダーを作成する
+    -   MapPage 内にある _fetchStores, _determinePosition 等のロジックをプロバイダーへ移動する
+    -   UI側を ref.watch で状態を購読する形に修正する
+
+### 3. データ削除の一貫性確保
+-   **Task:** リポジトリの削除メソッドの命名を統一する
+-   **Reason:** softDelete という名前でありながら物理削除（完全削除）を行っている現状の矛盾を解消し、意図しないデータ消失や混乱を防ぐため
+-   **Sub-tasks:**
+    -   物理削除で統一する場合は、メソッド名を delete に変更する
+
+### 4. 通知サービスのDI（依存性注入）化
+-   **Task:** NotificationService のシングルトン利用を廃止しProvider経由にする
+-   **Reason:** グローバルなシングルトンへの依存をなくし、ユニットテストやモックへの差し替えを容易にするため
+-   **Sub-tasks:**
+    -   NotificationService 内の static instance を削除または非推奨にする
+    -   usersYuutaiRepository や main.dart などで直接インスタンスを参照している箇所を、Riverpodの Provider 経由に変更する
+
+### 5. UI/UXの改善
+-   **Task:** 検索バーとリスト表示のUXを改善する
+-   **Reason:** ユーザーの操作性を向上させ、アプリの挙動をよりスムーズに見せるため
+-   **Sub-tasks:**
+    -   検索バー (CompanySearchBar) にテキスト消去用のクリアボタン（×）を追加する
+    -   優待リスト (UsersYuutaiPage) 更新時に一瞬ローディングが表示される「ちらつき」を、skipLoadingOnReload 等を活用して防止する
+
+### 6. マップ描画のパフォーマンス改善
+-   **Task:** マップマーカーのクラスタリングを導入する
+-   **Reason:** 店舗数が増加した際にマップの描画負荷が高まり、動作が重くなるのを防ぐため
+-   **Sub-tasks:**
+    -   Maps_cluster_manager などのパッケージ導入を検討する
+    -   または、表示領域（Viewport）内のデータのみをフェッチするロジックを実装する
 
 ---
 
 ## ✅ Completed
 
-### 1. フォームバリデーション改善
--   **Task:** フォームバリデーションを改善する
--   **Reason:** ユーザーエクスペリエンスを向上させる
--   **Sub-tasks:**
-    -   リアルタイムバリデーションを実装する
-    -   パスワード強度インジケーターを追加する
-    -   メールのバリデーションを厳格にする
-
-### 2. レスポンシブデザイン
--   **Task:** レスポンシブデザインを改善する
--   **Reason:** ユーザーエクスペリエンスを向上させる
--   **Sub-tasks:**
-    -   タブレット・ランドスケープ対応を追加する
-    -   固定高さの使用を避ける
-    -   大画面での最大幅制約を追加する
+### テーマシステムの改善（ハードコード色の排除）
+-   **Completed:** 2025-12-03
+-   **Summary:** 
+    -   ✅ AppTheme に `AppColors` ThemeExtension を実装
+    -   ✅ 17種類のカスタムカラーを定義（ライト/ダークテーマ対応）
+    -   ✅ UsersYuutaiListTile の編集・削除アクションボタンの色をテーマ化
+    -   ✅ UsersYuutaiSkeletonTile のスケルトン色をテーマ化
+    -   ✅ PasswordStrengthIndicator の強度表示色をテーマ化
+    -   ✅ LoginPage と SignUpPage のソーシャルログインボタン色をテーマ化
+    -   ✅ MainPage のドロワーヘッダー色をテーマ化
+    -   ✅ LoadingElevatedButton のローディングインジケーター色をテーマ化
+    -   ✅ CompanySearchBar は既にテーマ化済みであることを確認
+-   **Result:** ダークモード対応の準備が完了し、デザインの一貫性が向上。
 
 ---
 

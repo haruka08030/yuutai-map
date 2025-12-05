@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class PasswordStrengthIndicator extends StatelessWidget {
   final String password;
@@ -31,24 +32,26 @@ class PasswordStrengthIndicator extends StatelessWidget {
     double progress;
     String text;
 
+    final appColors = Theme.of(context).extension<AppColors>()!;
+
     switch (strength) {
       case PasswordStrength.none:
-        color = Colors.grey;
+        color = appColors.placeholder;
         progress = 0.0;
         text = 'パスワードを入力してください';
         break;
       case PasswordStrength.weak:
-        color = Colors.red;
+        color = appColors.passwordWeak;
         progress = 0.3;
         text = '弱い';
         break;
       case PasswordStrength.medium:
-        color = Colors.orange;
+        color = appColors.passwordMedium;
         progress = 0.6;
         text = '普通';
         break;
       case PasswordStrength.strong:
-        color = Colors.green;
+        color = appColors.passwordStrong;
         progress = 1.0;
         text = '強い';
         break;
@@ -59,7 +62,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
       children: [
         LinearProgressIndicator(
           value: progress,
-          backgroundColor: Colors.grey[300],
+          backgroundColor: appColors.passwordIndicatorBackground,
           color: color,
         ),
         Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart'; // New Import
 
 class CompanySearchBar extends StatelessWidget {
   const CompanySearchBar({
@@ -19,12 +20,12 @@ class CompanySearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // スクショの雰囲気に合わせた色味
-    const borderColor = Color(0xFFE0E0E0); // ごく薄いグレー
-    const placeholderColor = Color(0xFFAFAFAF); // 文字は薄め
+    final borderColor = AppTheme.dividerColor(context);
+    final placeholderColor = AppTheme.placeholderColor(context);
 
     final baseBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12), // 角の丸み
-      borderSide: const BorderSide(color: borderColor, width: 1),
+      borderSide: BorderSide(color: borderColor, width: 1),
     );
 
     return ConstrainedBox(
@@ -39,7 +40,7 @@ class CompanySearchBar extends StatelessWidget {
         style: const TextStyle(height: 1.2), // 行間を詰めて中央寄せ
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: placeholderColor),
+          hintStyle: TextStyle(color: placeholderColor),
           // 左の虫眼鏡（線が細いのでCustomPaintで再現）
           prefixIcon: const _MagnifierIcon(),
           // アイコンとテキストの間隔をスクショ寄りに
@@ -50,7 +51,7 @@ class CompanySearchBar extends StatelessWidget {
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           filled: true,
-          fillColor: Colors.white, // 背景は白
+          fillColor: Theme.of(context).colorScheme.surface, // Background is surface color
           enabledBorder: baseBorder,
           disabledBorder: baseBorder,
           focusedBorder: baseBorder, // 焦点時も色はほぼ変えない（スクショ準拠）
@@ -66,7 +67,7 @@ class _MagnifierIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const iconColor = Color(0xFFAFAFAF);
+    final iconColor = AppTheme.placeholderColor(context);
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 6),
       child: CustomPaint(

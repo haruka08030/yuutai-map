@@ -7,6 +7,8 @@ import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart'; // New import
+import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,18 +21,31 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const ProviderScope(child: MyApp()));
+  final sharedPreferences = await SharedPreferences.getInstance(); // Init SharedPreferences
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences), // Override provider
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget { // Changed from StatelessWidget
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) { // Added WidgetRef ref
+    final themeMode = ref.watch(themeProvider); // Watch themeProvider
+
     return MaterialApp(
       title: 'yuutai-map',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark, // Added darkTheme
+      themeMode: themeMode, // Used themeMode from provider
       home: const AuthGate(),
     );
   }
