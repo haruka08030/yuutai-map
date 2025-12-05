@@ -5,8 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
-import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart'; // New import
-import 'package:flutter_stock/app/widgets/loading_elevated_button.dart'; // New Import
+import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart';
+import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -198,8 +199,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     icon: const Icon(Icons.g_mobiledata), // Placeholder icon
                     label: const Text('Googleで登録'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
+                      backgroundColor: Theme.of(context).extension<AppColors>()!.googleButtonBackground,
+                      foregroundColor: Theme.of(context).extension<AppColors>()!.googleButtonForeground,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -209,8 +210,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       icon: const Icon(Icons.apple),
                       label: const Text('Appleで登録'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).extension<AppColors>()!.appleButtonBackground,
+                        foregroundColor: Theme.of(context).extension<AppColors>()!.appleButtonForeground,
                       ),
                     ),
                   const SizedBox(height: 24),

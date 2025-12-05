@@ -6,6 +6,7 @@ import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_p
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
 import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -99,15 +100,15 @@ class _MainPageState extends ConsumerState<MainPage> {
               destinations: const [
                 NavigationRailDestination(
                   icon: Icon(Icons.list),
-                  label: Text('優待'),
+                  label: Text(''),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.map),
-                  label: Text('マップ'),
+                  label: Text(''),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.settings),
-                  label: Text('設定'),
+                  label: Text(''),
                 ),
               ],
             ),
@@ -138,11 +139,16 @@ class _MainPageState extends ConsumerState<MainPage> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    const DrawerHeader(
-                      decoration: BoxDecoration(color: Colors.blue),
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).extension<AppColors>()!.drawerHeaderBackground,
+                      ),
                       child: Text(
                         'メニュー',
-                        style: TextStyle(color: Colors.white, fontSize: 24),
+                        style: TextStyle(
+                          color: Theme.of(context).extension<AppColors>()!.drawerHeaderForeground,
+                          fontSize: 24,
+                        ),
                       ),
                     ),
                     ListTile(
@@ -159,9 +165,9 @@ class _MainPageState extends ConsumerState<MainPage> {
         body: IndexedStack(index: _selectedIndex, children: widgetOptions),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.list), label: '優待'),
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'マップ'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: '設定'),
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.map), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
