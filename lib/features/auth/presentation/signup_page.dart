@@ -199,8 +199,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     icon: const Icon(Icons.g_mobiledata), // Placeholder icon
                     label: const Text('Googleで登録'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).extension<AppColors>()!.googleButtonBackground,
-                      foregroundColor: Theme.of(context).extension<AppColors>()!.googleButtonForeground,
+                      backgroundColor: Theme.of(context).extension<AppColors>()?.googleButtonBackground ?? Colors.white,
+                      foregroundColor: Theme.of(context).extension<AppColors>()?.googleButtonForeground ?? Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -210,8 +210,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       icon: const Icon(Icons.apple),
                       label: const Text('Appleで登録'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).extension<AppColors>()!.appleButtonBackground,
-                        foregroundColor: Theme.of(context).extension<AppColors>()!.appleButtonForeground,
+                        backgroundColor: Theme.of(context).extension<AppColors>()?.appleButtonBackground ?? Colors.black,
+                        foregroundColor: Theme.of(context).extension<AppColors>()?.appleButtonForeground ?? Colors.white,
                       ),
                     ),
                   const SizedBox(height: 24),
