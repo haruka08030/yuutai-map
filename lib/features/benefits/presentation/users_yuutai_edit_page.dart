@@ -6,6 +6,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/app/routing/slide_right_route.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
+import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:intl/intl.dart';
 
 class UsersYuutaiEditPage extends ConsumerStatefulWidget {
@@ -23,6 +24,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   late final TextEditingController _notesCtl;
 
   DateTime? _expireOn;
+  String? _selectedFolderId;
 
   // State for multi-select notifications
   final Map<int, bool> _selectedPredefinedDays = {30: false, 7: false, 0: false};
@@ -37,6 +39,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
         TextEditingController(text: widget.existing?.benefitDetail ?? '');
     _notesCtl = TextEditingController(text: widget.existing?.notes ?? '');
     _expireOn = widget.existing?.expiryDate?.toLocal();
+    _selectedFolderId = widget.existing?.folderId;
 
     // Initialize notification days state from existing data
     final existingDays = widget.existing?.notifyDaysBefore ?? [];
@@ -276,6 +279,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
       alertEnabled: notifyDays.isNotEmpty, // Set alertEnabled based on selection
       status: existing?.status ?? BenefitStatus.active,
       notifyDaysBefore: notifyDays,
+      folderId: _selectedFolderId,
     );
 
     await repo.upsert(entity, scheduleReminders: true);
@@ -382,6 +386,58 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
               ],
             ),
             onTap: _openExpireSheet,
+          ),
+          // Folder Selector
+          Consumer(
+            builder: (context, ref, _) {
+              final foldersAsync = ref.watch(foldersProvider);
+              return foldersAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (folders) {
+                  if (folders.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  
+                  final selectedFolder = folders.firstWhere(
+                    (f) => f.id == _selectedFolderId,
+                    orElse: () => folders.first,
+                  );
+                  
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('フォルダ'),
+                    subtitle: Text(_selectedFolderId == null 
+                        ? '未分類' 
+                        : selectedFolder.name),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () async {
+                      final result = await showDialog<String?>(
+                        context: context,
+                        builder: (ctx) => SimpleDialog(
+                          title: const Text('フォルダを選択'),
+                          children: [
+                            SimpleDialogOption(
+                              onPressed: () => Navigator.pop(ctx, null),
+                              child: const Text('未分類'),
+                            ),
+                            ...folders.map((folder) => SimpleDialogOption(
+                              onPressed: () => Navigator.pop(ctx, folder.id),
+                              child: Text(folder.name),
+                            )),
+                          ],
+                        ),
+                      );
+                      if (result != null || result == null) {
+                        setState(() {
+                          _selectedFolderId = result;
+                        });
+                      }
+                    },
+                  );
+                },
+              );
+            },
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,

@@ -22,6 +22,7 @@ _UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
   notifyDaysBefore: (json['notify_days_before'] as List<dynamic>?)
       ?.map((e) => (e as num).toInt())
       .toList(),
+  folderId: json['folder_id'] as String?,
 );
 
 Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
@@ -35,6 +36,7 @@ Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
       'alert_enabled': instance.alertEnabled,
       'notes': instance.notes,
       'notify_days_before': instance.notifyDaysBefore,
+      'folder_id': instance.folderId,
     };
 
 const _$BenefitStatusEnumMap = {

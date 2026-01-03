@@ -10,6 +10,7 @@ class StoreRepository {
   Future<List<Store>> getStores({
     String? brandId,
     String? companyId,
+    List<String>? companyIds,
     List<String>? categories,
   }) async {
     var query = _client.from('stores').select('id, name, lat, lng');
@@ -19,6 +20,9 @@ class StoreRepository {
     }
     if (companyId != null) {
       query = query.eq('company_id', companyId);
+    }
+    if (companyIds != null && companyIds.isNotEmpty) {
+      query = query.filter('company_id', 'in', companyIds);
     }
     if (categories != null && categories.isNotEmpty) {
       query = query.filter('category_tag', 'in', categories);

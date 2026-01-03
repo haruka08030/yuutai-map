@@ -18,6 +18,7 @@ abstract class UsersYuutai with _$UsersYuutai {
     @JsonKey(name: 'alert_enabled') @Default(false) bool alertEnabled,
     String? notes,
     @JsonKey(name: 'notify_days_before') List<int>? notifyDaysBefore,
+    @JsonKey(name: 'folder_id') String? folderId,
   }) = _UsersYuutai;
 
   factory UsersYuutai.fromJson(Map<String, dynamic> json) =>
