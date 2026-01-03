@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart'; // New Import
-import 'package:flutter_stock/app/theme/app_theme.dart'; // New Import
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 final _benefitsTabProvider = StateProvider.autoDispose<int>((ref) => 0);
 
@@ -71,7 +69,6 @@ class UsersYuutaiPage extends ConsumerWidget {
                 items = items.where((benefit) => benefit.folderId == selectedFolderId).toList();
               }
               
-              // Apply search filter
               if (searchQuery.isNotEmpty) {
                 items = items.where((benefit) {
                   final query = searchQuery.toLowerCase();
