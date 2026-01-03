@@ -5,22 +5,23 @@ import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.d
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart'; // New Import
 import 'package:flutter_stock/app/theme/app_theme.dart';
 
-final _benefitsTabProvider = StateProvider.autoDispose<int>((ref) => 0);
+
 
 class UsersYuutaiPage extends ConsumerWidget {
   const UsersYuutaiPage({
     super.key,
     required this.searchQuery,
     this.selectedFolderId,
+    this.showHistory = false,
   });
 
   final String searchQuery;
   final String? selectedFolderId;
+  final bool showHistory;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final curTab = ref.watch(_benefitsTabProvider);
-    final asyncBenefits = curTab == 0
+    final asyncBenefits = !showHistory
         ? ref.watch(activeUsersYuutaiProvider)
         : ref.watch(historyUsersYuutaiProvider);
 
@@ -56,7 +57,7 @@ class UsersYuutaiPage extends ConsumerWidget {
                 final fg = cs.onSurface.withAlpha(165);
                 final sub = cs.onSurface.withAlpha(114);
                 
-                if (curTab == 1) {
+                if (showHistory) {
                    return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
