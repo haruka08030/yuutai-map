@@ -138,9 +138,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       // Build for small screens with BottomNavigationBar
       return Scaffold(
         appBar: _buildAppBar(context, isLargeScreen),
-        drawer: isGuest
-            ? null
-            : Drawer(
+        drawer: Drawer(
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
@@ -255,9 +253,12 @@ class _FoldersSection extends ConsumerWidget {
 
     return foldersAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
-      data: (folders) {
-        if (folders.isEmpty) {
+    return foldersAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (err, _) {
+        debugPrint('Failed to load folders: $err');
+        return const SizedBox.shrink();
+      },
           return Column(
             children: [
               ListTile(
@@ -311,39 +312,50 @@ class _FoldersSection extends ConsumerWidget {
   }
 
   void _showCreateFolderDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('新しいフォルダ'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'フォルダ名',
-            hintText: '例: 食事、旅行',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('キャンセル'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (controller.text.trim().isNotEmpty) {
-                await ref
-                    .read(folderRepositoryProvider)
-                    .createFolder(controller.text.trim());
-                if (ctx.mounted) Navigator.pop(ctx);
-              }
-            },
-            child: const Text('作成'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+       final controller = TextEditingController();
+       return StatefulBuilder(
+         builder: (context, setState) {
+           return AlertDialog(
+             title: const Text('新しいフォルダ'),
+             content: TextField(
+               controller: controller,
+               decoration: const InputDecoration(
+                 labelText: 'フォルダ名',
+                 hintText: '例: 食事、旅行',
+               ),
+               autofocus: true,
+             ),
+             actions: [
+               TextButton(
+                 onPressed: () {
+                   controller.dispose();
+                   Navigator.pop(ctx);
+                 },
+                 child: const Text('キャンセル'),
+               ),
+               FilledButton(
+                 onPressed: () async {
+                   if (controller.text.trim().isNotEmpty) {
+                     await ref
+                         .read(folderRepositoryProvider)
+                         .createFolder(controller.text.trim());
+                     controller.dispose();
+                     if (ctx.mounted) Navigator.pop(ctx);
+                   }
+                 },
+                 child: const Text('作成'),
+               ),
+             ],
+           );
+         },
+       );
+     },
     );
   }
+
 
   void _showFolderOptions(BuildContext context, WidgetRef ref, folder) {
     showModalBottomSheet(
@@ -384,9 +396,19 @@ class _FoldersSection extends ConsumerWidget {
                       ),
                     ],
                   ),
-                );
                 if (confirmed == true) {
-                  await ref.read(folderRepositoryProvider).deleteFolder(folder.id!);
+                  final folderId = folder.id;
+                  if (folderId == null) return;
+                  try {
+                    await ref.read(folderRepositoryProvider).deleteFolder(folderId);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('削除に失敗しました: $e')),
+                      );
+                    }
+                  }
+                }
                 }
               },
             ),
