@@ -48,7 +48,7 @@ class UsersYuutaiPage extends ConsumerWidget {
                 ref.read(_benefitsTabProvider.notifier).state =
                     newSelection.first;
               },
-              style: ButtonStyle(
+              style: const ButtonStyle(
                 visualDensity: VisualDensity.compact,
               ),
             ),
@@ -58,7 +58,7 @@ class UsersYuutaiPage extends ConsumerWidget {
           child: asyncBenefits.when(
             loading: () => ListView.builder(
               itemCount: 8,
-              itemBuilder: (_, __) => const UsersYuutaiSkeletonTile(),
+              itemBuilder: (context, index) => const UsersYuutaiSkeletonTile(),
             ),
             error: (err, stack) => Center(child: Text('エラー: $err')),
             data: (data) {
@@ -120,7 +120,7 @@ class UsersYuutaiPage extends ConsumerWidget {
               return ListView.separated(
                 itemCount: items.length,
                 separatorBuilder: (_, _) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Divider(height: 1, thickness: 0.5, color: AppTheme.dividerColor(context)),
                 ),
                 itemBuilder: (context, index) {
