@@ -10,6 +10,7 @@ class AppDrawer extends ConsumerWidget {
     required this.onMapTapped,
     required this.onSettingsTapped,
     required this.onAllCouponsTapped,
+    required this.onHistoryTapped,
   });
 
   final String? selectedFolderId;
@@ -17,6 +18,7 @@ class AppDrawer extends ConsumerWidget {
   final VoidCallback onMapTapped;
   final VoidCallback onSettingsTapped;
   final VoidCallback onAllCouponsTapped;
+  final VoidCallback onHistoryTapped;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,10 +42,7 @@ class AppDrawer extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text('使用済み'),
-            onTap: () {
-              // TODO: Navigate to history view
-              Navigator.pop(context);
-            },
+            onTap: onHistoryTapped,
           ),
         ],
       ),

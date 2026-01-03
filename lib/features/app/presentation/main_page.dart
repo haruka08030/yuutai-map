@@ -20,6 +20,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
   String _searchQuery = '';
   String? _selectedFolderId; // null means "All", specific ID means filter by folder
+  bool _showHistory = false; // Add this line
   final _searchController = TextEditingController();
 
   @override
@@ -66,6 +67,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       UsersYuutaiPage(
         searchQuery: _searchQuery,
         selectedFolderId: _selectedFolderId,
+        showHistory: _showHistory,
       ),
       const MapPage(),
       const SettingsPage(),
@@ -137,12 +139,24 @@ class _MainPageState extends ConsumerState<MainPage> {
           onFolderSelected: (folderId) {
             setState(() {
               _selectedFolderId = folderId;
+              _showHistory = false;
+              _selectedIndex = 0;
             });
             Navigator.pop(context);
           },
           onAllCouponsTapped: () {
             setState(() {
               _selectedFolderId = null;
+              _showHistory = false;
+              _selectedIndex = 0;
+            });
+            Navigator.pop(context);
+          },
+          onHistoryTapped: () {
+            setState(() {
+              _selectedFolderId = null;
+              _showHistory = true;
+              _selectedIndex = 0;
             });
             Navigator.pop(context);
           },
