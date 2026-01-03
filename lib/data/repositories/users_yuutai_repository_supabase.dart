@@ -20,7 +20,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
   String get _tableName => 'users_yuutai';
 
   @override
-  Stream<List<domain.UsersYuutai>> watchActive() {
+  Stream<List<domain.UsersYuutai>> watchAll() {
     if (_user == null) {
       return Stream.value([]);
     }
@@ -28,8 +28,13 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .from(_tableName)
         .stream(primaryKey: ['id'])
         .eq('user_id', _user!.id)
-        .map((rows) => rows.where((r) => r['status'] == 'active').toList())
         .map(_rowsToEntities);
+  }
+
+  @override
+  Stream<List<domain.UsersYuutai>> watchActive() {
+    return watchAll().map((list) =>
+        list.where((i) => i.status == BenefitStatus.active).toList());
   }
 
   @override
