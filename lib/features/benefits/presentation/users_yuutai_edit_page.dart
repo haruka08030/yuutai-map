@@ -141,7 +141,8 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                           });
                         },
                       );
-                    }).toList(),
+                    }),
+
                     CheckboxListTile(
                       title: Row(
                         children: [
@@ -393,7 +394,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
               final foldersAsync = ref.watch(foldersProvider);
               return foldersAsync.when(
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, stack) => const SizedBox.shrink(),
                 data: (folders) {
                   if (folders.isEmpty) {
                     return const SizedBox.shrink();

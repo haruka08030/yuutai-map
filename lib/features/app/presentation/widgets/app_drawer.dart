@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/folders/presentation/widgets/folders_section.dart';
 
 class AppDrawer extends ConsumerWidget {

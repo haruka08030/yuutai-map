@@ -63,10 +63,10 @@ class FoldersSection extends ConsumerWidget {
   }
 
   void _showCreateFolderDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) {
-        final controller = TextEditingController();
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -90,11 +90,19 @@ class FoldersSection extends ConsumerWidget {
                 FilledButton(
                   onPressed: () async {
                     if (controller.text.trim().isNotEmpty) {
-                      await ref
-                          .read(folderRepositoryProvider)
-                          .createFolder(controller.text.trim());
-                      controller.dispose();
-                      if (ctx.mounted) Navigator.pop(ctx);
+                      try {
+                        await ref
+                            .read(folderRepositoryProvider)
+                            .createFolder(controller.text.trim());
+                        controller.dispose();
+                        if (ctx.mounted) Navigator.pop(ctx);
+                      } catch (e) {
+                        if (ctx.mounted) {
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(content: Text('作成に失敗しました: $e')),
+                          );
+                        }
+                      }
                     }
                   },
                   child: const Text('作成'),
@@ -104,7 +112,7 @@ class FoldersSection extends ConsumerWidget {
           },
         );
       },
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _showFolderOptions(BuildContext context, WidgetRef ref, Folder folder) {
@@ -187,18 +195,35 @@ class FoldersSection extends ConsumerWidget {
           FilledButton(
             onPressed: () async {
               if (controller.text.trim().isNotEmpty) {
-                await ref.read(folderRepositoryProvider).updateFolder(
-                      folder.id!,
-                      controller.text.trim(),
-                      folder.sortOrder,
+                final folderId = folder.id;
+                if (folderId == null) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('フォルダIDが不正です')),
                     );
-                if (ctx.mounted) Navigator.pop(ctx);
+                  }
+                  return;
+                }
+                try {
+                  await ref.read(folderRepositoryProvider).updateFolder(
+                        folderId,
+                        controller.text.trim(),
+                        folder.sortOrder,
+                      );
+                  if (ctx.mounted) Navigator.pop(ctx);
+                } catch (e) {
+                  if (ctx.mounted) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text('更新に失敗しました: $e')),
+                    );
+                  }
+                }
               }
             },
             child: const Text('保存'),
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 }

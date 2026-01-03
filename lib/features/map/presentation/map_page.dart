@@ -128,7 +128,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   Future<void> _showFilterSheet() async {
     bool tempShowAll = _showAllStores;
-    Set<String> tempSelectedCategories = Set<String>.from(_selectedCategories);
+    final Set<String> tempSelectedCategories = Set<String>.from(_selectedCategories);
 
     await showModalBottomSheet(
       context: context,
