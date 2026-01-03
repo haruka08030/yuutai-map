@@ -399,10 +399,19 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                     return const SizedBox.shrink();
                   }
                   
-                  final selectedFolder = folders.firstWhere(
-                    (f) => f.id == _selectedFolderId,
-                    orElse: () => folders.first,
-                  );
+                  final selectedFolder = _selectedFolderId != null
+                      ? folders.firstWhere(
+                          (f) => f.id == _selectedFolderId,
+                          orElse: () => folders.first,
+                        )
+                      : null;
+                   
+                   return ListTile(
+                     contentPadding: EdgeInsets.zero,
+                     title: const Text('フォルダ'),
+                     subtitle: Text(selectedFolder == null
+                         ? '未分類' 
+                         : selectedFolder.name),
                   
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -412,25 +421,25 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                         : selectedFolder.name),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
-                      final result = await showDialog<String?>(
+                      final result = await showDialog<bool, String?>(
                         context: context,
                         builder: (ctx) => SimpleDialog(
                           title: const Text('フォルダを選択'),
                           children: [
                             SimpleDialogOption(
-                              onPressed: () => Navigator.pop(ctx, null),
+                              onPressed: () => Navigator.pop(ctx, (true, null)),
                               child: const Text('未分類'),
                             ),
                             ...folders.map((folder) => SimpleDialogOption(
-                              onPressed: () => Navigator.pop(ctx, folder.id),
+                              onPressed: () => Navigator.pop(ctx, (true, folder.id)),
                               child: Text(folder.name),
                             )),
                           ],
                         ),
                       );
-                      if (result != null || result == null) {
+                      if (result != null && result.$1) {
                         setState(() {
-                          _selectedFolderId = result;
+                          _selectedFolderId = result.$2;
                         });
                       }
                     },
