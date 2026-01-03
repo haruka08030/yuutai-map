@@ -26,34 +26,6 @@ class UsersYuutaiPage extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<int>(
-              segments: const [
-                ButtonSegment(
-                  value: 0,
-                  label: Text('保有中'),
-                  icon: Icon(Icons.confirmation_number_outlined),
-                ),
-                ButtonSegment(
-                  value: 1,
-                  label: Text('使用済み'),
-                  icon: Icon(Icons.history),
-                ),
-              ],
-              selected: {curTab},
-              onSelectionChanged: (newSelection) {
-                ref.read(_benefitsTabProvider.notifier).state =
-                    newSelection.first;
-              },
-              style: const ButtonStyle(
-                visualDensity: VisualDensity.compact,
-              ),
-            ),
-          ),
-        ),
         Expanded(
           child: asyncBenefits.when(
             loading: () => ListView.builder(
