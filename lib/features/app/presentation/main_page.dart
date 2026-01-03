@@ -6,8 +6,7 @@ import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_p
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
 import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
-import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/features/folders/presentation/widgets/folders_section.dart';
+import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 
 
 class MainPage extends ConsumerStatefulWidget {
@@ -52,15 +51,9 @@ class _MainPageState extends ConsumerState<MainPage> {
           controller: _searchController,
         ),
       );
-    } else if (_selectedIndex == 1) {
+    } else {
       // 地図タブではAppBarを非表示
       return null;
-    } else {
-      return AppBar(
-        title: const Text(''),
-        // On large screens, settings page might not need a drawer button
-        leading: isLargeScreen ? null : null, 
-      );
     }
   }
 
@@ -139,90 +132,33 @@ class _MainPageState extends ConsumerState<MainPage> {
       // Build for small screens with BottomNavigationBar
       return Scaffold(
         appBar: _buildAppBar(context, isLargeScreen),
-        drawer: Drawer(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    DrawerHeader(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).extension<AppColors>()?.drawerHeaderBackground ?? 
-                               Theme.of(context).primaryColor,
-                      ),
-                      child: Text(
-                        'メニュー',
-                        style: TextStyle(
-                          color: Theme.of(context).extension<AppColors>()?.drawerHeaderForeground ?? 
-                                 Theme.of(context).colorScheme.onPrimary,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    // Folders Section
-                    FoldersSection(
-                      selectedFolderId: _selectedFolderId,
-                      onFolderSelected: (folderId) {
-                        setState(() {
-                          _selectedFolderId = folderId;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const Divider(),
-                    // All Coupons
-                    ListTile(
-                      leading: const Icon(Icons.confirmation_number),
-                      title: const Text('すべての優待'),
-                      selected: _selectedFolderId == null,
-                      onTap: () {
-                        setState(() {
-                          _selectedFolderId = null;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    // Map
-                    ListTile(
-                      leading: const Icon(Icons.map),
-                      title: const Text('マップ'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 1;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    // Settings
-                    ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('設定'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 2;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const Divider(),
-                    // Used Coupons (Moved to bottom)
-                    ListTile(
-                      leading: const Icon(Icons.history),
-                      title: const Text('使用済み'),
-                      onTap: () {
-                        // TODO: Navigate to history view
-                        Navigator.pop(context);
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.logout),
-                      title: const Text('ログアウト'),
-                      onTap: () async {
-                        await ref.read(authRepositoryProvider).signOut();
-                        // AuthGate will handle navigation
-                      },
-                    ),
-                  ],
-                ),
-              ),
+        drawer: AppDrawer(
+          selectedFolderId: _selectedFolderId,
+          onFolderSelected: (folderId) {
+            setState(() {
+              _selectedFolderId = folderId;
+            });
+            Navigator.pop(context);
+          },
+          onAllCouponsTapped: () {
+            setState(() {
+              _selectedFolderId = null;
+            });
+            Navigator.pop(context);
+          },
+          onMapTapped: () {
+            setState(() {
+              _selectedIndex = 1;
+            });
+            Navigator.pop(context);
+          },
+          onSettingsTapped: () {
+            setState(() {
+              _selectedIndex = 2;
+            });
+            Navigator.pop(context);
+          },
+        ),
         body: IndexedStack(index: _selectedIndex, children: widgetOptions),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
