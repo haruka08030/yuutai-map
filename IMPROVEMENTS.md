@@ -20,12 +20,6 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   MapPage 内にある _fetchStores, _determinePosition 等のロジックをプロバイダーへ移動する
     -   UI側を ref.watch で状態を購読する形に修正する
 
-### 3. データ削除の一貫性確保
--   **Task:** リポジトリの削除メソッドの命名を統一する
--   **Reason:** softDelete という名前でありながら物理削除（完全削除）を行っている現状の矛盾を解消し、意図しないデータ消失や混乱を防ぐため
--   **Sub-tasks:**
-    -   物理削除で統一する場合は、メソッド名を delete に変更する
-
 ### 4. 通知サービスのDI（依存性注入）化
 -   **Task:** NotificationService のシングルトン利用を廃止しProvider経由にする
 -   **Reason:** グローバルなシングルトンへの依存をなくし、ユニットテストやモックへの差し替えを容易にするため
@@ -33,37 +27,34 @@ This plan outlines key areas for improving the Yuutai Map application, focusing 
     -   NotificationService 内の static instance を削除または非推奨にする
     -   usersYuutaiRepository や main.dart などで直接インスタンスを参照している箇所を、Riverpodの Provider 経由に変更する
 
-### 5. UI/UXの改善
--   **Task:** 検索バーとリスト表示のUXを改善する
--   **Reason:** ユーザーの操作性を向上させ、アプリの挙動をよりスムーズに見せるため
--   **Sub-tasks:**
-    -   検索バー (CompanySearchBar) にテキスト消去用のクリアボタン（×）を追加する
-    -   優待リスト (UsersYuutaiPage) 更新時に一瞬ローディングが表示される「ちらつき」を、skipLoadingOnReload 等を活用して防止する
-
-### 6. マップ描画のパフォーマンス改善
+### 5. マップ描画のパフォーマンス改善
 -   **Task:** マップマーカーのクラスタリングを導入する
 -   **Reason:** 店舗数が増加した際にマップの描画負荷が高まり、動作が重くなるのを防ぐため
 -   **Sub-tasks:**
     -   Maps_cluster_manager などのパッケージ導入を検討する
     -   または、表示領域（Viewport）内のデータのみをフェッチするロジックを実装する
 
+### 6. OCR機能の導入
+-   **Task:** カメラで優待券を読み取り、企業名と期限を自動入力する
+-   **Reason:** ユーザーの入力負荷を大幅に下げ、アプリへの登録率を向上させるため
+-   **Sub-tasks:**
+    -   `google_mlkit_text_recognition` および `image_picker` パッケージを導入する
+    -   `UsersYuutaiEditPage` にカメラ起動ボタンを追加する
+    -   画像からテキストを抽出し、正規表現で日付と企業名を推測するロジックを実装する
+
+### 7. 論理削除とUndo機能の実装
+-   **Task:** データの削除を論理削除に変更し、削除取り消しを可能にする
+-   **Reason:** 誤操作によるデータ消失を防ぎ、ユーザーに安心感を与えるため
+-   **Sub-tasks:**
+    -   `users_yuutai` テーブルに `deleted_at` (timestamp, nullable) カラムを追加する
+    -   Repositoryの `softDelete` メソッドを `delete()` ではなく `update({ 'deleted_at': DateTime.now() })` に修正する
+    -   データ一覧取得時のクエリに `.is_('deleted_at', null)` フィルタを追加する
+    -   削除完了時の `SnackBar` に `SnackBarAction(label: '元に戻す', ...)` を追加し、復元ロジックを実装する
+
 ---
 
 ## ✅ Completed
 
-### テーマシステムの改善（ハードコード色の排除）
--   **Completed:** 2025-12-03
--   **Summary:** 
-    -   ✅ AppTheme に `AppColors` ThemeExtension を実装
-    -   ✅ 17種類のカスタムカラーを定義（ライト/ダークテーマ対応）
-    -   ✅ UsersYuutaiListTile の編集・削除アクションボタンの色をテーマ化
-    -   ✅ UsersYuutaiSkeletonTile のスケルトン色をテーマ化
-    -   ✅ PasswordStrengthIndicator の強度表示色をテーマ化
-    -   ✅ LoginPage と SignUpPage のソーシャルログインボタン色をテーマ化
-    -   ✅ MainPage のドロワーヘッダー色をテーマ化
-    -   ✅ LoadingElevatedButton のローディングインジケーター色をテーマ化
-    -   ✅ CompanySearchBar は既にテーマ化済みであることを確認
--   **Result:** ダークモード対応の準備が完了し、デザインの一貫性が向上。
 
 ---
 

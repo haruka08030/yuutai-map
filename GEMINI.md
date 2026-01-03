@@ -1,96 +1,89 @@
-# Project: Yuutai Map
+# Project: Yuutai Map Specification
 
-## 1. Purpose
-To develop a Flutter-based mobile application that helps users manage shareholder benefits ("yuutai") and visualize eligible store locations on a map, reducing decision-making costs and preventing opportunity losses.
+## 1. Vision & Core Value
+A premium Flutter application for managing shareholder benefits ("yuutai") and visualizing eligible store locations.
+- **Core Value:** Reduces opportunity loss (using coupons before expiry) and decision fatigue (finding where to use them).
+- **Target Audience:** Japan-based investors holding multiple shareholder benefits.
+- **Design Philosophy:** "Premium Utility". High-quality UI/UX that feels like a polished consumer product, not just a database viewer.
 
-## 2. Core Features
+## 2. Feature Specification
 
-### 2.1. Benefit Management
-- **CRUD Operations:** Registered users can add, view, edit, and delete their yuutai holdings.
-- **List View:** Display owned benefits in a list or card format.
-- **Manual Balance Tracking:** The `benefit_detail` and `notes` fields serve as free-text memos for users to manually track remaining values or quantities (e.g., "4 tickets left").
-- **Status Control:** Users manually transition benefits between `active`, `used`, and `expired` states.
+### 2.1. Benefit Management ("ToDo Style")
+- **Concept:** Simplistic "ToDo" list approach.
+- **Inputs:**
+    - `benefit_detail` (Text): Free-text field (e.g., "500 yen x 10 tickets"). No structured integer parsing.
+    - `notes` (Text): User memos.
+- **State Logic:**
+    - **Active:** Appears in the main list.
+    - **Used (Binary):** A checkbox/button action moves the item to a "History/Completed" tab.
+    - **Reverting:** Unchecking "Used" item in History returns it to the Active list.
+- **Data Integrity:** The system does *not* track partial usage (e.g., "3 tickets used, 7 remaining"). Users manually update the text field if they wish to track partial balances.
 
-### 2.2. Map Visualization
-- **Store Pinning:** Display all eligible stores from the `stores` table on a map.
+### 2.2. Map & Geolocation
+- **Clustering:**
+    - **Implementation:** Client-side clustering (Google Maps Flutter plugin).
+    - **Logic:** Aggregates pins dynamically based on zoom level.
 - **Filtering:**
-    - **By Ownership:** For registered users, toggle between viewing all stores vs. only stores associated with their currently held benefits. This filter is hidden for guest users.
-    - **By Category:** Filter stores by their `category_tag` (e.g., "Restaurant", "Retail").
+    - **"My Yuutai Only" Mode:** Strictly hides all pins for stores where the user does not have an *Active* benefit.
+    - **Cluster & Filter Interaction:** The cluster count must dynamically update to reflect the filtered state (e.g., a cluster of 50 becomes a cluster of 2 if only 2 are owned).
+- **Search:**
+    - **Scope:** **Local Inventory Only**. Searches strictly against the `stores` table in Supabase.
+    - **Result:** Does *not* query Google Places API for missing stores. If a store is not in the DB, it does not exist in the app ecosystem.
+- **Guest Mode:**
+    - **Goal:** Volume/Discovery demonstration.
+    - **Interaction:** Browsing allowed. Clicking a specific store pin (e.g., "Skylark") opens a Call-to-Action (CTA): *"Register to manage your coupons for Skylark and never miss an expiry date."*
 
-### 2.3. Authentication
-- **Standard Login:** Email and password authentication.
-- **Social Login:** Sign-in with Google and Apple for simplified access.
-- **Guest Mode:** Users can use the app without an account. In guest mode, users have read-only access to browse map data. Account registration is required to manage personal benefits.
+### 2.3. Notifications (Server-Side Authority)
+- **Architecture:** Supabase Edge Functions + Firebase Cloud Messaging (FCM).
+- **Trigger:** Scheduled Cron Job (Daily).
+- **Timezone:** **Strictly JST (Japan Standard Time)**. All expiration logic assumes Japanese business days.
+- **Offline handling:**
+    - System accepts that offline users might receive "False Positive" reminders if they used a coupon offline but haven't synced.
+    - "Used" status updates done offline will stop future notifications once connectivity is restored and sync occurs.
+- **Rules:**
+    - User configurable days (e.g., 30 days, 7 days, 1 day before).
+    - Sent to *all* logged-in devices.
 
-### 2.4. Notifications
-- **Expiration Reminders:** Schedule local notifications to remind users about expiring benefits.
-- **Configurable Timing:** Users can select multiple reminder timings (e.g., 30 days before, 7 days before, on the day) and set a custom day for notifications.
+### 2.4. Data Administration (Master Data)
+- **Strategy:** Manual Curation.
+- **Pipeline:**
+    1.  User reports missing store via external form (Google Form).
+    2.  Developer verifies data.
+    3.  Developer inserts data via SQL scripts to `stores`/`companies` tables.
+- **Constraint:** No in-app "Add Store" UI for V1.
 
-## 3. Architecture & Guiding Principles
+## 3. Technical Architecture
 
-- **Tech Stack:**
-  - **Framework:** Flutter
-  - **State Management:** Riverpod
-  - **Backend:** Supabase (Auth, PostgreSQL, Edge Functions)
-  - **Mapping:** Google Maps Platform
-  - **Modeling:** Freezed
+### 3.1. Tech Stack
+- **Frontend:** Flutter (Sorts: Riverpod, Freezed, GoRouter).
+- **Backend:** Supabase (PostgreSQL, Auth, Edge Functions, Storage).
+- **Maps:** Google Maps Platform (Flutter SDK).
+- **Notifications:** FCM (Firebase Cloud Messaging).
 
-- **Architecture:**
-  - Adhere strictly to **Clean Architecture** principles (Data, Domain, Presentation layers).
-  - Use the **Repository Pattern** to abstract data sources.
+### 3.2. Database Schema Refinements
+*(Specific field requirements based on decisions)*
+- **`users_yuutai` Table:**
+    - `status` (Text): `active`, `used`, `expired` - The source of truth for filtering.
+    - `benefit_detail` (Text): The user's manual ledger.
+    - `folder_id` (UUID, nullable): References `folders.id` for organization.
+- **`folders` Table:**
+    - `id` (UUID, PK): Unique folder identifier.
+    - `user_id` (UUID, FK): References `auth.users`.
+    - `name` (Text): User-defined folder name.
+    - `sort_order` (Integer): Manual ordering of folders.
+- **`stores` Table:**
+    - No real-time proxying. Static lat/lng coordinates required.
 
-- **Development Rules & Limitations:**
-  - **Supabase-Only Persistence:** All user-specific application data **must** be stored in Supabase. Do **not** use local databases like SQLite or Drift for user data.
-  - **Manual Calculations:** Business logic for benefit value/quantity deduction will **not** be implemented automatically. This is managed by the user manually editing text fields.
-  - **Manual Status Flow:** A benefit's status (`active` -> `used`) must be changed explicitly by user action (e.g., tapping a "Mark as Used" button).
-  - タスクを開始と言ったら’IMPROVEMENTS.md’を参照して自走して
-  - ’IMPROVEMENTS.md’の内容を定期的に確認して、タスクを追加する
-  - ナビゲーションアイテムのラベルは不要
-  
+### 3.3. Development Guidelines
+- **Offline First (Read:** Cached data via Riverpod/Drift (if needed) or simple in-memory caching. Sync on connect.
+- **Strict Typing:** All data models generated via `freezed`.
+- **Linting:** strict analysis options enabled.
 
-## 4. Database Schema (Supabase)
-
-### public.companies (Master Data)
-- `id` (int8, PK): Auto-increment.
-- `name` (text): Company name.
-- `stock_code` (text): Stock ticker symbol.
-- `official_url` (text): URL to official site.
-- `logo_url` (text): URL to company logo.
-
-### public.stores (Map Data)
-- `id` (int8, PK): Auto-increment.
-- `company_id` (int8, FK): Links to `companies`.
-- `store_brand` (text): Store brand name.
-- `name` (text): Store name.
-- `address` (text): Store address.
-- `lat` / `lng` (float8): Coordinates.
-- `geog` (geography): PostGIS location data.
-- `category_tag` (text): Filtering tag.
-
-### public.users_yuutai (User Holdings)
-- `id` (int8, PK): Auto-increment.
-- `user_id` (uuid, FK): Links to `auth.users`.
-- `company_id` (int8, FK, Nullable): Links to `companies`.
-- `company_name` (text): Display name (manual input or from master).
-- `benefit_detail` (text): **Free-text memo** for managing remaining balance/value.
-- `notes` (text, nullable): General-purpose user notes.
-- `expiry_date` (date, nullable): Expiration date.
-- `status` (text): `active`, `used`, `expired`. Corresponds to the `BenefitStatus` enum in Dart.
-- `alert_enabled` (bool): Notification toggle.
-- `notify_days_before` (int[], nullable): An array of integers representing the days before expiry to send a notification.
-
-## 5. Project Structure
-```text
-flutter_stock/
-├── lib/
-│   ├── app/                  # App-wide configurations (routing, theme)
-│   ├── core/                 # Core utilities (notifications, validators)
-│   ├── data/                 # Data layer (Repositories, Supabase client)
-│   ├── domain/               # Domain layer (Entities, Repository interfaces)
-│   ├── features/             # Feature modules (by feature)
-│   └── main.dart             # Entry point
-├── supabase/                 # Supabase migrations and edge functions
-├── test/                     # Unit and widget tests
-├── IMPROVEMENTS.md           # Task backlog and improvement plan
-└── GEMINI.md                 # This file
-```
+## 4. Immediate Roadmap (V1)
+1.  ✅ **Refine List UI:** Implement "Active" vs "History" toggle based on `status`.
+2.  ⏳ **Map Filter Logic:** Implement strict "Owned" filtering with client-side cluster updates.
+3.  ⏳ **Notification Backend:** Deploy Supabase Edge Function for JST-based daily checks.
+4.  ⏳ **Guest CTA:** Implement the refined "Sign-up" sheet when Guests click pins.
+5.  ✅ **Folder System:** Users can organize coupons into folders (create/rename/delete).
+6.  ⏳ **Folder Assignment:** Add folder selector to coupon edit page.
+7.  ⏳ **Folder Filtering:** Filter home list by selected folder from drawer.

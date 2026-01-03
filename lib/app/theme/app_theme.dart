@@ -217,21 +217,21 @@ class AppTheme {
   // Convenience getters for backward compatibility
   static Color secondaryTextColor(BuildContext context) {
     return Theme.of(context).extension<AppColors>()?.secondaryText 
-+      ?? AppColors.light.secondaryText;
+        ?? AppColors.light.secondaryText;
   }
 
   static Color benefitChipBackgroundColor(BuildContext context) {
     return Theme.of(context).extension<AppColors>()?.benefitChipBackground 
-+      ?? AppColors.light.benefitChipBackground;
+        ?? AppColors.light.benefitChipBackground;
   }
 
   static Color dividerColor(BuildContext context) {
-    return Theme.of(context).extension<AppColors>()?  .divider 
-+      ?? AppColors.light.divider;
+    return Theme.of(context).extension<AppColors>()?.divider 
+        ?? AppColors.light.divider;
   }
 
   static Color placeholderColor(BuildContext context) {
     return Theme.of(context).extension<AppColors>()?.placeholder 
-+      ?? AppColors.light.placeholder;
+        ?? AppColors.light.placeholder;
   }
 }
