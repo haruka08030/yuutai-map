@@ -17,9 +17,6 @@ class FolderRepositorySupabase implements FolderRepository {
 
   @override
   Stream<List<Folder>> watchFolders() {
-    if (_user == null) {
-  @override
-  Stream<List<Folder>> watchFolders() {
     final user = _user;
     if (user == null) {
       return Stream.value([]);
@@ -31,6 +28,7 @@ class FolderRepositorySupabase implements FolderRepository {
         .order('sort_order')
         .map(_rowsToEntities);
   }
+  @override
   Future<List<Folder>> getFolders() async {
     final user = _user;
     if (user == null) {
@@ -44,6 +42,7 @@ class FolderRepositorySupabase implements FolderRepository {
     return _rowsToEntities(rows);
   }
 
+  @override
   Future<void> createFolder(String name) async {
     final user = _user;
     if (user == null) {
@@ -65,7 +64,7 @@ class FolderRepositorySupabase implements FolderRepository {
       'sort_order': maxOrder + 1,
     });
   }
-  }
+
 
   @override
   Future<void> updateFolder(String id, String name, int sortOrder) async {
