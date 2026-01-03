@@ -10,9 +10,6 @@ class StoreRepository {
   Future<List<Store>> getStores({
     String? brandId,
     String? companyId,
-  Future<List<Store>> getStores({
-    String? brandId,
-    String? companyId,
     List<String>? companyIds,
     List<String>? categories,
   }) async {
@@ -21,11 +18,13 @@ class StoreRepository {
     if (brandId != null) {
       query = query.eq('store_brand', brandId);
     }
+    
     // Merge companyId and companyIds into a single filter
     final allCompanyIds = <String>[
       if (companyId != null) companyId,
       if (companyIds != null) ...companyIds,
     ];
+    
     if (allCompanyIds.isNotEmpty) {
       if (allCompanyIds.length == 1) {
         query = query.eq('company_id', allCompanyIds.first);
@@ -33,23 +32,7 @@ class StoreRepository {
         query = query.filter('company_id', 'in', allCompanyIds);
       }
     }
-    if (categories != null && categories.isNotEmpty) {
-      query = query.filter('category_tag', 'in', categories);
-    }
-  }
-    List<String>? categories,
-  }) async {
-    var query = _client.from('stores').select('id, name, lat, lng');
-
-    if (brandId != null) {
-      query = query.eq('store_brand', brandId);
-    }
-    if (companyId != null) {
-      query = query.eq('company_id', companyId);
-    }
-    if (companyIds != null && companyIds.isNotEmpty) {
-      query = query.filter('company_id', 'in', companyIds);
-    }
+    
     if (categories != null && categories.isNotEmpty) {
       query = query.filter('category_tag', 'in', categories);
     }

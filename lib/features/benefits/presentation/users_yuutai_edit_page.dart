@@ -412,16 +412,9 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                      subtitle: Text(selectedFolder == null
                          ? '未分類' 
                          : selectedFolder.name),
-                  
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('フォルダ'),
-                    subtitle: Text(_selectedFolderId == null 
-                        ? '未分類' 
-                        : selectedFolder.name),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
-                      final result = await showDialog<bool, String?>(
+                      final result = await showDialog<(bool, String?)>(
                         context: context,
                         builder: (ctx) => SimpleDialog(
                           title: const Text('フォルダを選択'),
