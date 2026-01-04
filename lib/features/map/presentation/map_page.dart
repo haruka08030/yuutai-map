@@ -1,12 +1,18 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
+import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart'
+    hide Cluster, ClusterManager;
+
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -17,6 +23,73 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   final Completer<GoogleMapController> _mapController = Completer();
+  late ClusterManager<Place> _clusterManager;
+  Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    _clusterManager = _initClusterManager();
+    super.initState();
+  }
+
+  ClusterManager<Place> _initClusterManager() {
+    return ClusterManager<Place>(
+      [],
+      _updateMarkers,
+      markerBuilder: (cluster) async {
+        return Marker(
+          markerId: MarkerId(cluster.getId()),
+          position: cluster.location,
+          onTap: () {},
+          icon: await _getMarkerBitmap(cluster.isMultiple ? 125 : 75,
+              text: cluster.isMultiple ? cluster.count.toString() : null),
+        );
+      },
+    );
+  }
+
+  void _updateMarkers(Set<Marker> markers) {
+    setState(() {
+      _markers = markers;
+    });
+  }
+
+  Future<BitmapDescriptor> _getMarkerBitmap(int size, {String? text}) async {
+    if (kIsWeb) size = (size / 2).round();
+
+    final pictureRecorder = PictureRecorder();
+    final canvas = Canvas(pictureRecorder);
+    final paint1 = Paint()..color = Colors.orange;
+    final paint2 = Paint()..color = Colors.white;
+
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2.0, paint1);
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2.2, paint2);
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2.8, paint1);
+
+    if (text != null) {
+      final textPainter = TextPainter(textDirection: TextDirection.ltr);
+      textPainter.text = TextSpan(
+        text: text,
+        style: TextStyle(
+            fontSize: size / 3,
+            color: Colors.white,
+            fontWeight: FontWeight.normal),
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+            size / 2 - textPainter.width / 2, size / 2 - textPainter.height / 2),
+      );
+    }
+
+    final img = await pictureRecorder.endRecording().toImage(size, size);
+    // ignore: cast_nullable_to_non_nullable
+    final data = await img.toByteData(format: ImageByteFormat.png) as ByteData;
+
+    // ignore: deprecated_member_use
+    return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+  }
 
   Future<void> _showFilterSheet(MapState currentState) async {
     bool tempShowAll = currentState.showAllStores;
@@ -122,6 +195,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     return mapStateAsync.when(
       data: (state) {
+        _clusterManager.setItems(state.items);
         return Scaffold(
           body: GoogleMap(
             mapType: MapType.normal,
@@ -132,12 +206,15 @@ class _MapPageState extends ConsumerState<MapPage> {
               ),
               zoom: 14,
             ),
+            markers: _markers,
             onMapCreated: (GoogleMapController controller) {
               if (!_mapController.isCompleted) {
                 _mapController.complete(controller);
               }
+              _clusterManager.setMapId(controller.mapId);
             },
-            markers: state.markers,
+            onCameraMove: (position) => _clusterManager.onCameraMove(position),
+            onCameraIdle: () => _clusterManager.updateMap(),
             myLocationEnabled: true,
             myLocationButtonEnabled: false, // Disable default button
           ),

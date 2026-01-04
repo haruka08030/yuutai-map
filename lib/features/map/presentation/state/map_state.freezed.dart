@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MapState {
-  Set<Marker> get markers => throw _privateConstructorUsedError;
+  List<Place> get items => throw _privateConstructorUsedError;
   Position get currentPosition => throw _privateConstructorUsedError;
   List<String> get availableCategories => throw _privateConstructorUsedError;
   bool get showAllStores => throw _privateConstructorUsedError;
@@ -37,7 +37,7 @@ abstract class $MapStateCopyWith<$Res> {
       _$MapStateCopyWithImpl<$Res, MapState>;
   @useResult
   $Res call({
-    Set<Marker> markers,
+    List<Place> items,
     Position currentPosition,
     List<String> availableCategories,
     bool showAllStores,
@@ -61,7 +61,7 @@ class _$MapStateCopyWithImpl<$Res, $Val extends MapState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? markers = null,
+    Object? items = null,
     Object? currentPosition = null,
     Object? availableCategories = null,
     Object? showAllStores = null,
@@ -70,10 +70,10 @@ class _$MapStateCopyWithImpl<$Res, $Val extends MapState>
   }) {
     return _then(
       _value.copyWith(
-            markers: null == markers
-                ? _value.markers
-                : markers // ignore: cast_nullable_to_non_nullable
-                      as Set<Marker>,
+            items: null == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<Place>,
             currentPosition: null == currentPosition
                 ? _value.currentPosition
                 : currentPosition // ignore: cast_nullable_to_non_nullable
@@ -110,7 +110,7 @@ abstract class _$$MapStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    Set<Marker> markers,
+    List<Place> items,
     Position currentPosition,
     List<String> availableCategories,
     bool showAllStores,
@@ -133,7 +133,7 @@ class __$$MapStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? markers = null,
+    Object? items = null,
     Object? currentPosition = null,
     Object? availableCategories = null,
     Object? showAllStores = null,
@@ -142,10 +142,10 @@ class __$$MapStateImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$MapStateImpl(
-        markers: null == markers
-            ? _value._markers
-            : markers // ignore: cast_nullable_to_non_nullable
-                  as Set<Marker>,
+        items: null == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<Place>,
         currentPosition: null == currentPosition
             ? _value.currentPosition
             : currentPosition // ignore: cast_nullable_to_non_nullable
@@ -175,22 +175,22 @@ class __$$MapStateImplCopyWithImpl<$Res>
 
 class _$MapStateImpl implements _MapState {
   const _$MapStateImpl({
-    required final Set<Marker> markers,
+    required final List<Place> items,
     required this.currentPosition,
     required final List<String> availableCategories,
     required this.showAllStores,
     required final Set<String> selectedCategories,
     this.isGuest = false,
-  }) : _markers = markers,
+  }) : _items = items,
        _availableCategories = availableCategories,
        _selectedCategories = selectedCategories;
 
-  final Set<Marker> _markers;
+  final List<Place> _items;
   @override
-  Set<Marker> get markers {
-    if (_markers is EqualUnmodifiableSetView) return _markers;
+  List<Place> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableSetView(_markers);
+    return EqualUnmodifiableListView(_items);
   }
 
   @override
@@ -221,7 +221,7 @@ class _$MapStateImpl implements _MapState {
 
   @override
   String toString() {
-    return 'MapState(markers: $markers, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, isGuest: $isGuest)';
+    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, isGuest: $isGuest)';
   }
 
   @override
@@ -229,7 +229,7 @@ class _$MapStateImpl implements _MapState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MapStateImpl &&
-            const DeepCollectionEquality().equals(other._markers, _markers) &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.currentPosition, currentPosition) ||
                 other.currentPosition == currentPosition) &&
             const DeepCollectionEquality().equals(
@@ -248,7 +248,7 @@ class _$MapStateImpl implements _MapState {
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    const DeepCollectionEquality().hash(_markers),
+    const DeepCollectionEquality().hash(_items),
     currentPosition,
     const DeepCollectionEquality().hash(_availableCategories),
     showAllStores,
@@ -267,7 +267,7 @@ class _$MapStateImpl implements _MapState {
 
 abstract class _MapState implements MapState {
   const factory _MapState({
-    required final Set<Marker> markers,
+    required final List<Place> items,
     required final Position currentPosition,
     required final List<String> availableCategories,
     required final bool showAllStores,
@@ -276,7 +276,7 @@ abstract class _MapState implements MapState {
   }) = _$MapStateImpl;
 
   @override
-  Set<Marker> get markers;
+  List<Place> get items;
   @override
   Position get currentPosition;
   @override
