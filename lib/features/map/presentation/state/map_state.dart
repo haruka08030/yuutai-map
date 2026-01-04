@@ -1,13 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_stock/features/map/presentation/state/place.dart';
 
 part 'map_state.freezed.dart';
 
 @freezed
 class MapState with _$MapState {
   const factory MapState({
-    required Set<Marker> markers,
+    required List<Place> items,
     required Position currentPosition,
     required List<String> availableCategories,
     required bool showAllStores,

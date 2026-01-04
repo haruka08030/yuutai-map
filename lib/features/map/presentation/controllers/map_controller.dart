@@ -5,6 +5,7 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
+import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -21,7 +22,7 @@ class MapController extends AsyncNotifier<MapState> {
     final availableCategories = await _fetchAvailableCategories();
 
     final initialState = MapState(
-      markers: const {},
+      items: const [],
       currentPosition: currentPosition,
       availableCategories: availableCategories,
       showAllStores: isGuest, // Default to all stores for guests
@@ -29,12 +30,12 @@ class MapController extends AsyncNotifier<MapState> {
       isGuest: isGuest,
     );
 
-    // Fetch initial markers and update state
-    final markers = await _fetchMarkers(
+    // Fetch initial items and update state
+    final items = await _fetchItems(
       showAllStores: initialState.showAllStores,
       selectedCategories: initialState.selectedCategories,
     );
-    return initialState.copyWith(markers: markers);
+    return initialState.copyWith(items: items);
   }
 
   Future<Position> _determinePosition() async {
@@ -67,21 +68,20 @@ class MapController extends AsyncNotifier<MapState> {
     return storeRepo.getAvailableCategories();
   }
 
-  Future<Set<Marker>> _fetchMarkers({
+  Future<List<Place>> _fetchItems({
     required bool showAllStores,
     required Set<String> selectedCategories,
   }) async {
     final storeRepo = ref.read(storeRepositoryProvider);
-    final Set<Marker> markers = {};
+    final List<Place> items = [];
 
     if (showAllStores) {
       final stores =
           await storeRepo.getStores(categories: selectedCategories.toList());
       for (final store in stores) {
-        markers.add(Marker(
-          markerId: MarkerId(store.id.toString()),
-          position: LatLng(store.latitude, store.longitude),
-          infoWindow: InfoWindow(title: store.name),
+        items.add(Place(
+          name: store.name,
+          latLng: LatLng(store.latitude, store.longitude),
         ));
       }
     } else {
@@ -94,16 +94,15 @@ class MapController extends AsyncNotifier<MapState> {
             categories: selectedCategories.toList(),
           );
           for (final store in stores) {
-            markers.add(Marker(
-              markerId: MarkerId(store.id.toString()),
-              position: LatLng(store.latitude, store.longitude),
-              infoWindow: InfoWindow(title: store.name),
+            items.add(Place(
+              name: store.name,
+              latLng: LatLng(store.latitude, store.longitude),
             ));
           }
         }
       }
     }
-    return markers;
+    return items;
   }
 
   Future<void> applyFilters({
@@ -115,12 +114,12 @@ class MapController extends AsyncNotifier<MapState> {
     state = const AsyncLoading<MapState>().copyWithPrevious(AsyncData(oldState));
 
     try {
-      final markers = await _fetchMarkers(
+      final items = await _fetchItems(
         showAllStores: showAllStores,
         selectedCategories: selectedCategories,
       );
       state = AsyncData(oldState.copyWith(
-        markers: markers,
+        items: items,
         showAllStores: showAllStores,
         selectedCategories: selectedCategories,
       ));
