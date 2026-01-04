@@ -92,13 +92,10 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
   }
 
   @override
-  Future<void> softDelete(int id, {bool scheduleReminders = true}) async {
+  Future<void> delete(int id, {bool scheduleReminders = true}) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
-    // Actually delete as per new schema, or maybe just delete row?
-    // GEMINI.md says "Status: active, used, expired". No "deleted"?
-    // But repository interface says softDelete. Let's delete the row for now as per previous impl.
     await _supabase
         .from(_tableName)
         .delete()
