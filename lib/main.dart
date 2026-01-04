@@ -15,19 +15,25 @@ Future<void> main() async {
   tz.initializeTimeZones();
   await dotenv.load(fileName: ".env");
   await initializeDateFormatting('ja_JP');
-  await NotificationService.instance.initialize();
+  // await NotificationService.instance.initialize(); // Will be initialized via Provider
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  final sharedPreferences = await SharedPreferences.getInstance(); // Init SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+    ],
+  );
+
+  await container.read(notificationServiceProvider).initialize();
 
   runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(sharedPreferences), // Override provider
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: const MyApp(),
     ),
   );
