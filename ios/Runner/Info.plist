@@ -4,6 +4,8 @@
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>地図上でお近くの店舗を表示するために、位置情報へのアクセスを許可してください。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>カメラを使用して優待券の写真を撮り、内容を自動入力するために使用します。</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>LSApplicationCategoryType</key>

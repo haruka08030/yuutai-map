@@ -8,6 +8,8 @@ import 'package:flutter_stock/app/routing/slide_right_route.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class UsersYuutaiEditPage extends ConsumerStatefulWidget {
   const UsersYuutaiEditPage({super.key, this.existing});
@@ -312,6 +314,35 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
     }
   }
 
+  Future<void> _handleOcr() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) {
+      return;
+    }
+
+    final textRecognizer = TextRecognizer();
+    final recognizedText =
+        await textRecognizer.processImage(InputImage.fromFilePath(image.path));
+    await textRecognizer.close();
+
+    setState(() {
+      _benefitContentCtl.text = recognizedText.text;
+    });
+
+    // Simple date parsing
+    final dateRegex = RegExp(r'(\d{4})年(\d{1,2})月(\d{1,2})日');
+    final match = dateRegex.firstMatch(recognizedText.text);
+    if (match != null) {
+      final year = int.parse(match.group(1)!);
+      final month = int.parse(match.group(2)!);
+      final day = int.parse(match.group(3)!);
+      setState(() {
+        _expireOn = DateTime(year, month, day);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -350,10 +381,14 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _benefitContentCtl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: '優待内容',
               hintText: '例: 3000円分の割引券',
               isDense: true,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.camera_alt),
+                onPressed: _handleOcr,
+              ),
             ),
           ),
           const SizedBox(height: 12),
