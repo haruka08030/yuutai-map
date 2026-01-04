@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
+import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
-import 'package:flutter_stock/features/map/data/store_repository.dart';
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -17,118 +16,12 @@ class MapPage extends ConsumerStatefulWidget {
 }
 
 class _MapPageState extends ConsumerState<MapPage> {
-  final Completer<GoogleMapController> _controller = Completer();
-  Set<Marker> _markers = {};
-  Position? _currentPosition;
-  bool _isLoading = true;
-  String? _errorMessage;
+  final Completer<GoogleMapController> _mapController = Completer();
 
-  // Filter state
-  bool _showAllStores = false;
-  Set<String> _selectedCategories = {};
-
-  List<String> _availableCategories = [];
-
-  @override
-  void initState() {
-    super.initState();
-    final isGuest = ref.read(isGuestProvider);
-    if (isGuest) {
-      _showAllStores = true;
-    }
-    _init();
-  }
-
-  Future<void> _init() async {
-    try {
-      setState(() => _isLoading = true);
-      await _determinePosition();
-      await _fetchAvailableCategories();
-      await _fetchStores();
-    } catch (e) {
-      setState(() => _errorMessage = e.toString());
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Future<void> _fetchAvailableCategories() async {
-    final storeRepo = ref.read(storeRepositoryProvider);
-    final categories = await storeRepo.getAvailableCategories();
-    if (mounted) {
-      setState(() => _availableCategories = categories);
-    }
-  }
-
-  Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    _currentPosition = await Geolocator.getCurrentPosition();
-  }
-
-  Future<void> _fetchStores() async {
-    final storeRepo = ref.read(storeRepositoryProvider);
-    final Set<Marker> markers = {};
-
-    if (_showAllStores) {
-      final stores =
-          await storeRepo.getStores(categories: _selectedCategories.toList());
-      for (final store in stores) {
-        markers.add(Marker(
-          markerId: MarkerId(store.id.toString()),
-          position: LatLng(store.latitude, store.longitude),
-          infoWindow: InfoWindow(title: store.name),
-        ));
-      }
-    } else {
-      final benefits =
-          await ref.read(usersYuutaiRepositoryProvider).getActive();
-      for (final benefit in benefits) {
-        if (benefit.companyId != null) {
-          final stores = await storeRepo.getStores(
-            companyId: benefit.companyId.toString(),
-            categories: _selectedCategories.toList(),
-          );
-          for (final store in stores) {
-            markers.add(Marker(
-              markerId: MarkerId(store.id.toString()),
-              position: LatLng(store.latitude, store.longitude),
-              infoWindow: InfoWindow(title: store.name),
-            ));
-          }
-        }
-      }
-    }
-
-    if (mounted) {
-      setState(() => _markers = markers);
-    }
-  }
-
-  Future<void> _showFilterSheet() async {
-    bool tempShowAll = _showAllStores;
-    final Set<String> tempSelectedCategories = Set<String>.from(_selectedCategories);
+  Future<void> _showFilterSheet(MapState currentState) async {
+    bool tempShowAll = currentState.showAllStores;
+    final Set<String> tempSelectedCategories =
+        Set<String>.from(currentState.selectedCategories);
 
     await showModalBottomSheet(
       context: context,
@@ -139,7 +32,6 @@ class _MapPageState extends ConsumerState<MapPage> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) {
-            final isGuest = ref.watch(isGuestProvider);
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -150,7 +42,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                     Text('フィルター',
                         style: Theme.of(context).textTheme.titleLarge),
                     const Divider(height: 24),
-                    if (!isGuest)
+                    if (!currentState.isGuest)
                       SwitchListTile(
                         title: const Text('すべての店舗を表示'),
                         subtitle: const Text('オフにすると保有優待の店舗のみ表示'),
@@ -164,7 +56,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: _availableCategories.map((category) {
+                      children: currentState.availableCategories.map((category) {
                         return FilterChip(
                           label: Text(category),
                           selected: tempSelectedCategories.contains(category),
@@ -185,11 +77,10 @@ class _MapPageState extends ConsumerState<MapPage> {
                       width: double.infinity,
                       child: FilledButton(
                         onPressed: () {
-                          setState(() {
-                            _showAllStores = tempShowAll;
-                            _selectedCategories = tempSelectedCategories;
-                          });
-                          _fetchStores();
+                          ref.read(mapControllerProvider.notifier).applyFilters(
+                                showAllStores: tempShowAll,
+                                selectedCategories: tempSelectedCategories,
+                              );
                           Navigator.of(dialogContext).pop();
                         },
                         child: const Text('適用'),
@@ -205,21 +96,17 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
-  Future<void> _goToCurrentLocation() async {
-    final GoogleMapController controller = await _controller.future;
+  Future<void> _goToCurrentLocation(Position currentPosition) async {
+    final GoogleMapController controller = await _mapController.future;
     try {
-      await _determinePosition();
-      if (_currentPosition != null && mounted) {
-        await controller.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(
-                  _currentPosition!.latitude, _currentPosition!.longitude),
-              zoom: 14.5,
-            ),
+      await controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(currentPosition.latitude, currentPosition.longitude),
+            zoom: 14.5,
           ),
-        );
-      }
+        ),
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -231,56 +118,60 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const AppLoadingIndicator();
-    }
+    final mapStateAsync = ref.watch(mapControllerProvider);
 
-    if (_errorMessage != null) {
-      return Center(
+    return mapStateAsync.when(
+      data: (state) {
+        return Scaffold(
+          body: GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                state.currentPosition.latitude,
+                state.currentPosition.longitude,
+              ),
+              zoom: 14,
+            ),
+            onMapCreated: (GoogleMapController controller) {
+              if (!_mapController.isCompleted) {
+                _mapController.complete(controller);
+              }
+            },
+            markers: state.markers,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false, // Disable default button
+          ),
+          floatingActionButton: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton.small(
+                heroTag: 'location_fab',
+                onPressed: () => _goToCurrentLocation(state.currentPosition),
+                child: const Icon(Icons.my_location),
+              ),
+              const SizedBox(height: 16),
+              FloatingActionButton(
+                heroTag: 'filter_fab',
+                onPressed: () => _showFilterSheet(state),
+                child: const Icon(Icons.filter_list),
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () => const AppLoadingIndicator(),
+      error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_errorMessage!),
+            Text('エラーが発生しました\n${error.toString()}'),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _init, child: const Text('リトライ'))
+            ElevatedButton(
+              onPressed: () => ref.invalidate(mapControllerProvider),
+              child: const Text('リトライ'),
+            )
           ],
         ),
-      );
-    }
-
-    return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(
-          target: _currentPosition != null
-              ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-              : const LatLng(35.6895, 139.6917), // Default to Tokyo
-          zoom: 14,
-        ),
-        onMapCreated: (GoogleMapController controller) {
-          if (!_controller.isCompleted) {
-            _controller.complete(controller);
-          }
-        },
-        markers: _markers,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false, // Disable default button
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'location_fab',
-            onPressed: _goToCurrentLocation,
-            child: const Icon(Icons.my_location),
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            heroTag: 'filter_fab',
-            onPressed: _showFilterSheet,
-            child: const Icon(Icons.filter_list),
-          ),
-        ],
       ),
     );
   }

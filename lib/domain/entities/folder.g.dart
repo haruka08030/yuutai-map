@@ -6,7 +6,7 @@ part of 'folder.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_Folder _$FolderFromJson(Map<String, dynamic> json) => _Folder(
+_$FolderImpl _$$FolderImplFromJson(Map<String, dynamic> json) => _$FolderImpl(
   id: json['id'] as String?,
   userId: json['user_id'] as String?,
   name: json['name'] as String,
@@ -16,10 +16,11 @@ _Folder _$FolderFromJson(Map<String, dynamic> json) => _Folder(
       : DateTime.parse(json['created_at'] as String),
 );
 
-Map<String, dynamic> _$FolderToJson(_Folder instance) => <String, dynamic>{
-  'id': instance.id,
-  'user_id': instance.userId,
-  'name': instance.name,
-  'sort_order': instance.sortOrder,
-  'created_at': instance.createdAt?.toIso8601String(),
-};
+Map<String, dynamic> _$$FolderImplToJson(_$FolderImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'user_id': instance.userId,
+      'name': instance.name,
+      'sort_order': instance.sortOrder,
+      'created_at': instance.createdAt?.toIso8601String(),
+    };

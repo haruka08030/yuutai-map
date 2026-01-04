@@ -7,6 +7,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 
 final usersYuutaiRepositoryProvider = Provider<UsersYuutaiRepository>((ref) {
   return UsersYuutaiRepositorySupabase(
+    ref,
     ref.watch(supabaseProvider),
   );
 });

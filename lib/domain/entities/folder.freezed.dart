@@ -1,5 +1,5 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,281 +9,259 @@ part of 'folder.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// dart format off
 T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
+
+Folder _$FolderFromJson(Map<String, dynamic> json) {
+  return _Folder.fromJson(json);
+}
 
 /// @nodoc
 mixin _$Folder {
-
- String? get id;@JsonKey(name: 'user_id') String? get userId; String get name;@JsonKey(name: 'sort_order') int get sortOrder;@JsonKey(name: 'created_at') DateTime? get createdAt;
-/// Create a copy of Folder
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$FolderCopyWith<Folder> get copyWith => _$FolderCopyWithImpl<Folder>(this as Folder, _$identity);
+  String? get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'user_id')
+  String? get userId => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sort_order')
+  int get sortOrder => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Folder to a JSON map.
-  Map<String, dynamic> toJson();
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Folder&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,userId,name,sortOrder,createdAt);
-
-@override
-String toString() {
-  return 'Folder(id: $id, userId: $userId, name: $name, sortOrder: $sortOrder, createdAt: $createdAt)';
-}
-
-
+  /// Create a copy of Folder
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $FolderCopyWith<Folder> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract mixin class $FolderCopyWith<$Res>  {
-  factory $FolderCopyWith(Folder value, $Res Function(Folder) _then) = _$FolderCopyWithImpl;
-@useResult
-$Res call({
- String? id,@JsonKey(name: 'user_id') String? userId, String name,@JsonKey(name: 'sort_order') int sortOrder,@JsonKey(name: 'created_at') DateTime? createdAt
-});
-
-
-
-
+abstract class $FolderCopyWith<$Res> {
+  factory $FolderCopyWith(Folder value, $Res Function(Folder) then) =
+      _$FolderCopyWithImpl<$Res, Folder>;
+  @useResult
+  $Res call({
+    String? id,
+    @JsonKey(name: 'user_id') String? userId,
+    String name,
+    @JsonKey(name: 'sort_order') int sortOrder,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+  });
 }
+
 /// @nodoc
-class _$FolderCopyWithImpl<$Res>
+class _$FolderCopyWithImpl<$Res, $Val extends Folder>
     implements $FolderCopyWith<$Res> {
-  _$FolderCopyWithImpl(this._self, this._then);
+  _$FolderCopyWithImpl(this._value, this._then);
 
-  final Folder _self;
-  final $Res Function(Folder) _then;
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
-/// Create a copy of Folder
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? userId = freezed,Object? name = null,Object? sortOrder = null,Object? createdAt = freezed,}) {
-  return _then(_self.copyWith(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
-as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
-  ));
+  /// Create a copy of Folder
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? userId = freezed,
+    Object? name = null,
+    Object? sortOrder = null,
+    Object? createdAt = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: freezed == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            sortOrder: null == sortOrder
+                ? _value.sortOrder
+                : sortOrder // ignore: cast_nullable_to_non_nullable
+                      as int,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+          )
+          as $Val,
+    );
+  }
 }
 
+/// @nodoc
+abstract class _$$FolderImplCopyWith<$Res> implements $FolderCopyWith<$Res> {
+  factory _$$FolderImplCopyWith(
+    _$FolderImpl value,
+    $Res Function(_$FolderImpl) then,
+  ) = __$$FolderImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String? id,
+    @JsonKey(name: 'user_id') String? userId,
+    String name,
+    @JsonKey(name: 'sort_order') int sortOrder,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+  });
 }
 
+/// @nodoc
+class __$$FolderImplCopyWithImpl<$Res>
+    extends _$FolderCopyWithImpl<$Res, _$FolderImpl>
+    implements _$$FolderImplCopyWith<$Res> {
+  __$$FolderImplCopyWithImpl(
+    _$FolderImpl _value,
+    $Res Function(_$FolderImpl) _then,
+  ) : super(_value, _then);
 
-/// Adds pattern-matching-related methods to [Folder].
-extension FolderPatterns on Folder {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Folder value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _Folder() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Folder value)  $default,){
-final _that = this;
-switch (_that) {
-case _Folder():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Folder value)?  $default,){
-final _that = this;
-switch (_that) {
-case _Folder() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'user_id')  String? userId,  String name, @JsonKey(name: 'sort_order')  int sortOrder, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _Folder() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.sortOrder,_that.createdAt);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id, @JsonKey(name: 'user_id')  String? userId,  String name, @JsonKey(name: 'sort_order')  int sortOrder, @JsonKey(name: 'created_at')  DateTime? createdAt)  $default,) {final _that = this;
-switch (_that) {
-case _Folder():
-return $default(_that.id,_that.userId,_that.name,_that.sortOrder,_that.createdAt);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id, @JsonKey(name: 'user_id')  String? userId,  String name, @JsonKey(name: 'sort_order')  int sortOrder, @JsonKey(name: 'created_at')  DateTime? createdAt)?  $default,) {final _that = this;
-switch (_that) {
-case _Folder() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.sortOrder,_that.createdAt);case _:
-  return null;
-
-}
-}
-
+  /// Create a copy of Folder
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = freezed,
+    Object? userId = freezed,
+    Object? name = null,
+    Object? sortOrder = null,
+    Object? createdAt = freezed,
+  }) {
+    return _then(
+      _$FolderImpl(
+        id: freezed == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        sortOrder: null == sortOrder
+            ? _value.sortOrder
+            : sortOrder // ignore: cast_nullable_to_non_nullable
+                  as int,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+      ),
+    );
+  }
 }
 
 /// @nodoc
 @JsonSerializable()
+class _$FolderImpl extends _Folder {
+  const _$FolderImpl({
+    this.id,
+    @JsonKey(name: 'user_id') this.userId,
+    required this.name,
+    @JsonKey(name: 'sort_order') this.sortOrder = 0,
+    @JsonKey(name: 'created_at') this.createdAt,
+  }) : super._();
 
-class _Folder extends Folder {
-  const _Folder({this.id, @JsonKey(name: 'user_id') this.userId, required this.name, @JsonKey(name: 'sort_order') this.sortOrder = 0, @JsonKey(name: 'created_at') this.createdAt}): super._();
-  factory _Folder.fromJson(Map<String, dynamic> json) => _$FolderFromJson(json);
+  factory _$FolderImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FolderImplFromJson(json);
 
-@override final  String? id;
-@override@JsonKey(name: 'user_id') final  String? userId;
-@override final  String name;
-@override@JsonKey(name: 'sort_order') final  int sortOrder;
-@override@JsonKey(name: 'created_at') final  DateTime? createdAt;
+  @override
+  final String? id;
+  @override
+  @JsonKey(name: 'user_id')
+  final String? userId;
+  @override
+  final String name;
+  @override
+  @JsonKey(name: 'sort_order')
+  final int sortOrder;
+  @override
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
 
-/// Create a copy of Folder
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$FolderCopyWith<_Folder> get copyWith => __$FolderCopyWithImpl<_Folder>(this, _$identity);
+  @override
+  String toString() {
+    return 'Folder(id: $id, userId: $userId, name: $name, sortOrder: $sortOrder, createdAt: $createdAt)';
+  }
 
-@override
-Map<String, dynamic> toJson() {
-  return _$FolderToJson(this, );
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FolderImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, userId, name, sortOrder, createdAt);
+
+  /// Create a copy of Folder
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FolderImplCopyWith<_$FolderImpl> get copyWith =>
+      __$$FolderImplCopyWithImpl<_$FolderImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$FolderImplToJson(this);
+  }
 }
 
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Folder&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+abstract class _Folder extends Folder {
+  const factory _Folder({
+    final String? id,
+    @JsonKey(name: 'user_id') final String? userId,
+    required final String name,
+    @JsonKey(name: 'sort_order') final int sortOrder,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
+  }) = _$FolderImpl;
+  const _Folder._() : super._();
+
+  factory _Folder.fromJson(Map<String, dynamic> json) = _$FolderImpl.fromJson;
+
+  @override
+  String? get id;
+  @override
+  @JsonKey(name: 'user_id')
+  String? get userId;
+  @override
+  String get name;
+  @override
+  @JsonKey(name: 'sort_order')
+  int get sortOrder;
+  @override
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+
+  /// Create a copy of Folder
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FolderImplCopyWith<_$FolderImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,id,userId,name,sortOrder,createdAt);
-
-@override
-String toString() {
-  return 'Folder(id: $id, userId: $userId, name: $name, sortOrder: $sortOrder, createdAt: $createdAt)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$FolderCopyWith<$Res> implements $FolderCopyWith<$Res> {
-  factory _$FolderCopyWith(_Folder value, $Res Function(_Folder) _then) = __$FolderCopyWithImpl;
-@override @useResult
-$Res call({
- String? id,@JsonKey(name: 'user_id') String? userId, String name,@JsonKey(name: 'sort_order') int sortOrder,@JsonKey(name: 'created_at') DateTime? createdAt
-});
-
-
-
-
-}
-/// @nodoc
-class __$FolderCopyWithImpl<$Res>
-    implements _$FolderCopyWith<$Res> {
-  __$FolderCopyWithImpl(this._self, this._then);
-
-  final _Folder _self;
-  final $Res Function(_Folder) _then;
-
-/// Create a copy of Folder
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? userId = freezed,Object? name = null,Object? sortOrder = null,Object? createdAt = freezed,}) {
-  return _then(_Folder(
-id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
-as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
-  ));
-}
-
-
-}
-
-// dart format on
