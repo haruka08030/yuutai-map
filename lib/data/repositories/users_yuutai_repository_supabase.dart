@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
 import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart' as domain;
@@ -5,7 +6,7 @@ import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
-  UsersYuutaiRepositorySupabase(this._supabase) {
+  UsersYuutaiRepositorySupabase(this._ref, this._supabase) {
     _supabase.auth.onAuthStateChange.listen((data) {
       final session = data.session;
       if (session != null) {
@@ -14,6 +15,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     });
   }
 
+  final Ref _ref;
   final SupabaseClient _supabase;
   User? _user;
 
@@ -70,7 +72,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     final inserted = domain.UsersYuutai.fromJson(res);
 
     if (scheduleReminders) {
-      await NotificationService.instance.reschedulePresetReminders(inserted);
+      await _ref.read(notificationServiceProvider).reschedulePresetReminders(inserted);
     }
   }
 
@@ -85,7 +87,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     }).eq('id', id).eq('user_id', _user!.id);
 
     if (status == BenefitStatus.used && scheduleReminders) {
-      await NotificationService.instance.cancelAllFor(id.toString());
+      await _ref.read(notificationServiceProvider).cancelAllFor(id.toString());
     }
   }
 
@@ -103,7 +105,7 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
         .eq('id', id)
         .eq('user_id', _user!.id);
     if (scheduleReminders) {
-      await NotificationService.instance.cancelAllFor(id.toString());
+      await _ref.read(notificationServiceProvider).cancelAllFor(id.toString());
     }
   }
 

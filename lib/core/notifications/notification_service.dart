@@ -1,13 +1,18 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-class NotificationService {
-  static final NotificationService instance = NotificationService._();
-  NotificationService._();
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return NotificationService();
+});
 
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+class NotificationService {
+  NotificationService();
+
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     const AndroidInitializationSettings android = AndroidInitializationSettings(
