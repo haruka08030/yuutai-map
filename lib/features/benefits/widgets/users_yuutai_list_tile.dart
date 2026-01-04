@@ -75,7 +75,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
               );
               if (ok == true && benefit.id != null) {
                 await HapticFeedback.heavyImpact();
-                await repo.softDelete(benefit.id!);
+                await repo.delete(benefit.id!);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -136,7 +136,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
               );
               if (ok == true && benefit.id != null) {
                 await HapticFeedback.heavyImpact();
-                await repo.softDelete(benefit.id!);
+                await repo.delete(benefit.id!);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
