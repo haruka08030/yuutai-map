@@ -8,6 +8,6 @@ abstract class UsersYuutaiRepository {
   Future<void> upsert(UsersYuutai benefit, {bool scheduleReminders = true});
   Future<void> updateStatus(int id, BenefitStatus status,
       {bool scheduleReminders = true});
-  Future<void> softDelete(int id, {bool scheduleReminders = true});
+  Future<void> delete(int id, {bool scheduleReminders = true});
   Future<List<UsersYuutai>> search(String query);
 }

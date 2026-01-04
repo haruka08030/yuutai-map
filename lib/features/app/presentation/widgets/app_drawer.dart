@@ -23,9 +23,10 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
           FoldersSection(
             selectedFolderId: selectedFolderId,
             onFolderSelected: onFolderSelected,
@@ -44,8 +45,9 @@ class AppDrawer extends ConsumerWidget {
             title: const Text('使用済み'),
             onTap: onHistoryTapped,
           ),
-        ],
-      ),
+          ],
+        ),
+      ), // Corrected: Added missing closing parenthesis for SafeArea
     );
   }
 }

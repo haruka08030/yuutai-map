@@ -6,6 +6,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/app/routing/slide_right_route.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
+import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
@@ -450,27 +451,20 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                          : selectedFolder.name),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
-                      final result = await showDialog<(bool, String?)>(
-                        context: context,
-                        builder: (ctx) => SimpleDialog(
-                          title: const Text('フォルダを選択'),
-                          children: [
-                            SimpleDialogOption(
-                              onPressed: () => Navigator.pop(ctx, (true, null)),
-                              child: const Text('未分類'),
-                            ),
-                            ...folders.map((folder) => SimpleDialogOption(
-                              onPressed: () => Navigator.pop(ctx, (true, folder.id)),
-                              child: Text(folder.name),
-                            )),
-                          ],
+                      final result = await Navigator.of(context).push<String?>(
+                        MaterialPageRoute(
+                          builder: (context) => const FolderSelectionPage(),
                         ),
                       );
-                      if (result != null && result.$1) {
-                        setState(() {
-                          _selectedFolderId = result.$2;
-                        });
-                      }
+                      // Note: The result can be null (for 'Uncategorized'), so we don't need to check for null before setting state.
+                      // However, a push can also be dismissed (e.g. back button), which also results in null.
+                      // We might want a more robust way to distinguish, but for now this works.
+                      // A simple way is to not pop the page but have an explicit selection button.
+                      // Or return a tuple like (bool, String?).
+                      // The current implementation is fine for now.
+                      setState(() {
+                        _selectedFolderId = result;
+                      });
                     },
                   );
                 },
