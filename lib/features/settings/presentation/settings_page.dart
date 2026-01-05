@@ -6,6 +6,7 @@ import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
+import 'package:flutter_stock/features/folders/presentation/folder_management_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -76,11 +77,23 @@ class AccountInfoPage extends ConsumerWidget {
           children: [
             Text('メールアドレス: ${user.email}'),
             const SizedBox(height: 24),
+            ListTile(
+              title: const Text('フォルダ管理'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const FolderManagementPage()),
+                );
+              },
+            ),
             SwitchListTile(
               title: const Text('ダークモード'),
               value: themeMode == ThemeMode.dark,
               onChanged: (isOn) {
-                ref.read(themeProvider.notifier).setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
+                ref
+                    .read(themeProvider.notifier)
+                    .setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
               },
             ),
             const SizedBox(height: 24), // Add spacing
