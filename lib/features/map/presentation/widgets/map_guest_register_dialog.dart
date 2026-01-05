@@ -22,6 +22,8 @@ class MapGuestRegisterDialog extends StatelessWidget {
               '「$storeName」の優待を管理するには、アカウント登録が必要です。',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
             ),
             const SizedBox(height: 24),
             SizedBox(
