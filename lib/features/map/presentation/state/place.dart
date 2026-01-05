@@ -6,11 +6,13 @@ class Place with ClusterItem {
     required this.name,
     required this.latLng,
     this.isClosed = false,
+    this.category,
   });
 
   final String name;
   final bool isClosed;
   final LatLng latLng;
+  final String? category;
 
   @override
   LatLng get location => latLng;

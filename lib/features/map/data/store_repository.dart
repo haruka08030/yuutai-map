@@ -13,7 +13,7 @@ class StoreRepository {
     List<String>? companyIds,
     List<String>? categories,
   }) async {
-    var query = _client.from('stores').select('id, name, lat, lng');
+    var query = _client.from('stores').select('id, name, lat, lng, category_tag');
 
     if (brandId != null) {
       query = query.eq('store_brand', brandId);

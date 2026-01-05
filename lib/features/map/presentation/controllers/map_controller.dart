@@ -37,10 +37,10 @@ class MapController extends AsyncNotifier<MapState> {
       items: const [],
       currentPosition: currentPosition,
       availableCategories: availableCategories,
-      showAllStores: isGuest, // Default to all stores for guests
+      showAllStores: isGuest,
       selectedCategories: const {},
-      folderId: selectedFolderId,
       isGuest: isGuest,
+      folderId: selectedFolderId,
     );
 
     // Fetch initial items and update state
@@ -97,6 +97,7 @@ class MapController extends AsyncNotifier<MapState> {
         items.add(Place(
           name: store.name,
           latLng: LatLng(store.latitude, store.longitude),
+          category: store.category,
         ));
       }
     } else {
@@ -115,6 +116,7 @@ class MapController extends AsyncNotifier<MapState> {
             items.add(Place(
               name: store.name,
               latLng: LatLng(store.latitude, store.longitude),
+              category: store.category,
             ));
           }
         }

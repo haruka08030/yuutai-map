@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/features/auth/presentation/login_page.dart';
-import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
-import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
+import 'package:flutter_stock/app/theme/theme_provider.dart';
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_management_page.dart';
 
 class SettingsPage extends ConsumerWidget {
