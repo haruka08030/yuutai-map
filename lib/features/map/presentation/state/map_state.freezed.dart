@@ -22,6 +22,7 @@ mixin _$MapState {
   List<String> get availableCategories => throw _privateConstructorUsedError;
   bool get showAllStores => throw _privateConstructorUsedError;
   Set<String> get selectedCategories => throw _privateConstructorUsedError;
+  String? get folderId => throw _privateConstructorUsedError;
   bool get isGuest => throw _privateConstructorUsedError;
 
   /// Create a copy of MapState
@@ -42,6 +43,7 @@ abstract class $MapStateCopyWith<$Res> {
     List<String> availableCategories,
     bool showAllStores,
     Set<String> selectedCategories,
+    String? folderId,
     bool isGuest,
   });
 }
@@ -66,6 +68,7 @@ class _$MapStateCopyWithImpl<$Res, $Val extends MapState>
     Object? availableCategories = null,
     Object? showAllStores = null,
     Object? selectedCategories = null,
+    Object? folderId = freezed,
     Object? isGuest = null,
   }) {
     return _then(
@@ -90,6 +93,10 @@ class _$MapStateCopyWithImpl<$Res, $Val extends MapState>
                 ? _value.selectedCategories
                 : selectedCategories // ignore: cast_nullable_to_non_nullable
                       as Set<String>,
+            folderId: freezed == folderId
+                ? _value.folderId
+                : folderId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             isGuest: null == isGuest
                 ? _value.isGuest
                 : isGuest // ignore: cast_nullable_to_non_nullable
@@ -115,6 +122,7 @@ abstract class _$$MapStateImplCopyWith<$Res>
     List<String> availableCategories,
     bool showAllStores,
     Set<String> selectedCategories,
+    String? folderId,
     bool isGuest,
   });
 }
@@ -138,6 +146,7 @@ class __$$MapStateImplCopyWithImpl<$Res>
     Object? availableCategories = null,
     Object? showAllStores = null,
     Object? selectedCategories = null,
+    Object? folderId = freezed,
     Object? isGuest = null,
   }) {
     return _then(
@@ -162,6 +171,10 @@ class __$$MapStateImplCopyWithImpl<$Res>
             ? _value._selectedCategories
             : selectedCategories // ignore: cast_nullable_to_non_nullable
                   as Set<String>,
+        folderId: freezed == folderId
+            ? _value.folderId
+            : folderId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         isGuest: null == isGuest
             ? _value.isGuest
             : isGuest // ignore: cast_nullable_to_non_nullable
@@ -180,6 +193,7 @@ class _$MapStateImpl implements _MapState {
     required final List<String> availableCategories,
     required this.showAllStores,
     required final Set<String> selectedCategories,
+    this.folderId,
     this.isGuest = false,
   }) : _items = items,
        _availableCategories = availableCategories,
@@ -216,12 +230,14 @@ class _$MapStateImpl implements _MapState {
   }
 
   @override
+  final String? folderId;
+  @override
   @JsonKey()
   final bool isGuest;
 
   @override
   String toString() {
-    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, isGuest: $isGuest)';
+    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, folderId: $folderId, isGuest: $isGuest)';
   }
 
   @override
@@ -242,6 +258,8 @@ class _$MapStateImpl implements _MapState {
               other._selectedCategories,
               _selectedCategories,
             ) &&
+            (identical(other.folderId, folderId) ||
+                other.folderId == folderId) &&
             (identical(other.isGuest, isGuest) || other.isGuest == isGuest));
   }
 
@@ -253,6 +271,7 @@ class _$MapStateImpl implements _MapState {
     const DeepCollectionEquality().hash(_availableCategories),
     showAllStores,
     const DeepCollectionEquality().hash(_selectedCategories),
+    folderId,
     isGuest,
   );
 
@@ -272,6 +291,7 @@ abstract class _MapState implements MapState {
     required final List<String> availableCategories,
     required final bool showAllStores,
     required final Set<String> selectedCategories,
+    final String? folderId,
     final bool isGuest,
   }) = _$MapStateImpl;
 
@@ -285,6 +305,8 @@ abstract class _MapState implements MapState {
   bool get showAllStores;
   @override
   Set<String> get selectedCategories;
+  @override
+  String? get folderId;
   @override
   bool get isGuest;
 

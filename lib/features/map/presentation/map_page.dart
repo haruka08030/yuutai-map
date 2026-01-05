@@ -201,6 +201,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           ref.read(mapControllerProvider.notifier).applyFilters(
                                 showAllStores: tempShowAll,
                                 selectedCategories: tempSelectedCategories,
+                                folderId: currentState.folderId,
                               );
                           Navigator.of(dialogContext).pop();
                         },

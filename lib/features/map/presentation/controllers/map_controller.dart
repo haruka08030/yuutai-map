@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
@@ -17,7 +18,18 @@ final mapControllerProvider =
 class MapController extends AsyncNotifier<MapState> {
   @override
   Future<MapState> build() async {
+    ref.listen<String?>(selectedFolderIdProvider, (prev, next) {
+      if (state.value != null && prev != next) {
+        applyFilters(
+          showAllStores: state.value!.showAllStores,
+          selectedCategories: state.value!.selectedCategories,
+          folderId: next,
+        );
+      }
+    });
+
     final isGuest = ref.watch(isGuestProvider);
+    final selectedFolderId = ref.watch(selectedFolderIdProvider);
     final currentPosition = await _determinePosition();
     final availableCategories = await _fetchAvailableCategories();
 
@@ -27,6 +39,7 @@ class MapController extends AsyncNotifier<MapState> {
       availableCategories: availableCategories,
       showAllStores: isGuest, // Default to all stores for guests
       selectedCategories: const {},
+      folderId: selectedFolderId,
       isGuest: isGuest,
     );
 
@@ -34,6 +47,7 @@ class MapController extends AsyncNotifier<MapState> {
     final items = await _fetchItems(
       showAllStores: initialState.showAllStores,
       selectedCategories: initialState.selectedCategories,
+      folderId: initialState.folderId,
     );
     return initialState.copyWith(items: items);
   }
@@ -71,6 +85,7 @@ class MapController extends AsyncNotifier<MapState> {
   Future<List<Place>> _fetchItems({
     required bool showAllStores,
     required Set<String> selectedCategories,
+    String? folderId,
   }) async {
     final storeRepo = ref.read(storeRepositoryProvider);
     final List<Place> items = [];
@@ -85,8 +100,11 @@ class MapController extends AsyncNotifier<MapState> {
         ));
       }
     } else {
-      final benefits =
+      var benefits =
           await ref.read(usersYuutaiRepositoryProvider).getActive();
+      if (folderId != null) {
+        benefits = benefits.where((b) => b.folderId == folderId).toList();
+      }
       for (final benefit in benefits) {
         if (benefit.companyId != null) {
           final stores = await storeRepo.getStores(
@@ -108,6 +126,7 @@ class MapController extends AsyncNotifier<MapState> {
   Future<void> applyFilters({
     required bool showAllStores,
     required Set<String> selectedCategories,
+    String? folderId,
   }) async {
     final oldState = await future;
     // ignore: invalid_use_of_internal_member
@@ -117,11 +136,13 @@ class MapController extends AsyncNotifier<MapState> {
       final items = await _fetchItems(
         showAllStores: showAllStores,
         selectedCategories: selectedCategories,
+        folderId: folderId,
       );
       state = AsyncData(oldState.copyWith(
         items: items,
         showAllStores: showAllStores,
         selectedCategories: selectedCategories,
+        folderId: folderId,
       ));
     } catch (e, st) {
       // ignore: invalid_use_of_internal_member
