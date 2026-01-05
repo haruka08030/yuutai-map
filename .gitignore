@@ -18,7 +18,7 @@ migrate_working_dir/
 *.iws
 .idea/
 
-
+# Flutter/Dart specific
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -27,6 +27,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+coverage/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+*.g.dart
+*.freezed.dart
 
 # Symbolication related
 app.*.symbols
@@ -53,5 +58,6 @@ data_importer/serviceAccountKey.json
 android/local.properties
 **/local.properties
 
+# Gemini
 GEMINI.md
 IMPROVEMENTS.md

@@ -5,6 +5,9 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_management_page.dart';
+import 'package:url_launcher/url_launcher.dart'; // Add url_launcher
+
+const String _privacyPolicyUrl = 'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -48,6 +51,16 @@ class AuthOptionsPage extends StatelessWidget {
               },
               child: const Text('新規登録'),
             ),
+            const SizedBox(height: 24), // Add spacing for privacy policy
+            // Privacy Policy button for guest users
+            TextButton(
+              onPressed: () async {
+                if (!await launchUrl(Uri.parse(_privacyPolicyUrl))) {
+                  // Handle error if URL cannot be launched
+                }
+              },
+              child: const Text('プライバシーポリシー'),
+            ),
           ],
         ),
       ),
@@ -85,6 +98,16 @@ class AccountInfoPage extends ConsumerWidget {
                 ref
                     .read(themeProvider.notifier)
                     .setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
+              },
+            ),
+            // Add Privacy Policy button here
+            ListTile(
+              title: const Text('プライバシーポリシー'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                if (!await launchUrl(Uri.parse(_privacyPolicyUrl))) {
+                  // Handle error if URL cannot be launched
+                }
               },
             ),
             const SizedBox(height: 24), // Add spacing
