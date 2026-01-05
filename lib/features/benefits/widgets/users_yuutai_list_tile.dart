@@ -23,6 +23,13 @@ class UsersYuutaiListTile extends ConsumerWidget {
     return DateFormat('yyyy/MM/dd').format(date);
   }
 
+  int _calculateDaysRemaining(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final expireDate = DateTime(date.year, date.month, date.day);
+    return expireDate.difference(today).inDays;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(usersYuutaiRepositoryProvider);
@@ -194,15 +201,53 @@ class UsersYuutaiListTile extends ConsumerWidget {
                         // 期限日
                         if (benefit.expiryDate != null) ...[
                           const SizedBox(height: 5),
-                          Text(
-                            _formatExpireDate(benefit.expiryDate!),
-                            style: TextStyle(
-                              color: AppTheme.secondaryTextColor(context), // Themed color
-                              fontSize: 14,
-                              decoration: isUsed
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
+                          Builder(
+                            builder: (context) {
+                              final daysRemaining = _calculateDaysRemaining(benefit.expiryDate!);
+                              final appColors = Theme.of(context).extension<AppColors>();
+                              
+                              Color color = AppTheme.secondaryTextColor(context);
+                              IconData? icon;
+                              
+                              if (!isUsed) {
+                                if (daysRemaining <= 7) {
+                                  color = appColors?.expiringUrgent ?? Colors.red;
+                                  icon = Icons.error_outline;
+                                } else if (daysRemaining <= 30) {
+                                  color = appColors?.expiringSoon ?? Colors.orange;
+                                  icon = Icons.warning_amber_rounded;
+                                }
+                              }
+
+                              return Row(
+                                children: [
+                                  if (icon != null) ...[
+                                    Icon(icon, size: 14, color: color),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  Text(
+                                    _formatExpireDate(benefit.expiryDate!),
+                                    style: TextStyle(
+                                      color: color,
+                                      fontSize: 14,
+                                      fontWeight: icon != null ? FontWeight.bold : FontWeight.normal,
+                                      decoration: isUsed ? TextDecoration.lineThrough : null,
+                                    ),
+                                  ),
+                                  if (!isUsed && daysRemaining >= 0) ...[
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      daysRemaining == 0 ? '本日まで' : 'あと$daysRemaining日',
+                                      style: TextStyle(
+                                        color: color,
+                                        fontSize: 12,
+                                        fontWeight: icon != null ? FontWeight.bold : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
                           ),
                         ],
                         // 優待内容
