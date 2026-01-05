@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_stock/features/app/presentation/main_page.dart';
-import 'package:flutter_stock/features/auth/presentation/login_page.dart';
-import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
 
 class InitialAuthChoicePage extends StatelessWidget {
   const InitialAuthChoicePage({super.key});

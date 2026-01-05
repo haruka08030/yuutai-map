@@ -10,6 +10,7 @@ abstract class Store with _$Store {
     required String name,
     @JsonKey(name: 'lat') required double latitude,
     @JsonKey(name: 'lng') required double longitude,
+    String? category,
   }) = _Store;
 
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);

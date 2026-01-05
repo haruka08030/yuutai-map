@@ -1,4 +1,4 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Define the Notifier class
 class SelectedFolderIdNotifier extends Notifier<String?> {
