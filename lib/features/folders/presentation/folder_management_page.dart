@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/app/widgets/empty_state_view.dart';
 import 'package:flutter_stock/domain/entities/folder.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 
@@ -18,29 +19,40 @@ class FolderManagementPage extends ConsumerWidget {
         title: const Text('Folder Management'),
       ),
       body: foldersAsync.when(
-        data: (folders) => ListView.builder(
-          itemCount: folders.length,
-          itemBuilder: (context, index) {
-            final folder = folders[index];
-            return ListTile(
-              title: Text(folder.name),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () => _showEditFolderDialog(context, ref, folder),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () =>
-                        _showDeleteConfirmDialog(context, ref, folder),
-                  ),
-                ],
-              ),
+        data: (folders) {
+          if (folders.isEmpty) {
+            return EmptyStateView(
+              icon: Icons.folder_open_outlined,
+              title: 'フォルダがありません',
+              subtitle: '優待を整理するためのフォルダを作成しましょう',
+              actionLabel: 'フォルダを作成',
+              onActionPressed: () => _showAddFolderDialog(context, ref),
             );
-          },
-        ),
+          }
+          return ListView.builder(
+            itemCount: folders.length,
+            itemBuilder: (context, index) {
+              final folder = folders[index];
+              return ListTile(
+                title: Text(folder.name),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => _showEditFolderDialog(context, ref, folder),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () =>
+                          _showDeleteConfirmDialog(context, ref, folder),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
         loading: () => const AppLoadingIndicator(),
         error: (err, stack) => Center(
           child: Text('Error: $err'),
