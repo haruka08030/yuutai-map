@@ -40,7 +40,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   Color _getCategoryColor(String? category) {
     if (category == null || !_categoryColors.containsKey(category)) {
-      return Colors.orange; // Default color if no category or category not found
+      return Colors.grey; // Default color for undefined categories
     }
     return _categoryColors[category]!;
   }

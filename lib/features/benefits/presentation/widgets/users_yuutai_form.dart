@@ -34,7 +34,7 @@ class UsersYuutaiForm extends ConsumerWidget {
               hintText: '例: 〇〇ホールディングス',
               suffixIcon: Icon(Icons.search),
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'タイトルを入力してください' : null,
+            validator: (v) => (v == null || v.trim().isEmpty) ? '企業名を入力してください' : null,
             readOnly: true,
             onTap: () async {
               final company = await context.push<String>('/company/search');
@@ -204,87 +204,91 @@ class UsersYuutaiForm extends ConsumerWidget {
     bool tempCustomEnabled = controller.customDayEnabled;
     final tempCustomCtl = TextEditingController(text: controller.customDayValue);
 
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setDialogState(() {
-                              tempSelectedDays.updateAll((key, value) => false);
-                              tempCustomEnabled = false;
-                              tempCustomCtl.clear();
-                            });
-                          },
-                          child: const Text('クリア'),
-                        ),
-                        FilledButton(
-                          onPressed: () {
-                            notifier.updateReminderSettings(tempSelectedDays, tempCustomEnabled, tempCustomCtl.text);
-                            Navigator.of(dialogContext).pop();
-                          },
-                          child: const Text('決定'),
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    ...tempSelectedDays.entries.map((entry) {
-                      return CheckboxListTile(
-                        title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
-                        value: entry.value,
-                        onChanged: (bool? value) {
-                          setDialogState(() {
-                            tempSelectedDays[entry.key] = value!;
-                          });
-                        },
-                      );
-                    }),
-                    CheckboxListTile(
-                      title: Row(
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              return SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('カスタム:'),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 60,
-                            child: TextFormField(
-                              controller: tempCustomCtl,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              textAlign: TextAlign.center,
-                              decoration: const InputDecoration(isDense: true),
-                              enabled: tempCustomEnabled,
-                            ),
+                          TextButton(
+                            onPressed: () {
+                              setDialogState(() {
+                                tempSelectedDays.updateAll((key, value) => false);
+                                tempCustomEnabled = false;
+                                tempCustomCtl.clear();
+                              });
+                            },
+                            child: const Text('クリア'),
                           ),
-                          const SizedBox(width: 8),
-                          const Text('日前'),
+                          FilledButton(
+                            onPressed: () {
+                              notifier.updateReminderSettings(tempSelectedDays, tempCustomEnabled, tempCustomCtl.text);
+                              Navigator.of(dialogContext).pop();
+                            },
+                            child: const Text('決定'),
+                          ),
                         ],
                       ),
-                      value: tempCustomEnabled,
-                      onChanged: (bool? value) {
-                        setDialogState(() {
-                          tempCustomEnabled = value!;
-                        });
-                      },
-                    ),
-                  ],
+                      const Divider(),
+                      ...tempSelectedDays.entries.map((entry) {
+                        return CheckboxListTile(
+                          title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
+                          value: entry.value,
+                          onChanged: (bool? value) {
+                            setDialogState(() {
+                              tempSelectedDays[entry.key] = value!;
+                            });
+                          },
+                        );
+                      }),
+                      CheckboxListTile(
+                        title: Row(
+                          children: [
+                            const Text('カスタム:'),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              width: 60,
+                              child: TextFormField(
+                                controller: tempCustomCtl,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(isDense: true),
+                                enabled: tempCustomEnabled,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('日前'),
+                          ],
+                        ),
+                        value: tempCustomEnabled,
+                        onChanged: (bool? value) {
+                          setDialogState(() {
+                            tempCustomEnabled = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      tempCustomCtl.dispose();
+    }
   }
 }

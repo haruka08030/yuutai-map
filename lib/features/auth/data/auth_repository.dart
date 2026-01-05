@@ -73,6 +73,13 @@ class AuthRepository {
     await _client.auth.signOut();
   }
 
+  Future<void> deleteAccount() async {
+    final response = await _client.functions.invoke('delete-user');
+    if (response.status != 200) {
+      throw Exception(response.data['error'] ?? 'Failed to delete account');
+    }
+  }
+
   User? get currentUser => _client.auth.currentUser;
 }
 

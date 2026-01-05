@@ -16,9 +16,17 @@ class OcrService {
     }
 
     final textRecognizer = TextRecognizer();
-    final recognizedText =
-        await textRecognizer.processImage(InputImage.fromFilePath(image.path));
-    await textRecognizer.close();
+    RecognizedText recognizedText;
+    try {
+      recognizedText =
+          await textRecognizer.processImage(InputImage.fromFilePath(image.path));
+    } catch (e) {
+      await textRecognizer.close();
+      // Handle error appropriately (log, rethrow, return null, etc.)
+      rethrow;
+    } finally {
+      await textRecognizer.close();
+    }
 
     final text = recognizedText.text;
     DateTime? expiryDate;
@@ -30,7 +38,14 @@ class OcrService {
       final year = int.parse(match.group(1)!);
       final month = int.parse(match.group(2)!);
       final day = int.parse(match.group(3)!);
-      expiryDate = DateTime(year, month, day);
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        try {
+          expiryDate = DateTime(year, month, day);
+        } catch (e) {
+          // Invalid date combination (e.g., Feb 30)
+          expiryDate = null;
+        }
+      }
     }
     return OcrResult(text, expiryDate);
   }

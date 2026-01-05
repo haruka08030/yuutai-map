@@ -23,13 +23,19 @@ class UsersYuutaiEditState with _$UsersYuutaiEditState {
 }
 
 final titleControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  return TextEditingController(text: arg?.companyName ?? '');
+  final controller = TextEditingController(text: arg?.companyName ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
 });
 final benefitContentControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  return TextEditingController(text: arg?.benefitDetail ?? '');
+  final controller = TextEditingController(text: arg?.benefitDetail ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
 });
 final notesControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  return TextEditingController(text: arg?.notes ?? '');
+  final controller = TextEditingController(text: arg?.notes ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
 });
 
 class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
@@ -51,6 +57,8 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
         } else {
           customEnabled = true;
           customValue = day.toString();
+          // Assuming only one custom day is supported for now.
+          break;
         }
       }
     }
@@ -73,11 +81,11 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     state = state.copyWith(selectedFolderId: id);
   }
 
-  void updateReminderSettings(Map<int, bool> predefined, bool customEnabled, String customValue) {
+  void updateReminderSettings(Map<int, bool> predefined, bool customDayEnabled, String customDayValue) {
     state = state.copyWith(
       selectedPredefinedDays: predefined,
-      customDayEnabled: customEnabled,
-      customDayValue: customValue,
+      customDayEnabled: customDayEnabled,
+      customDayValue: customDayValue,
     );
   }
 

@@ -60,8 +60,8 @@ class MapStatusBanner extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.close),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+                iconSize: 20,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
                 onPressed: onClose,
               )
             ],
