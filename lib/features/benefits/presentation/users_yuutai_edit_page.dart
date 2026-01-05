@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
-import 'package:flutter_stock/app/routing/slide_right_route.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
@@ -305,9 +305,7 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
   }
 
   Future<void> _openCompanySearchSheet() async {
-    final company = await Navigator.of(context).push<String>(
-      SlideRightRoute<String>(page: const CompanySearchPage()),
-    );
+    final company = await context.push<String>('/company/search');
     if (company != null) {
       setState(() {
         _titleCtl.text = company;
@@ -451,10 +449,8 @@ class _UsersYuutaiEditPageState extends ConsumerState<UsersYuutaiEditPage> {
                          : selectedFolder.name),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
-                      final result = await Navigator.of(context).push<String?>(
-                        MaterialPageRoute(
-                          builder: (context) => const FolderSelectionPage(),
-                        ),
+                      final result = await context.push<String?>(
+                        '/folders/select',
                       );
                       // Note: The result can be null (for 'Uncategorized'), so we don't need to check for null before setting state.
                       // However, a push can also be dismissed (e.g. back button), which also results in null.
