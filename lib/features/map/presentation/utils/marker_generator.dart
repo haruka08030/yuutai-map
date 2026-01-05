@@ -35,8 +35,10 @@ class MarkerGenerator {
     }
 
     final img = await pictureRecorder.endRecording().toImage(size, size);
-    // ignore: cast_nullable_to_non_nullable
-    final data = await img.toByteData(format: ImageByteFormat.png) as ByteData;
+    final data = await img.toByteData(format: ImageByteFormat.png);
+    if (data == null) {
+      throw Exception('Failed to convert image to byte data');
+    }
 
     // ignore: deprecated_member_use
     return BitmapDescriptor.fromBytes(data.buffer.asUint8List());

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/presentation/controllers/users_yuutai_edit_controller.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/users_yuutai_form.dart';
 
-class UsersYuutaiEditPage extends ConsumerWidget {
+class UsersYuutaiEditPage extends HookConsumerWidget {
   const UsersYuutaiEditPage({super.key, this.existing});
   final UsersYuutai? existing;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final formKey = GlobalKey<FormState>();
+    final formKey = useMemoized(() => GlobalKey<FormState>());
     final controller = ref.watch(usersYuutaiEditControllerProvider(existing));
     final notifier = ref.read(usersYuutaiEditControllerProvider(existing).notifier);
 
