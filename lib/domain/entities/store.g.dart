@@ -11,6 +11,7 @@ _$StoreImpl _$$StoreImplFromJson(Map<String, dynamic> json) => _$StoreImpl(
   name: json['name'] as String,
   latitude: (json['lat'] as num).toDouble(),
   longitude: (json['lng'] as num).toDouble(),
+  category: json['category'] as String?,
 );
 
 Map<String, dynamic> _$$StoreImplToJson(_$StoreImpl instance) =>
@@ -19,4 +20,5 @@ Map<String, dynamic> _$$StoreImplToJson(_$StoreImpl instance) =>
       'name': instance.name,
       'lat': instance.latitude,
       'lng': instance.longitude,
+      'category': instance.category,
     };

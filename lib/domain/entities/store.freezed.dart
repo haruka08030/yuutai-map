@@ -27,6 +27,7 @@ mixin _$Store {
   double get latitude => throw _privateConstructorUsedError;
   @JsonKey(name: 'lng')
   double get longitude => throw _privateConstructorUsedError;
+  String? get category => throw _privateConstructorUsedError;
 
   /// Serializes this Store to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $StoreCopyWith<$Res> {
     String name,
     @JsonKey(name: 'lat') double latitude,
     @JsonKey(name: 'lng') double longitude,
+    String? category,
   });
 }
 
@@ -69,6 +71,7 @@ class _$StoreCopyWithImpl<$Res, $Val extends Store>
     Object? name = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? category = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +91,10 @@ class _$StoreCopyWithImpl<$Res, $Val extends Store>
                 ? _value.longitude
                 : longitude // ignore: cast_nullable_to_non_nullable
                       as double,
+            category: freezed == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -107,6 +114,7 @@ abstract class _$$StoreImplCopyWith<$Res> implements $StoreCopyWith<$Res> {
     String name,
     @JsonKey(name: 'lat') double latitude,
     @JsonKey(name: 'lng') double longitude,
+    String? category,
   });
 }
 
@@ -128,6 +136,7 @@ class __$$StoreImplCopyWithImpl<$Res>
     Object? name = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? category = freezed,
   }) {
     return _then(
       _$StoreImpl(
@@ -147,6 +156,10 @@ class __$$StoreImplCopyWithImpl<$Res>
             ? _value.longitude
             : longitude // ignore: cast_nullable_to_non_nullable
                   as double,
+        category: freezed == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -160,6 +173,7 @@ class _$StoreImpl implements _Store {
     required this.name,
     @JsonKey(name: 'lat') required this.latitude,
     @JsonKey(name: 'lng') required this.longitude,
+    this.category,
   });
 
   factory _$StoreImpl.fromJson(Map<String, dynamic> json) =>
@@ -175,10 +189,12 @@ class _$StoreImpl implements _Store {
   @override
   @JsonKey(name: 'lng')
   final double longitude;
+  @override
+  final String? category;
 
   @override
   String toString() {
-    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude)';
+    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category)';
   }
 
   @override
@@ -191,12 +207,15 @@ class _$StoreImpl implements _Store {
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.longitude == longitude) &&
+            (identical(other.category, category) ||
+                other.category == category));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, latitude, longitude);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, latitude, longitude, category);
 
   /// Create a copy of Store
   /// with the given fields replaced by the non-null parameter values.
@@ -218,6 +237,7 @@ abstract class _Store implements Store {
     required final String name,
     @JsonKey(name: 'lat') required final double latitude,
     @JsonKey(name: 'lng') required final double longitude,
+    final String? category,
   }) = _$StoreImpl;
 
   factory _Store.fromJson(Map<String, dynamic> json) = _$StoreImpl.fromJson;
@@ -232,6 +252,8 @@ abstract class _Store implements Store {
   @override
   @JsonKey(name: 'lng')
   double get longitude;
+  @override
+  String? get category;
 
   /// Create a copy of Store
   /// with the given fields replaced by the non-null parameter values.
