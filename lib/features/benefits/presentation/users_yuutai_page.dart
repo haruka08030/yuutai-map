@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
-import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart'; // New Import
+import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/app/widgets/empty_state_view.dart';
 
 
 
@@ -53,40 +54,26 @@ class UsersYuutaiPage extends ConsumerWidget {
               }
 
               if (items.isEmpty) {
-                final cs = Theme.of(context).colorScheme;
-                final fg = cs.onSurface.withAlpha(165);
-                final sub = cs.onSurface.withAlpha(114);
-                
                 if (showHistory) {
-                   return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.history_toggle_off, size: 64, color: fg),
-                        const SizedBox(height: 12),
-                        Text('使用履歴がありません',
-                            style: TextStyle(fontSize: 16, color: fg)),
-                      ],
-                    ),
+                  return const EmptyStateView(
+                    icon: Icons.history_toggle_off,
+                    title: '使用履歴がありません',
+                    subtitle: '使用した優待はここに表示されます',
                   );
                 }
 
                 if (searchQuery.isNotEmpty) {
-                  return const Center(child: Text('該当する優待が見つかりません。'));
+                  return EmptyStateView(
+                    icon: Icons.search_off,
+                    title: '「$searchQuery」は見つかりませんでした',
+                    subtitle: '別のキーワードで試してみてください',
+                  );
                 }
-                
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.inbox_outlined, size: 64, color: fg),
-                      const SizedBox(height: 12),
-                      Text('優待がありません',
-                          style: TextStyle(fontSize: 16, color: fg)),
-                      const SizedBox(height: 4),
-                      Text('右下の + から追加できます', style: TextStyle(color: sub)),
-                    ],
-                  ),
+
+                return const EmptyStateView(
+                  icon: Icons.inbox_outlined,
+                  title: '優待を登録しよう！',
+                  subtitle: '右下の「＋」ボタンから追加できます',
                 );
               }
 
