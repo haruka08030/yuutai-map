@@ -9,9 +9,12 @@ import 'package:flutter_stock/features/map/presentation/controllers/map_controll
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_stock/features/auth/presentation/initial_auth_choice_page.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
+
 
 
 class MapPage extends ConsumerStatefulWidget {
@@ -25,6 +28,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   final Completer<GoogleMapController> _mapController = Completer();
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
+  bool _bannerDismissed = false;
 
   @override
   void initState() {
@@ -40,12 +44,63 @@ class _MapPageState extends ConsumerState<MapPage> {
         return Marker(
           markerId: MarkerId(cluster.getId()),
           position: cluster.location,
-          onTap: () {},
+          onTap: () => _onMarkerTapped(cluster),
           icon: await _getMarkerBitmap(cluster.isMultiple ? 125 : 75,
               text: cluster.isMultiple ? cluster.count.toString() : null),
         );
       },
     );
+  }
+
+  void _onMarkerTapped(Cluster<Place> cluster) async {
+    final isGuest = ref.read(isGuestProvider);
+    if (isGuest && !cluster.isMultiple) {
+      final storeName = cluster.items.first.name;
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        builder: (ctx) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '「$storeName」の優待を管理するには、アカウント登録が必要です。',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      child: const Text('登録・ログイン画面へ'),
+                      onPressed: () {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const InitialAuthChoicePage(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else if (cluster.isMultiple) {
+      final controller = await _mapController.future;
+      final currentZoom = await controller.getZoomLevel();
+      controller.animateCamera(
+        CameraUpdate.newLatLngZoom(cluster.location, currentZoom + 2),
+      );
+    }
   }
 
   void _updateMarkers(Set<Marker> markers) {
@@ -191,32 +246,114 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<MapState?>(mapControllerProvider.select((s) => s.value),
+        (previous, next) {
+      if (previous != null && next != null) {
+        if (previous.showAllStores && !next.showAllStores) {
+          // The user just switched from "all stores" to "my yuutai only"
+          setState(() {
+            _bannerDismissed = false;
+          });
+        }
+      }
+    });
     final mapStateAsync = ref.watch(mapControllerProvider);
 
     return mapStateAsync.when(
       data: (state) {
         _clusterManager.setItems(state.items);
         return Scaffold(
-          body: GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-              target: LatLng(
-                state.currentPosition.latitude,
-                state.currentPosition.longitude,
+body: Stack(
+            children: [
+              GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(
+                    state.currentPosition.latitude,
+                    state.currentPosition.longitude,
+                  ),
+                  zoom: 14,
+                ),
+                markers: _markers,
+                onMapCreated: (GoogleMapController controller) {
+                  if (!_mapController.isCompleted) {
+                    _mapController.complete(controller);
+                  }
+                  _clusterManager.setMapId(controller.mapId);
+                },
+                onCameraMove: (position) =>
+                    _clusterManager.onCameraMove(position),
+                onCameraIdle: () => _clusterManager.updateMap(),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false, // Disable default button
               ),
-              zoom: 14,
-            ),
-            markers: _markers,
-            onMapCreated: (GoogleMapController controller) {
-              if (!_mapController.isCompleted) {
-                _mapController.complete(controller);
-              }
-              _clusterManager.setMapId(controller.mapId);
-            },
-            onCameraMove: (position) => _clusterManager.onCameraMove(position),
-            onCameraIdle: () => _clusterManager.updateMap(),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false, // Disable default button
+              if (!state.showAllStores && !state.isGuest && !_bannerDismissed)
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 16,
+                  left: 16,
+                  right: 16,
+                  child: Material(
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer
+                            .withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              '保有優待の対象店舗のみ表示中です。',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              ref
+                                  .read(mapControllerProvider.notifier)
+                                  .applyFilters(
+                                    showAllStores: true,
+                                    selectedCategories:
+                                        state.selectedCategories,
+                                  );
+                            },
+                            child: const Text('すべて表示'),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() {
+                                _bannerDismissed = true;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           floatingActionButton: Column(
             mainAxisAlignment: MainAxisAlignment.end,
