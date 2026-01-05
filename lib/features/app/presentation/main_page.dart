@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
 import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
-
+import 'package:flutter_stock/features/app/providers/app_providers.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -20,8 +19,7 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
   String _searchQuery = '';
-  String? _selectedFolderId; // null means "All", specific ID means filter by folder
-  bool _showHistory = false; // Add this line
+  bool _showHistory = false;
   final _searchController = TextEditingController();
 
   @override
@@ -54,7 +52,6 @@ class _MainPageState extends ConsumerState<MainPage> {
         ),
       );
     } else {
-      // 地図タブではAppBarを非表示
       return null;
     }
   }
@@ -62,12 +59,13 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     final isGuest = ref.watch(isGuestProvider);
+    final selectedFolderId = ref.watch(selectedFolderIdProvider);
     final bool isLargeScreen = MediaQuery.of(context).size.width >= 600;
 
     final List<Widget> widgetOptions = <Widget>[
       UsersYuutaiPage(
         searchQuery: _searchQuery,
-        selectedFolderId: _selectedFolderId,
+        selectedFolderId: selectedFolderId,
         showHistory: _showHistory,
       ),
       const MapPage(),
@@ -75,7 +73,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     ];
 
     final FloatingActionButton? fab =
-        _selectedIndex == 0 && !isGuest // Only show FAB on the benefits page for non-guests
+        _selectedIndex == 0 && !isGuest
             ? FloatingActionButton(
                 onPressed: () {
                   context.push('/yuutai/add');
@@ -86,7 +84,6 @@ class _MainPageState extends ConsumerState<MainPage> {
             : null;
 
     if (isLargeScreen) {
-      // Build for large screens with NavigationRail
       return Scaffold(
         appBar: _buildAppBar(context, isLargeScreen),
         body: Row(
@@ -112,10 +109,10 @@ class _MainPageState extends ConsumerState<MainPage> {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: Stack( // Use Stack to position FAB on top of content
+              child: Stack(
                 children: [
                   IndexedStack(index: _selectedIndex, children: widgetOptions),
-                  if (fab != null) // Position FAB if it exists
+                  if (fab != null)
                     Positioned(
                       bottom: 16,
                       right: 16,
@@ -128,30 +125,29 @@ class _MainPageState extends ConsumerState<MainPage> {
         ),
       );
     } else {
-      // Build for small screens with BottomNavigationBar
       return Scaffold(
         appBar: _buildAppBar(context, isLargeScreen),
         drawer: AppDrawer(
-          selectedFolderId: _selectedFolderId,
+          selectedFolderId: selectedFolderId,
           onFolderSelected: (folderId) {
+            ref.read(selectedFolderIdProvider.notifier).setSelectedFolderId(folderId);
             setState(() {
-              _selectedFolderId = folderId;
               _showHistory = false;
               _selectedIndex = 0;
             });
             Navigator.pop(context);
           },
           onAllCouponsTapped: () {
+            ref.read(selectedFolderIdProvider.notifier).setSelectedFolderId(null);
             setState(() {
-              _selectedFolderId = null;
               _showHistory = false;
               _selectedIndex = 0;
             });
             Navigator.pop(context);
           },
           onHistoryTapped: () {
+            ref.read(selectedFolderIdProvider.notifier).setSelectedFolderId(null);
             setState(() {
-              _selectedFolderId = null;
               _showHistory = true;
               _selectedIndex = 0;
             });

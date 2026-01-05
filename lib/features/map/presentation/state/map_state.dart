@@ -12,6 +12,7 @@ class MapState with _$MapState {
     required List<String> availableCategories,
     required bool showAllStores,
     required Set<String> selectedCategories,
+    String? folderId,
     @Default(false) bool isGuest,
   }) = _MapState;
 }
