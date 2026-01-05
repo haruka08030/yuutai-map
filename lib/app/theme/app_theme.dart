@@ -23,6 +23,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.passwordMedium,
     required this.passwordStrong,
     required this.passwordIndicatorBackground,
+    required this.expiringSoon,
+    required this.expiringUrgent,
   });
 
   final Color secondaryText;
@@ -43,6 +45,8 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color passwordMedium;
   final Color passwordStrong;
   final Color passwordIndicatorBackground;
+  final Color expiringSoon;
+  final Color expiringUrgent;
 
   @override
   AppColors copyWith({
@@ -64,6 +68,8 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? passwordMedium,
     Color? passwordStrong,
     Color? passwordIndicatorBackground,
+    Color? expiringSoon,
+    Color? expiringUrgent,
   }) {
     return AppColors(
       secondaryText: secondaryText ?? this.secondaryText,
@@ -84,6 +90,8 @@ class AppColors extends ThemeExtension<AppColors> {
       passwordMedium: passwordMedium ?? this.passwordMedium,
       passwordStrong: passwordStrong ?? this.passwordStrong,
       passwordIndicatorBackground: passwordIndicatorBackground ?? this.passwordIndicatorBackground,
+      expiringSoon: expiringSoon ?? this.expiringSoon,
+      expiringUrgent: expiringUrgent ?? this.expiringUrgent,
     );
   }
 
@@ -111,6 +119,8 @@ class AppColors extends ThemeExtension<AppColors> {
       passwordMedium: Color.lerp(passwordMedium, other.passwordMedium, t)!,
       passwordStrong: Color.lerp(passwordStrong, other.passwordStrong, t)!,
       passwordIndicatorBackground: Color.lerp(passwordIndicatorBackground, other.passwordIndicatorBackground, t)!,
+      expiringSoon: Color.lerp(expiringSoon, other.expiringSoon, t)!,
+      expiringUrgent: Color.lerp(expiringUrgent, other.expiringUrgent, t)!,
     );
   }
 
@@ -134,6 +144,8 @@ class AppColors extends ThemeExtension<AppColors> {
     passwordMedium: Color(0xFFFF9800), // Orange
     passwordStrong: Color(0xFF4CAF50), // Green
     passwordIndicatorBackground: Color(0xFFE0E0E0),
+    expiringSoon: Color(0xFFFF9800), // Orange
+    expiringUrgent: Color(0xFFF44336), // Red
   );
 
   /// Dark theme colors
@@ -156,6 +168,8 @@ class AppColors extends ThemeExtension<AppColors> {
     passwordMedium: Color(0xFFFFB74D), // Lighter orange
     passwordStrong: Color(0xFF66BB6A), // Lighter green
     passwordIndicatorBackground: Color(0xFF424242),
+    expiringSoon: Color(0xFFFFB74D), // Orange
+    expiringUrgent: Color(0xFFEF5350), // Red
   );
 }
 

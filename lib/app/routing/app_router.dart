@@ -10,6 +10,8 @@ import 'package:flutter_stock/features/benefits/presentation/company_search_page
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_management_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
+import 'package:flutter_stock/features/map/presentation/store_detail_page.dart';
+import 'package:flutter_stock/features/map/presentation/state/place.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -67,6 +69,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final benefit = state.extra as UsersYuutai?;
           return UsersYuutaiEditPage(existing: benefit);
+        },
+      ),
+      GoRoute(
+        path: '/store/detail',
+        builder: (context, state) {
+          final place = state.extra as Place;
+          return StoreDetailPage(place: place);
         },
       ),
       GoRoute(
