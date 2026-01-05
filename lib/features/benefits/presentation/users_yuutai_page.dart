@@ -5,6 +5,9 @@ import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.d
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/widgets/empty_state_view.dart';
+import 'package:flutter_stock/app/widgets/app_error_view.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 
 
 
@@ -34,7 +37,10 @@ class UsersYuutaiPage extends ConsumerWidget {
               itemCount: 8,
               itemBuilder: (context, index) => const UsersYuutaiSkeletonTile(),
             ),
-            error: (err, stack) => Center(child: Text('エラー: $err')),
+            error: (err, stack) => AppErrorView(
+              message: AppException.from(err).message,
+              onRetry: () => ref.invalidate(activeUsersYuutaiProvider),
+            ),
             data: (data) {
               var items = data;
               
@@ -77,26 +83,105 @@ class UsersYuutaiPage extends ConsumerWidget {
                 );
               }
 
-              return ListView.separated(
-                itemCount: items.length,
-                separatorBuilder: (_, _) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Divider(height: 1, thickness: 0.5, color: AppTheme.dividerColor(context)),
-                ),
-                itemBuilder: (context, index) {
-                  final b = items[index];
-                  return UsersYuutaiListTile(
-                    benefit: b,
-                    subtitle: (b.benefitDetail?.isNotEmpty ?? false)
-                        ? b.benefitDetail
-                        : null,
-                  );
-                },
+              if (showHistory) {
+                return _buildSimpleList(items);
+              }
+
+              // Filter for active benefits only when grouping
+              final expiringSoon = items.where((b) {
+                if (b.expiryDate == null) return false;
+                final today = DateTime.now();
+                final diff = DateTime(b.expiryDate!.year, b.expiryDate!.month, b.expiryDate!.day)
+                    .difference(DateTime(today.year, today.month, today.day))
+                    .inDays;
+                return diff >= 0 && diff <= 30;
+              }).toList();
+
+              // Sort expiring soon by date
+              expiringSoon.sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
+
+              final others = items.where((b) => !expiringSoon.contains(b)).toList();
+
+              return ListView(
+                children: [
+                  if (expiringSoon.isNotEmpty) ...[
+                    _buildSectionHeader(context, '期限間近', Icons.timer_outlined, Colors.orange),
+                    ...expiringSoon.map((b) => _buildTile(b)),
+                    const SizedBox(height: 16),
+                  ],
+                  if (others.isNotEmpty) ...[
+                    if (expiringSoon.isNotEmpty)
+                      _buildSectionHeader(context, 'すべて', Icons.list_alt, null),
+                    ...others.map((b) => _buildTile(b)),
+                  ],
+                ],
               );
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon, Color? color) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color ?? Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color ?? Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTile(UsersYuutai b) {
+    return Column(
+      children: [
+        UsersYuutaiListTile(
+          benefit: b,
+          subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
+        ),
+        Builder(
+          builder: (context) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Divider(
+              height: 1,
+              thickness: 0.5,
+              color: AppTheme.dividerColor(context),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSimpleList(List<UsersYuutai> items) {
+    return ListView.separated(
+      itemCount: items.length,
+      separatorBuilder: (context, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppTheme.dividerColor(context),
+        ),
+      ),
+      itemBuilder: (context, index) {
+        final b = items[index];
+        return UsersYuutaiListTile(
+          benefit: b,
+          subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
+        );
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_stock/core/ocr/ocr_service.dart';
 import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
 
@@ -134,7 +135,11 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
         context.pop();
       }
     } catch (e) {
-      // Handle error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppException.from(e).message)),
+        );
+      }
     } finally {
       state = state.copyWith(isLoading: false);
     }

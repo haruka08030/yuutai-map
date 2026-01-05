@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
+import 'package:flutter_stock/app/widgets/app_error_view.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
@@ -77,14 +79,18 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   void _onMarkerTapped(Cluster<Place> cluster) async {
     final isGuest = ref.read(isGuestProvider);
-    if (isGuest && !cluster.isMultiple) {
-      final storeName = cluster.items.first.name;
-      MapGuestRegisterDialog.show(
-        context: context,
-        storeName: storeName,
-        onRegisterPressed: () => context.go('/'),
-      );
-    } else if (cluster.isMultiple) {
+    if (!cluster.isMultiple) {
+      final place = cluster.items.first;
+      if (isGuest) {
+        MapGuestRegisterDialog.show(
+          context: context,
+          storeName: place.name,
+          onRegisterPressed: () => context.go('/'),
+        );
+      } else {
+        context.push('/store/detail', extra: place);
+      }
+    } else {
       final controller = await _mapController.future;
       final currentZoom = await controller.getZoomLevel();
       controller.animateCamera(
@@ -207,18 +213,9 @@ class _MapPageState extends ConsumerState<MapPage> {
         );
       },
       loading: () => const AppLoadingIndicator(),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('エラーが発生しました\n${error.toString()}'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(mapControllerProvider),
-              child: const Text('リトライ'),
-            )
-          ],
-        ),
+      error: (error, stack) => AppErrorView(
+        message: AppException.from(error).message,
+        onRetry: () => ref.invalidate(mapControllerProvider),
       ),
     );
   }

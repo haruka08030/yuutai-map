@@ -27,7 +27,11 @@ mixin _$Store {
   double get latitude => throw _privateConstructorUsedError;
   @JsonKey(name: 'lng')
   double get longitude => throw _privateConstructorUsedError;
+  @JsonKey(name: 'category_tag')
   String? get category => throw _privateConstructorUsedError;
+  String? get address => throw _privateConstructorUsedError;
+  @JsonKey(name: 'company_id')
+  int? get companyId => throw _privateConstructorUsedError;
 
   /// Serializes this Store to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,7 +52,9 @@ abstract class $StoreCopyWith<$Res> {
     String name,
     @JsonKey(name: 'lat') double latitude,
     @JsonKey(name: 'lng') double longitude,
-    String? category,
+    @JsonKey(name: 'category_tag') String? category,
+    String? address,
+    @JsonKey(name: 'company_id') int? companyId,
   });
 }
 
@@ -72,6 +78,8 @@ class _$StoreCopyWithImpl<$Res, $Val extends Store>
     Object? latitude = null,
     Object? longitude = null,
     Object? category = freezed,
+    Object? address = freezed,
+    Object? companyId = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,6 +103,14 @@ class _$StoreCopyWithImpl<$Res, $Val extends Store>
                 ? _value.category
                 : category // ignore: cast_nullable_to_non_nullable
                       as String?,
+            address: freezed == address
+                ? _value.address
+                : address // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            companyId: freezed == companyId
+                ? _value.companyId
+                : companyId // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -114,7 +130,9 @@ abstract class _$$StoreImplCopyWith<$Res> implements $StoreCopyWith<$Res> {
     String name,
     @JsonKey(name: 'lat') double latitude,
     @JsonKey(name: 'lng') double longitude,
-    String? category,
+    @JsonKey(name: 'category_tag') String? category,
+    String? address,
+    @JsonKey(name: 'company_id') int? companyId,
   });
 }
 
@@ -137,6 +155,8 @@ class __$$StoreImplCopyWithImpl<$Res>
     Object? latitude = null,
     Object? longitude = null,
     Object? category = freezed,
+    Object? address = freezed,
+    Object? companyId = freezed,
   }) {
     return _then(
       _$StoreImpl(
@@ -160,6 +180,14 @@ class __$$StoreImplCopyWithImpl<$Res>
             ? _value.category
             : category // ignore: cast_nullable_to_non_nullable
                   as String?,
+        address: freezed == address
+            ? _value.address
+            : address // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        companyId: freezed == companyId
+            ? _value.companyId
+            : companyId // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -173,7 +201,9 @@ class _$StoreImpl implements _Store {
     required this.name,
     @JsonKey(name: 'lat') required this.latitude,
     @JsonKey(name: 'lng') required this.longitude,
-    this.category,
+    @JsonKey(name: 'category_tag') this.category,
+    this.address,
+    @JsonKey(name: 'company_id') this.companyId,
   });
 
   factory _$StoreImpl.fromJson(Map<String, dynamic> json) =>
@@ -190,11 +220,17 @@ class _$StoreImpl implements _Store {
   @JsonKey(name: 'lng')
   final double longitude;
   @override
+  @JsonKey(name: 'category_tag')
   final String? category;
+  @override
+  final String? address;
+  @override
+  @JsonKey(name: 'company_id')
+  final int? companyId;
 
   @override
   String toString() {
-    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category)';
+    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category, address: $address, companyId: $companyId)';
   }
 
   @override
@@ -209,13 +245,24 @@ class _$StoreImpl implements _Store {
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
             (identical(other.category, category) ||
-                other.category == category));
+                other.category == category) &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.companyId, companyId) ||
+                other.companyId == companyId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, latitude, longitude, category);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    latitude,
+    longitude,
+    category,
+    address,
+    companyId,
+  );
 
   /// Create a copy of Store
   /// with the given fields replaced by the non-null parameter values.
@@ -237,7 +284,9 @@ abstract class _Store implements Store {
     required final String name,
     @JsonKey(name: 'lat') required final double latitude,
     @JsonKey(name: 'lng') required final double longitude,
-    final String? category,
+    @JsonKey(name: 'category_tag') final String? category,
+    final String? address,
+    @JsonKey(name: 'company_id') final int? companyId,
   }) = _$StoreImpl;
 
   factory _Store.fromJson(Map<String, dynamic> json) = _$StoreImpl.fromJson;
@@ -253,7 +302,13 @@ abstract class _Store implements Store {
   @JsonKey(name: 'lng')
   double get longitude;
   @override
+  @JsonKey(name: 'category_tag')
   String? get category;
+  @override
+  String? get address;
+  @override
+  @JsonKey(name: 'company_id')
+  int? get companyId;
 
   /// Create a copy of Store
   /// with the given fields replaced by the non-null parameter values.

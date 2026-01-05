@@ -95,9 +95,12 @@ class MapController extends AsyncNotifier<MapState> {
           await storeRepo.getStores(categories: selectedCategories.toList());
       for (final store in stores) {
         items.add(Place(
+          id: store.id,
           name: store.name,
           latLng: LatLng(store.latitude, store.longitude),
           category: store.category,
+          address: store.address,
+          companyId: store.companyId,
         ));
       }
     } else {
@@ -114,9 +117,12 @@ class MapController extends AsyncNotifier<MapState> {
           );
           for (final store in stores) {
             items.add(Place(
+              id: store.id,
               name: store.name,
               latLng: LatLng(store.latitude, store.longitude),
               category: store.category,
+              address: store.address,
+              companyId: store.companyId,
             ));
           }
         }

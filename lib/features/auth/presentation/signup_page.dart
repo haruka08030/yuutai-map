@@ -8,6 +8,7 @@ import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart';
 import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -52,13 +53,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       } on AuthException catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.message)),
+            SnackBar(content: Text(AppException.from(e).message)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+            SnackBar(content: Text(AppException.from(e).message)),
           );
         }
       } finally {
@@ -73,17 +74,16 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     setState(() => _isLoading = true);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
-    }
-    on AuthException catch (e) {
+    } on AuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
+          SnackBar(content: Text(AppException.from(e).message)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+          SnackBar(content: Text(AppException.from(e).message)),
         );
       }
     } finally {
@@ -98,14 +98,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithApple();
-    }
-    on AuthException catch (e) {
+    } on AuthException catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(SnackBar(content: Text(e.message)));
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('予期せぬエラーが発生しました: ${e.toString()}')),
+        SnackBar(content: Text(AppException.from(e).message)),
       );
     } finally {
       if (mounted) {

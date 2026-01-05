@@ -56,7 +56,13 @@ class AuthOptionsPage extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 if (!await launchUrl(Uri.parse(_privacyPolicyUrl))) {
-                  // Handle error if URL cannot be launched
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('プライバシーポリシーを開けませんでした'),
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text('プライバシーポリシー'),
@@ -106,7 +112,13 @@ class AccountInfoPage extends ConsumerWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () async {
                 if (!await launchUrl(Uri.parse(_privacyPolicyUrl))) {
-                  // Handle error if URL cannot be launched
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('プライバシーポリシーを開けませんでした'),
+                      ),
+                    );
+                  }
                 }
               },
             ),
