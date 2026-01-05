@@ -11,8 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart'; // New import
 
 const String _privacyPolicyUrl =
     'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
-const String _inquiryUrl =
-    'https://forms.gle/your-inquiry-form-url'; // TODO: Update with actual inquiry form URL
+const String _inquiryUrl = 'https://forms.gle/VGyP1fZV8EPi56nc7';
 
 final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
   return await PackageInfo.fromPlatform();
