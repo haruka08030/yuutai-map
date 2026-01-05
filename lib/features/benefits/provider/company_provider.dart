@@ -13,7 +13,7 @@ final companyListProvider = FutureProvider.family<List<String>, String>((
   final builder = supabase
       .from('companies')
       .select('name')
-      .ilike('name', escapedQuery);
+      .ilike('name', '%$escapedQuery%');
 
   final response = await builder;
 

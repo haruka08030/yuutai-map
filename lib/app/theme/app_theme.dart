@@ -1,9 +1,6 @@
-// ignore_for_file: const_with_non_const, prefer_const_constructors, unnecessary_const
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Custom colors extension for the app theme
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
   const AppColors({
@@ -254,7 +251,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFFF9FAFB), // Gray 50
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: base.scaffoldBackgroundColor,
+        backgroundColor: const Color(0xFFF9FAFB),
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -265,7 +262,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
@@ -321,7 +318,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFF030712), // Gray 950
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: base.scaffoldBackgroundColor,
+        backgroundColor: const Color(0xFFF9FAFB),
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -332,7 +329,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: const CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),

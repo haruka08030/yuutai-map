@@ -44,7 +44,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             .signUpWithEmailPassword(
               username: _nameController.text.trim(),
               email: _emailController.text.trim(),
-              password: _passwordController.text,
+              password: _passwordController.text.trim(),
             );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
