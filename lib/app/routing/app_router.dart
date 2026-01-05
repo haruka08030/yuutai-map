@@ -16,9 +16,12 @@ import 'package:flutter_stock/features/map/presentation/map_page.dart'; // Expli
 import 'package:flutter_stock/features/map/presentation/store_detail_page.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/settings/presentation/notification_settings_page.dart';
+import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 
 
+
+import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart'; // New Import
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authNotifierProvider);
@@ -130,6 +133,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                       );
                     },
                   ),
+                  GoRoute( // New route for Yuutai Search
+                    path: 'search',
+                    builder: (context, state) => YuutaiSearchPage(
+                      initialQuery: state.uri.queryParameters['q'],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -169,6 +178,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'notifications',
                     builder: (context, state) => const NotificationSettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'account',
+                    builder: (context, state) => const AccountDetailPage(),
                   ),
                 ],
               ),

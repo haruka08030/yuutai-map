@@ -34,7 +34,7 @@ class AppDrawer extends ConsumerWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.confirmation_number),
-            title: const Text('すべての優待'),
+            title: const Text('すべて'),
             selected: selectedFolderId == null,
             onTap: onAllCouponsTapped,
           ),
