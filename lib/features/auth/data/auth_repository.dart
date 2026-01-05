@@ -80,6 +80,22 @@ class AuthRepository {
     }
   }
 
+  Future<void> updateUserProfile({String? username}) async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      throw Exception('User not logged in');
+    }
+
+    final Map<String, dynamic> newUserMetadata = Map.from(
+      user.userMetadata ?? {},
+    );
+    if (username != null) {
+      newUserMetadata['username'] = username;
+    }
+
+    await _client.auth.updateUser(UserAttributes(data: newUserMetadata));
+  }
+
   User? get currentUser => _client.auth.currentUser;
 }
 

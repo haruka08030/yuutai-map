@@ -20,6 +20,7 @@ class MapActionButtons extends StatelessWidget {
           FloatingActionButton.small(
             heroTag: 'location_fab',
             onPressed: onLocationPressed,
+            tooltip: 'My Location',
             backgroundColor: Colors.white,
             foregroundColor: const Color(0xFF24A19C),
             elevation: 4,
@@ -29,6 +30,7 @@ class MapActionButtons extends StatelessWidget {
           FloatingActionButton(
             heroTag: 'filter_fab',
             onPressed: onFilterPressed,
+            tooltip: 'Filter',
             backgroundColor: const Color(0xFF24A19C),
             foregroundColor: Colors.white,
             elevation: 6,

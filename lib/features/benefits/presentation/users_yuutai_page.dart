@@ -1,5 +1,3 @@
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
@@ -95,10 +93,15 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   case YuutaiSortOrder.expiryDate:
                     // For expiryDate, we keep nulls (no expiry) at the end
                     items.sort((a, b) {
-                      if (a.expiryDate == null && b.expiryDate == null)
+                      if (a.expiryDate == null && b.expiryDate == null) {
                         return 0;
-                      if (a.expiryDate == null) return 1;
-                      if (b.expiryDate == null) return -1;
+                      }
+                      if (a.expiryDate == null) {
+                        return 1;
+                      }
+                      if (b.expiryDate == null) {
+                        return -1;
+                      }
                       return a.expiryDate!.compareTo(b.expiryDate!);
                     });
                     break;
@@ -228,10 +231,9 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border(
-          bottom: BorderSide(color: AppTheme.dividerColor(context)),
-        ),
+        color:
+            Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).colorScheme.surface, // Match AppBar background
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,

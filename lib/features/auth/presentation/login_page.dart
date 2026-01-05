@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
-import 'dart:io';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -305,7 +304,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                       ),
                     ),
-                    if (Platform.isIOS || Platform.isMacOS) ...[
+                    if (!kIsWeb &&
+                        (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.macOS)) ...[
                       const SizedBox(height: 12),
                       ElevatedButton.icon(
                         onPressed: _isLoading ? null : _signInWithApple,

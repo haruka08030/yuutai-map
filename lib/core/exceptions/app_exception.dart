@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
 
 sealed class AppException implements Exception {
   AppException(this.message);
@@ -21,8 +22,7 @@ sealed class AppException implements Exception {
       }
     }
 
-    if (error.toString().contains('SocketException') ||
-        error.toString().contains('Network')) {
+    if (error is SocketException || error is IOException) {
       return NetworkExceptionApp('ネットワーク接続エラーが発生しました。通信環境を確認してください。');
     }
 

@@ -1,6 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'dart:io';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +10,7 @@ import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -45,10 +44,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             .signUpWithEmailPassword(
               username: _nameController.text.trim(),
               email: _emailController.text.trim(),
-              password: _passwordController.text.trim(),
+              password: _passwordController.text,
             );
-        // The AuthGate will handle navigation if successful.
-        // Supabase sends a confirmation email by default.
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('確認メールを送信しました。メールを確認してください。')),
@@ -267,7 +264,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         ),
                       ),
                     ),
-                    if (Platform.isIOS || Platform.isMacOS) ...[
+                    if (!kIsWeb &&
+                        (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.macOS)) ...[
                       const SizedBox(height: 12),
                       ElevatedButton.icon(
                         onPressed: _isLoading ? null : _signInWithApple,
