@@ -6,6 +6,7 @@ import 'package:flutter_stock/features/app/presentation/widgets/shell_screen.dar
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
+import 'package:flutter_stock/features/auth/provider/auth_notifier.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart'; // Explicitly import UsersYuutaiPage
@@ -20,8 +21,34 @@ import 'package:flutter_stock/features/settings/presentation/settings_page.dart'
 
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final authNotifier = ref.watch(authNotifierProvider);
+
   return GoRouter(
     initialLocation: '/', // AuthGate is still the initial entry point
+    refreshListenable: authNotifier,
+    redirect: (context, state) {
+      final isLoggedIn = authNotifier.isLoggedIn;
+      final location = state.uri.path;
+      
+      // If the user is logged in, they shouldn't be on the landing page/login/signup
+      final isAuthPath = location == '/' || location == '/login' || location == '/signup';
+      
+      if (isLoggedIn && isAuthPath) {
+        return '/yuutai';
+      }
+      
+      // Define sub-routes that require authentication
+      // Main tabs (/yuutai, /map, /settings) are allowed for guests
+      final isProtectedSubRoute = location.startsWith('/yuutai/') || 
+                                 location.startsWith('/settings/') ||
+                                 location == '/folders'; // or other specific sensitive paths
+      
+      if (!isLoggedIn && isProtectedSubRoute) {
+        return '/';
+      }
+      
+      return null;
+    },
     routes: <RouteBase>[
       // Authentication Routes
       GoRoute(
@@ -61,8 +88,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'edit',
                     builder: (context, state) {
-                      final benefit = state.extra as UsersYuutai?;
-                      return UsersYuutaiEditPage(existing: benefit);
+                      final extra = state.extra;
+                      if (extra is! UsersYuutai?) {
+                        return const Scaffold(
+                          body: Center(child: Text('Invalid benefit data')),
+                        );
+                      }
+                      return UsersYuutaiEditPage(existing: extra);
                     },
                   ),
                   GoRoute(
@@ -113,8 +145,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'store/detail',
                     builder: (context, state) {
-                      final place = state.extra as Place;
-                      return StoreDetailPage(place: place);
+                      final extra = state.extra;
+                      if (extra is! Place) {
+                        return const Scaffold(
+                          body: Center(child: Text('Invalid store data')),
+                        );
+                      }
+                      return StoreDetailPage(place: extra);
                     },
                   ),
                 ],
