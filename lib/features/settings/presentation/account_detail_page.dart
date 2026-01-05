@@ -118,16 +118,18 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                       await authRepository.updateUserProfile(
                         username: _nameController.text,
                       );
+                      ref.invalidate(authRepositoryProvider);
                       if (!currentContext.mounted) return;
                       ScaffoldMessenger.of(currentContext).showSnackBar(
                         const SnackBar(content: Text('変更を保存しました')),
                       );
-                      ref.invalidate(authRepositoryProvider);
                     } catch (e) {
+                      // Log the full error for debugging
+                      debugPrint('Failed to update profile: $e');
                       if (!currentContext.mounted) return;
                       ScaffoldMessenger.of(
                         currentContext,
-                      ).showSnackBar(SnackBar(content: Text('保存に失敗しました: $e')));
+                      ).showSnackBar(const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')));
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -215,14 +217,18 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       try {
         await ref.read(authRepositoryProvider).deleteAccount();
         if (!currentContext.mounted) return;
-        ScaffoldMessenger.of(
-          currentContext,
-        ).showSnackBar(const SnackBar(content: Text('アカウントを削除しました')));
+        // Navigate to login/home after successful deletion
+        if (currentContext.mounted) {
+          Navigator.of(currentContext).popUntil((route) => route.isFirst);
+          // Or navigate to a specific route:
+          // Navigator.of(currentContext).pushReplacementNamed('/login');
+        }
       } catch (e) {
+        debugPrint('Failed to delete account: $e');
         if (!currentContext.mounted) return;
         ScaffoldMessenger.of(
           currentContext,
-        ).showSnackBar(SnackBar(content: Text('削除に失敗しました: $e')));
+        ).showSnackBar(const SnackBar(content: Text('削除に失敗しました。もう一度お試しください。')));
       }
     }
   }

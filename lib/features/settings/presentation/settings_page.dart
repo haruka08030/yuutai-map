@@ -6,7 +6,7 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 
 const String _privacyPolicyUrl =
     'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
@@ -15,7 +15,15 @@ const String _inquiryUrl =
 
 /// Helper function to launch URLs and show a SnackBar on failure.
 Future<void> _openExternalUrl(String url, BuildContext context) async {
-  if (!await launchUrl(Uri.parse(url))) {
+  try {
+    if (!await launchUrl(Uri.parse(url))) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+      }
+    }
+  } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
@@ -23,17 +31,6 @@ Future<void> _openExternalUrl(String url, BuildContext context) async {
     }
   }
 }
-
-class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isGuest = ref.watch(isGuestProvider);
-    final user = ref.watch(authRepositoryProvider).currentUser;
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('設定'), centerTitle: true),
       body: isGuest
           ? const AuthOptionsPage()
           : user != null
@@ -130,12 +127,12 @@ class AuthOptionsPage extends StatelessWidget {
         _SettingsTile(
           icon: Icons.privacy_tip_outlined,
           label: 'プライバシーポリシー',
-          onTap: () => _openExternalUrl(_privacyPolicyUrl, context),
+          onTap: () => launchURL(_privacyPolicyUrl, context),
         ),
         _SettingsTile(
           icon: Icons.help_outline_rounded,
           label: 'お問い合わせ',
-          onTap: () => _openExternalUrl(_inquiryUrl, context),
+          onTap: () => launchURL(_inquiryUrl, context),
         ),
         _SettingsTile(
           icon: Icons.info_outline_rounded,
@@ -240,7 +237,7 @@ class AccountInfoPage extends ConsumerWidget {
         _SettingsTile(
           icon: Icons.privacy_tip_outlined,
           label: 'プライバシーポリシー',
-          onTap: () => _openExternalUrl(_privacyPolicyUrl, context),
+          onTap: () => launchURL(_privacyPolicyUrl, context),
         ),
         _SettingsTile(
           icon: Icons.description_outlined,
@@ -255,7 +252,7 @@ class AccountInfoPage extends ConsumerWidget {
         _SettingsTile(
           icon: Icons.help_outline_rounded,
           label: 'お問い合わせ',
-          onTap: () => _openExternalUrl(_inquiryUrl, context),
+          onTap: () => launchURL(_inquiryUrl, context),
         ),
         _SettingsTile(
           icon: Icons.logout_rounded,
