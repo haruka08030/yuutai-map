@@ -104,6 +104,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  Future<void> _signInAsGuest() async {
+    // Call the signInAsGuest method in AuthRepository
+    ref.read(authRepositoryProvider).signInAsGuest();
+    // The AuthGate and GoRouter will handle navigation
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,6 +217,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: 48),
                     SignUpPrompt(isLoading: _isLoading),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: _isLoading ? null : _signInAsGuest,
+                      child: const Text('ゲストとして利用'),
+                    ),
                   ],
                 ),
               ),
