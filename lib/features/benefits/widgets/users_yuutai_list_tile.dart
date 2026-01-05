@@ -9,8 +9,6 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:intl/intl.dart';
 
 class UsersYuutaiListTile extends ConsumerWidget {
@@ -126,7 +124,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                         final newStatus = v ?? false
                             ? BenefitStatus.used
                             : BenefitStatus.active;
-                        repo.updateStatus(benefit.id!, newStatus);
+                        await repo.updateStatus(benefit.id!, newStatus);
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6),

@@ -18,8 +18,9 @@ class PasswordStrengthIndicator extends StatelessWidget {
     if (password.contains(RegExp(r'[A-Z]'))) score++; // Uppercase
     if (password.contains(RegExp(r'[a-z]'))) score++; // Lowercase
     if (password.contains(RegExp(r'[0-9]'))) score++; // Digits
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')))
+    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
       score++; // Symbols
+    }
 
     if (score < 2) return PasswordStrength.weak;
     if (score < 4) return PasswordStrength.medium;

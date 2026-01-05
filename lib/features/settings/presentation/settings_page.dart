@@ -13,6 +13,17 @@ const String _privacyPolicyUrl =
 const String _inquiryUrl =
     'https://forms.gle/your-inquiry-form-url'; // TODO: Update with actual inquiry form URL
 
+/// Helper function to launch URLs and show a SnackBar on failure.
+Future<void> _openExternalUrl(String url, BuildContext context) async {
+  if (!await launchUrl(Uri.parse(url))) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+    }
+  }
+}
+
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -119,12 +130,12 @@ class AuthOptionsPage extends StatelessWidget {
         _SettingsTile(
           icon: Icons.privacy_tip_outlined,
           label: 'プライバシーポリシー',
-          onTap: () => _launchURL(_privacyPolicyUrl, context),
+          onTap: () => _openExternalUrl(_privacyPolicyUrl, context),
         ),
         _SettingsTile(
           icon: Icons.help_outline_rounded,
           label: 'お問い合わせ',
-          onTap: () => _launchURL(_inquiryUrl, context),
+          onTap: () => _openExternalUrl(_inquiryUrl, context),
         ),
         _SettingsTile(
           icon: Icons.info_outline_rounded,
@@ -144,16 +155,6 @@ class AuthOptionsPage extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Future<void> _launchURL(String url, BuildContext context) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
-      }
-    }
   }
 }
 
@@ -239,7 +240,7 @@ class AccountInfoPage extends ConsumerWidget {
         _SettingsTile(
           icon: Icons.privacy_tip_outlined,
           label: 'プライバシーポリシー',
-          onTap: () => _launchURL(_privacyPolicyUrl, context),
+          onTap: () => _openExternalUrl(_privacyPolicyUrl, context),
         ),
         _SettingsTile(
           icon: Icons.description_outlined,
@@ -254,7 +255,7 @@ class AccountInfoPage extends ConsumerWidget {
         _SettingsTile(
           icon: Icons.help_outline_rounded,
           label: 'お問い合わせ',
-          onTap: () => _launchURL(_inquiryUrl, context),
+          onTap: () => _openExternalUrl(_inquiryUrl, context),
         ),
         _SettingsTile(
           icon: Icons.logout_rounded,
@@ -296,16 +297,6 @@ class AccountInfoPage extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  Future<void> _launchURL(String url, BuildContext context) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
-      }
-    }
   }
 }
 

@@ -1,3 +1,5 @@
+// ignore_for_file: const_with_non_const, prefer_const_constructors, unnecessary_const
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -252,7 +254,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFFF9FAFB), // Gray 50
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFFFFFFFF),
+        backgroundColor: base.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -263,13 +265,13 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 0,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-          side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+          side: BorderSide(color: Color(0xFFE5E7EB), width: 1),
         ),
-        color: const Color(0xFFFFFFFF),
+        color: Color(0xFFFFFFFF),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -302,7 +304,7 @@ class AppTheme {
         ),
         labelStyle: const TextStyle(color: Color(0xFF6B7280)),
       ),
-      extensions: const [AppColors.light],
+      extensions: [AppColors.light],
     );
   }
 
@@ -319,7 +321,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFF030712), // Gray 950
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFF111827),
+        backgroundColor: base.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
@@ -330,13 +332,13 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: CardThemeData(
         elevation: 0,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-          side: const BorderSide(color: Color(0xFF374151), width: 1),
+          side: BorderSide(color: Color(0xFF374151), width: 1),
         ),
-        color: const Color(0xFF1F2937),
+        color: Color(0xFF1F2937),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -369,7 +371,7 @@ class AppTheme {
         ),
         labelStyle: const TextStyle(color: Color(0xFF9CA3AF)),
       ),
-      extensions: const [AppColors.dark],
+      extensions: [AppColors.dark],
     );
   }
 

@@ -110,11 +110,25 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement save logic
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text('変更を保存しました')));
+                  onPressed: () async {
+                    final currentContext =
+                        context; // Store context before async gap
+                    try {
+                      final authRepository = ref.read(authRepositoryProvider);
+                      await authRepository.updateUserProfile(
+                        username: _nameController.text,
+                      );
+                      if (!currentContext.mounted) return;
+                      ScaffoldMessenger.of(currentContext).showSnackBar(
+                        const SnackBar(content: Text('変更を保存しました')),
+                      );
+                      ref.invalidate(authRepositoryProvider);
+                    } catch (e) {
+                      if (!currentContext.mounted) return;
+                      ScaffoldMessenger.of(
+                        currentContext,
+                      ).showSnackBar(SnackBar(content: Text('保存に失敗しました: $e')));
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF24A19C),
@@ -175,8 +189,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
   }
 
   Future<void> _showDeleteConfirmation() async {
+    final currentContext = context; // Store context before async gap
     final confirmed = await showDialog<bool>(
-      context: context,
+      context: currentContext,
       builder: (context) => AlertDialog(
         title: const Text('アカウント削除'),
         content: const Text(
@@ -199,14 +214,14 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
     if (confirmed == true) {
       try {
         await ref.read(authRepositoryProvider).deleteAccount();
-        if (!mounted) return;
+        if (!currentContext.mounted) return;
         ScaffoldMessenger.of(
-          context,
+          currentContext,
         ).showSnackBar(const SnackBar(content: Text('アカウントを削除しました')));
       } catch (e) {
-        if (!mounted) return;
+        if (!currentContext.mounted) return;
         ScaffoldMessenger.of(
-          context,
+          currentContext,
         ).showSnackBar(SnackBar(content: Text('削除に失敗しました: $e')));
       }
     }

@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 
 const _defaultNotifyDaysKey = 'defaultNotifyDays';
-// Default values: 30 days before, 7 days before, and on the day (0)
 const List<int> _initialDefaultDays = [30, 7, 0];
 
 class NotificationSettingsRepository {
@@ -17,7 +16,6 @@ class NotificationSettingsRepository {
       return _initialDefaultDays;
     }
     final parsed = stored.map((s) => int.tryParse(s)).whereType<int>().toList();
-    // Return default if parsing failed or resulted in empty list
     return parsed.isEmpty ? _initialDefaultDays : parsed;
   }
 
