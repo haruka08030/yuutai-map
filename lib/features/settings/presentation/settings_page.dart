@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
-import 'package:url_launcher/url_launcher.dart'; // Add url_launcher
+import 'package:url_launcher/url_launcher.dart';
 
-const String _privacyPolicyUrl = 'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
+const String _privacyPolicyUrl =
+    'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
+const String _inquiryUrl =
+    'https://forms.gle/your-inquiry-form-url'; // TODO: Update with actual inquiry form URL
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -17,14 +22,12 @@ class SettingsPage extends ConsumerWidget {
     final user = ref.watch(authRepositoryProvider).currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('設定'),
-      ),
+      appBar: AppBar(title: const Text('設定'), centerTitle: true),
       body: isGuest
           ? const AuthOptionsPage()
           : user != null
-              ? AccountInfoPage(user: user)
-              : const AppLoadingIndicator(),
+          ? AccountInfoPage(user: user)
+          : const AppLoadingIndicator(),
     );
   }
 }
@@ -34,122 +37,123 @@ class AuthOptionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+        // Guest Section
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).extension<AppColors>()?.cardBackground ??
+                AppColors.light.cardBackground,
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+            border: Border.all(color: AppTheme.dividerColor(context)),
+          ),
+          child: Column(
             children: [
-              const SizedBox(height: 32),
-              // Guest Section
-              Center(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: const ShapeDecoration(
-                        color: Color(0xFFC4C4C4),
-                        shape: OvalBorder(),
-                      ),
-                      child: const Icon(Icons.person_outline, size: 40, color: Colors.white),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'ゲストユーザー',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'ログインして全ての機能を利用しましょう',
-                      style: TextStyle(
-                        color: Color(0xFF767E8C),
-                        fontSize: 14,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => context.push('/login'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF24A19C),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('ログイン'),
-                        ),
-                        const SizedBox(width: 12),
-                        OutlinedButton(
-                          onPressed: () => context.push('/signup'),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFF24A19C)),
-                            foregroundColor: const Color(0xFF24A19C),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('新規登録'),
-                        ),
-                      ],
-                    ),
-                  ],
+              Container(
+                width: 72,
+                height: 72,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  size: 36,
+                  color: Color(0xFF9CA3AF),
                 ),
               ),
-              const SizedBox(height: 48),
-              // Menu Items (Common for Guest/User if applicable)
-              _SettingsTile(
-                icon: Icons.lock_outline,
-                label: 'プライバシーポリシー',
-                onTap: () async {
-                  if (!await launchUrl(Uri.parse(_privacyPolicyUrl))) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('プライバシーポリシーを開けませんでした')),
-                      );
-                    }
-                  }
-                },
-              ),
-              _SettingsTile(
-                icon: Icons.info_outline,
-                label: 'ライセンス表記',
-                onTap: () => showLicensePage(context: context),
-              ),
-              const SizedBox(height: 48),
-              // Footer
-              const Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'App Version 1.0.0',
-                      style: TextStyle(
-                        color: Color(0xFF767E8C),
-                        fontSize: 12,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 16),
+              Text(
+                'ゲストユーザー',
+                style: GoogleFonts.outfit(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 8),
+              Text(
+                'ログインして全ての機能を利用しましょう',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.secondaryTextColor(context),
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/login'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF24A19C),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('ログイン'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/signup'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF24A19C),
+                        side: const BorderSide(color: Color(0xFF24A19C)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text('新規登録'),
+                    ),
+                  ),
+                ],
+              ),
             ],
+          ),
+        ),
+        const SizedBox(height: 32),
+        _buildSectionHeader('その他'),
+        _SettingsTile(
+          icon: Icons.privacy_tip_outlined,
+          label: 'プライバシーポリシー',
+          onTap: () => _launchURL(_privacyPolicyUrl, context),
+        ),
+        _SettingsTile(
+          icon: Icons.help_outline_rounded,
+          label: 'お問い合わせ',
+          onTap: () => _launchURL(_inquiryUrl, context),
+        ),
+        _SettingsTile(
+          icon: Icons.info_outline_rounded,
+          label: 'ライセンス表記',
+          onTap: () => showLicensePage(context: context),
+        ),
+        const SizedBox(height: 48),
+        Center(
+          child: Text(
+            'Version 1.0.0',
+            style: TextStyle(
+              color: AppTheme.secondaryTextColor(context),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _launchURL(String url, BuildContext context) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
+      }
+    }
   }
 }
 
@@ -163,123 +167,131 @@ class AccountInfoPage extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final isDark = themeMode == ThemeMode.dark;
 
-    return Column(
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+        // Profile Section
+        Center(
+          child: Column(
             children: [
-              const SizedBox(height: 32),
-              // Profile Section
-              Center(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: const ShapeDecoration(
-                        color: Color(0xFFC4C4C4),
-                        shape: OvalBorder(),
-                      ),
-                      child: const Icon(Icons.person, size: 40, color: Colors.white),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      user.email?.split('@')[0] ?? 'User Name',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.email ?? '@username',
-                      style: const TextStyle(
-                        color: Color(0xFF767E8C),
-                        fontSize: 16,
-                        fontFamily: 'ABeeZee',
-                        fontWeight: FontWeight.w400,
-                        height: 1.25,
-                      ),
-                    ),
-                  ],
+              Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(
+                        context,
+                      ).extension<AppColors>()?.cardBackground ??
+                      AppColors.light.cardBackground,
+                  borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+                  border: Border.all(
+                    color: AppTheme.dividerColor(context),
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.person_rounded,
+                  size: 48,
+                  color: Color(0xFF24A19C),
                 ),
               ),
-              const SizedBox(height: 48),
-              // Menu Items
-              _SettingsTile(
-                icon: Icons.person_outline,
-                label: 'Account',
-                onTap: () => context.push('/settings/account'),
-              ),
-              _SettingsTile(
-                icon: Icons.color_lens_outlined,
-                label: 'Theme',
-                onTap: () {},
-              ),
-              _SettingsTile(
-                icon: Icons.style_outlined,
-                label: 'Change Mode',
-                trailing: Switch.adaptive(
-                  value: isDark,
-                  activeTrackColor: const Color(0xFF24A19C),
-                  onChanged: (isOn) {
-                    ref
-                        .read(themeProvider.notifier)
-                        .setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
-                  },
+              const SizedBox(height: 16),
+              Text(
+                user.email?.split('@')[0] ?? 'ユーザー',
+                style: GoogleFonts.outfit(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 24),
-              _SettingsTile(
-                icon: Icons.lock_outline,
-                label: 'Privacy Policy',
-                onTap: () => _launchURL(_privacyPolicyUrl, context),
-              ),
-              _SettingsTile(
-                icon: Icons.description_outlined,
-                label: '利用規約',
-                onTap: () {},
-              ),
-              _SettingsTile(
-                icon: Icons.info_outline,
-                label: 'ライセンス表記',
-                onTap: () => showLicensePage(context: context),
-              ),
-              _SettingsTile(
-                icon: Icons.mail_outline,
-                label: 'お問い合わせ',
-                onTap: () {},
-              ),
-              _SettingsTile(
-                icon: Icons.logout,
-                label: 'Log Out',
-                onTap: () async {
-                  await ref.read(authRepositoryProvider).signOut();
-                },
-              ),
-              const SizedBox(height: 48),
-              // Footer
-              const Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'App Version 1.0.0',
-                      style: TextStyle(
-                        color: Color(0xFF767E8C),
-                        fontSize: 12,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 4),
+              Text(
+                user.email ?? '',
+                style: TextStyle(
+                  color: AppTheme.secondaryTextColor(context),
+                  fontSize: 15,
                 ),
               ),
-              const SizedBox(height: 32),
             ],
+          ),
+        ),
+        const SizedBox(height: 40),
+        _buildSectionHeader('アカウント設定'),
+        _SettingsTile(
+          icon: Icons.person_outline_rounded,
+          label: 'プロフィール編集',
+          onTap: () => context.push('/settings/account'),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('アプリ設定'),
+        _SettingsTile(
+          icon: isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+          label: 'ダークモード',
+          trailing: Switch.adaptive(
+            value: isDark,
+            activeTrackColor: const Color(0xFF24A19C),
+            onChanged: (isOn) {
+              ref
+                  .read(themeProvider.notifier)
+                  .setThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
+            },
+          ),
+        ),
+        _SettingsTile(
+          icon: Icons.privacy_tip_outlined,
+          label: 'プライバシーポリシー',
+          onTap: () => _launchURL(_privacyPolicyUrl, context),
+        ),
+        _SettingsTile(
+          icon: Icons.description_outlined,
+          label: '利用規約',
+          onTap: () {},
+        ),
+        _SettingsTile(
+          icon: Icons.info_outline_rounded,
+          label: 'ライセンス表記',
+          onTap: () => showLicensePage(context: context),
+        ),
+        _SettingsTile(
+          icon: Icons.help_outline_rounded,
+          label: 'お問い合わせ',
+          onTap: () => _launchURL(_inquiryUrl, context),
+        ),
+        _SettingsTile(
+          icon: Icons.logout_rounded,
+          label: 'ログアウト',
+          labelColor: Colors.redAccent,
+          onTap: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('ログアウト'),
+                content: const Text('ログアウトしますか？'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('キャンセル'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text('ログアウト'),
+                  ),
+                ],
+              ),
+            );
+            if (confirm == true) {
+              await ref.read(authRepositoryProvider).signOut();
+            }
+          },
+        ),
+        const SizedBox(height: 48),
+        Center(
+          child: Text(
+            'Version 1.0.0',
+            style: TextStyle(
+              color: AppTheme.secondaryTextColor(context),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
@@ -289,12 +301,27 @@ class AccountInfoPage extends ConsumerWidget {
   Future<void> _launchURL(String url, BuildContext context) async {
     if (!await launchUrl(Uri.parse(url))) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('リンクを開けませんでした')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
       }
     }
   }
+}
+
+Widget _buildSectionHeader(String title) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 4, bottom: 12),
+    child: Text(
+      title,
+      style: GoogleFonts.outfit(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: const Color(0xFF24A19C),
+        letterSpacing: 0.5,
+      ),
+    ),
+  );
 }
 
 class _SettingsTile extends StatelessWidget {
@@ -303,41 +330,70 @@ class _SettingsTile extends StatelessWidget {
     required this.label,
     this.onTap,
     this.trailing,
+    this.labelColor,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color:
+            Theme.of(context).extension<AppColors>()?.cardBackground ??
+            AppColors.light.cardBackground,
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+        border: Border.all(
+          color: AppTheme.dividerColor(context).withValues(alpha: 0.5),
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFF767E8C), size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFF767E8C),
-                  fontSize: 16,
-                  fontFamily: 'ABeeZee',
-                  fontWeight: FontWeight.w400,
-                  height: 1.25,
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (labelColor ?? const Color(0xFF24A19C)).withValues(
+                    alpha: 0.1,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: labelColor ?? const Color(0xFF24A19C),
+                  size: 20,
                 ),
               ),
-            ),
-            if (trailing != null)
-              trailing!
-            else
-              const Icon(Icons.chevron_right,
-                  color: Color(0xFFE0E5ED), size: 20),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    color: labelColor ?? const Color(0xFF111827),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (trailing != null)
+                trailing!
+              else
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppTheme.dividerColor(context),
+                  size: 20,
+                ),
+            ],
+          ),
         ),
       ),
     );

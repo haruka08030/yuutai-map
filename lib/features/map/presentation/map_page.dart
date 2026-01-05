@@ -34,10 +34,10 @@ class _MapPageState extends ConsumerState<MapPage> {
   late final MarkerGenerator _markerGenerator;
 
   static const Map<String, Color> _categoryColors = {
-    '飲食': Colors.red,
-    'ファッション': Colors.purple,
-    '家電': Colors.blue,
-    'その他': Colors.grey,
+    '飲食': Color(0xFFEF4444), // Red-500
+    'ファッション': Color(0xFF8B5CF6), // Violet-500
+    '家電': Color(0xFF3B82F6), // Blue-500
+    'その他': Color(0xFF6B7280), // Gray-500
   };
 
   Color _getCategoryColor(String? category) {
@@ -60,7 +60,8 @@ class _MapPageState extends ConsumerState<MapPage> {
       _updateMarkers,
       markerBuilder: (cluster) async {
         final Color markerColor = cluster.isMultiple
-            ? Colors.orange // Default color for clusters
+            ? Colors
+                  .orange // Default color for clusters
             : _getCategoryColor(cluster.items.first.category);
 
         return Marker(
@@ -109,17 +110,20 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply: ({
-        required bool showAllStores,
-        required Set<String> selectedCategories,
-        String? folderId,
-      }) {
-        ref.read(mapControllerProvider.notifier).applyFilters(
-              showAllStores: showAllStores,
-              selectedCategories: selectedCategories,
-              folderId: folderId,
-            );
-      },
+      onApply:
+          ({
+            required bool showAllStores,
+            required Set<String> selectedCategories,
+            String? folderId,
+          }) {
+            ref
+                .read(mapControllerProvider.notifier)
+                .applyFilters(
+                  showAllStores: showAllStores,
+                  selectedCategories: selectedCategories,
+                  folderId: folderId,
+                );
+          },
     );
   }
 
@@ -145,8 +149,10 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<MapState?>(mapControllerProvider.select((s) => s.value),
-        (previous, next) {
+    ref.listen<MapState?>(mapControllerProvider.select((s) => s.value), (
+      previous,
+      next,
+    ) {
       if (previous != null && next != null) {
         if (previous.showAllStores && !next.showAllStores) {
           // The user just switched from "all stores" to "my yuutai only"
@@ -192,7 +198,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                 isGuest: state.isGuest,
                 bannerDismissed: _bannerDismissed,
                 onShowAll: () {
-                  ref.read(mapControllerProvider.notifier).applyFilters(
+                  ref
+                      .read(mapControllerProvider.notifier)
+                      .applyFilters(
                         showAllStores: true,
                         selectedCategories: state.selectedCategories,
                         folderId: state.folderId,
@@ -207,7 +215,8 @@ class _MapPageState extends ConsumerState<MapPage> {
             ],
           ),
           floatingActionButton: MapActionButtons(
-            onLocationPressed: () => _goToCurrentLocation(state.currentPosition),
+            onLocationPressed: () =>
+                _goToCurrentLocation(state.currentPosition),
             onFilterPressed: () => _showFilterSheet(state),
           ),
         );

@@ -13,18 +13,20 @@ class StoreRepository {
     List<String>? companyIds,
     List<String>? categories,
   }) async {
-    var query = _client.from('stores').select('id, name, lat, lng, category_tag, address, company_id');
+    var query = _client
+        .from('stores')
+        .select('id, name, lat, lng, category_tag, address, company_id');
 
     if (brandId != null) {
       query = query.eq('store_brand', brandId);
     }
-    
+
     // Merge companyId and companyIds into a single filter
     final allCompanyIds = <String>[
       if (companyId != null) companyId,
       if (companyIds != null) ...companyIds,
     ];
-    
+
     if (allCompanyIds.isNotEmpty) {
       if (allCompanyIds.length == 1) {
         query = query.eq('company_id', allCompanyIds.first);
@@ -32,7 +34,7 @@ class StoreRepository {
         query = query.filter('company_id', 'in', allCompanyIds);
       }
     }
-    
+
     if (categories != null && categories.isNotEmpty) {
       query = query.filter('category_tag', 'in', categories);
     }

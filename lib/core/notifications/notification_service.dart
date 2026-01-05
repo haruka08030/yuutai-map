@@ -70,7 +70,7 @@ class NotificationService {
     if (daysList == null || daysList.isEmpty) {
       return;
     }
-    
+
     final notifyAtHour = 9;
 
     for (final day in daysList) {
@@ -95,7 +95,7 @@ class NotificationService {
         scheduledAt.copyWith(hour: notifyAtHour, minute: 0, second: 0),
         tz.local,
       );
-      
+
       // Create a unique ID for each notification to avoid collisions
       final notificationId = (b.id! * 1000) + day;
 
@@ -105,7 +105,8 @@ class NotificationService {
         '「${b.companyName}」の期限が${day == 0 ? "本日" : "$day日後"}です。',
         scheduledDate,
         notificationDetails,
-        payload: idStr, // Use the same payload to group notifications by benefit
+        payload:
+            idStr, // Use the same payload to group notifications by benefit
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }

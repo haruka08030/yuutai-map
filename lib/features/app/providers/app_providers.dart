@@ -15,5 +15,5 @@ class SelectedFolderIdNotifier extends Notifier<String?> {
 // Expose the NotifierProvider
 final selectedFolderIdProvider =
     NotifierProvider<SelectedFolderIdNotifier, String?>(() {
-  return SelectedFolderIdNotifier();
-});
+      return SelectedFolderIdNotifier();
+    });

@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class EmptyStateView extends StatelessWidget {
   const EmptyStateView({
     super.key,
-    required this.icon,
+    this.icon,
+    this.imagePath,
     required this.title,
     this.subtitle,
     this.actionLabel,
     this.onActionPressed,
   });
 
-  final IconData icon;
+  final IconData? icon;
+  final String? imagePath;
   final String title;
   final String? subtitle;
   final String? actionLabel;
@@ -18,46 +22,86 @@ class EmptyStateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final fg = cs.onSurface.withAlpha(165);
-    final sub = cs.onSurface.withAlpha(114);
-
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(40.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: fg,
-            ),
-            const SizedBox(height: 16),
+            if (imagePath != null)
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                ), // Added horizontal margin
+                child: ClipRRect(
+                  // Added ClipRRect for rounded corners
+                  borderRadius: BorderRadius.circular(
+                    20,
+                  ), // Apply desired radius
+                  child: Image.asset(
+                    imagePath!,
+                    fit: BoxFit.contain, // Ensure proper scaling
+                  ),
+                ),
+              )
+            else if (icon != null)
+              Icon(icon, size: 80, color: AppTheme.dividerColor(context))
+            else
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                ), // Added horizontal margin
+                child: ClipRRect(
+                  // Added ClipRRect for rounded corners
+                  borderRadius: BorderRadius.circular(
+                    20,
+                  ), // Apply desired radius
+                  child: Image.asset(
+                    'assets/images/empty_state.png',
+                    fit: BoxFit.contain, // Ensure proper scaling
+                  ),
+                ),
+              ),
+            const SizedBox(height: 32),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: fg,
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: GoogleFonts.outfit(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF111827),
+              ),
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: sub,
-                    ),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppTheme.secondaryTextColor(context),
+                  height: 1.5,
+                ),
               ),
             ],
             if (actionLabel != null && onActionPressed != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
               ElevatedButton.icon(
                 onPressed: onActionPressed,
-                icon: const Icon(Icons.add),
-                label: Text(actionLabel!),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(
+                  actionLabel!,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                ),
               ),
             ],
           ],

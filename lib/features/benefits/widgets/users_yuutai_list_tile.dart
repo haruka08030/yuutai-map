@@ -1,3 +1,5 @@
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:intl/intl.dart';
 
@@ -33,192 +36,140 @@ class UsersYuutaiListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.watch(usersYuutaiRepositoryProvider);
+    final daysRemaining = benefit.expiryDate != null
+        ? _calculateDaysRemaining(benefit.expiryDate!)
+        : null;
+    final isUsed = benefit.status == BenefitStatus.used;
+    final appColors = Theme.of(context).extension<AppColors>();
 
-    return Slidable(
-      key: ValueKey(benefit.id),
-      startActionPane: ActionPane(
-        motion: const DrawerMotion(),
-        children: [
-          SlidableAction(
-            backgroundColor: Theme.of(context).extension<AppColors>()?.editActionBackground ?? Colors.white,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            icon: Icons.edit,
-            label: '編集',
-            onPressed: (_) {
-              context.push('/yuutai/edit', extra: benefit);
-            },
-          ),
-          SlidableAction(
-            backgroundColor: Theme.of(context).extension<AppColors>()?.deleteActionBackground ?? Colors.white,
-            foregroundColor: Theme.of(context).extension<AppColors>()?.deleteActionForeground ?? Colors.white,
-            icon: Icons.delete,
-            label: '削除',
-            onPressed: (_) async {
-              await HapticFeedback.lightImpact();
-              if (!context.mounted) return;
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('削除しますか？'),
-                  content: Text('「${benefit.companyName}」を削除します。取り消せません。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                      child: const Text('キャンセル'),
-                    ),
-                    FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Theme.of(context).extension<AppColors>()?.deleteActionBackground ?? Colors.white,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Slidable(
+        key: ValueKey(benefit.id),
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              onPressed: (_) => context.push('/yuutai/edit', extra: benefit),
+              backgroundColor: appColors?.editActionBackground ?? Colors.blue,
+              foregroundColor: Colors.white,
+              icon: Icons.edit_outlined,
+              label: '編集',
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(12),
+              ),
+            ),
+          ],
+        ),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              onPressed: (_) async {
+                await HapticFeedback.lightImpact();
+                if (!context.mounted) return;
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('削除しますか？'),
+                    content: Text('「${benefit.companyName}」を削除します。取り消せません。'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(false),
+                        child: const Text('キャンセル'),
                       ),
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                      child: const Text('削除'),
-                    ),
-                  ],
-                ),
-              );
-              if (ok == true && benefit.id != null) {
-                await HapticFeedback.heavyImpact();
-                await repo.delete(benefit.id!);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('削除しました'),
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-        ],
-      ),
-      endActionPane: ActionPane(
-        motion: const DrawerMotion(),
-        children: [
-          SlidableAction(
-            backgroundColor: Theme.of(context).extension<AppColors>()?.editActionBackground ?? Colors.white,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            icon: Icons.edit,
-            label: '編集',
-            onPressed: (_) {
-              context.push('/yuutai/edit', extra: benefit);
-            },
-          ),
-          SlidableAction(
-            backgroundColor: Theme.of(context).extension<AppColors>()?.deleteActionBackground ?? Colors.white,
-            foregroundColor: Theme.of(context).extension<AppColors>()?.deleteActionForeground ?? Colors.white,
-            icon: Icons.delete,
-            label: '削除',
-            onPressed: (_) async {
-              await HapticFeedback.lightImpact();
-              if (!context.mounted) return;
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('削除しますか？'),
-                  content: Text('「${benefit.companyName}」を削除します。取り消せません。'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                      child: const Text('キャンセル'),
-                    ),
-                    FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Theme.of(context).extension<AppColors>()?.deleteActionBackground ?? Colors.white,
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: appColors?.deleteActionBackground,
+                        ),
+                        onPressed: () => Navigator.of(ctx).pop(true),
+                        child: const Text('削除'),
                       ),
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                      child: const Text('削除'),
-                    ),
-                  ],
-                ),
-              );
-              if (ok == true && benefit.id != null) {
-                await HapticFeedback.heavyImpact();
-                await repo.delete(benefit.id!);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('削除しました'),
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                    ],
+                  ),
+                );
+                if (ok == true && benefit.id != null) {
+                  await HapticFeedback.heavyImpact();
+                  await repo.delete(benefit.id!);
                 }
-              }
-            },
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          context.push('/yuutai/edit', extra: benefit);
-        },
-        child: Builder(
-          builder: (context) {
-            final hasSubtitle = benefit.expiryDate != null || subtitle != null;
-            final isUsed = benefit.status == BenefitStatus.used;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              },
+              backgroundColor: appColors?.deleteActionBackground ?? Colors.red,
+              foregroundColor: Colors.white,
+              icon: Icons.delete_outline,
+              label: '削除',
+              borderRadius: const BorderRadius.horizontal(
+                right: Radius.circular(12),
+              ),
+            ),
+          ],
+        ),
+        child: Card(
+          margin: EdgeInsets.zero,
+          child: InkWell(
+            onTap: () => context.push('/yuutai/edit', extra: benefit),
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Row(
-                crossAxisAlignment: hasSubtitle
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.center,
                 children: [
-                  // チェックボックス
-                  Checkbox(
-                    value: isUsed,
-                    onChanged: (v) async {
-                      if (benefit.id == null) return;
-                      await HapticFeedback.lightImpact();
-                      final newStatus =
-                          v ?? false ? BenefitStatus.used : BenefitStatus.active;
-                      repo.updateStatus(benefit.id!, newStatus);
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                  Theme(
+                    data: ThemeData(
+                      unselectedWidgetColor: AppTheme.dividerColor(context),
                     ),
-                    activeColor: Theme.of(context).colorScheme.primary, // Themed primary color
-                    visualDensity: VisualDensity.compact,
+                    child: Checkbox(
+                      value: isUsed,
+                      onChanged: (v) async {
+                        if (benefit.id == null) return;
+                        await HapticFeedback.lightImpact();
+                        final newStatus = v ?? false
+                            ? BenefitStatus.used
+                            : BenefitStatus.active;
+                        repo.updateStatus(benefit.id!, newStatus);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  // コンテンツ
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        // タイトル（企業名）
                         Text(
                           benefit.companyName,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            decoration:
-                                isUsed ? TextDecoration.lineThrough : null,
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isUsed
+                                ? AppTheme.secondaryTextColor(context)
+                                : null,
+                            decoration: isUsed
+                                ? TextDecoration.lineThrough
+                                : null,
                           ),
                         ),
-                        // 期限日
                         if (benefit.expiryDate != null) ...[
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 4),
                           Builder(
                             builder: (context) {
-                              final daysRemaining = _calculateDaysRemaining(benefit.expiryDate!);
-                              final appColors = Theme.of(context).extension<AppColors>();
-                              
-                              Color color = AppTheme.secondaryTextColor(context);
+                              Color color = AppTheme.secondaryTextColor(
+                                context,
+                              );
                               IconData? icon;
-                              
-                              if (!isUsed) {
+                              if (!isUsed && daysRemaining != null) {
                                 if (daysRemaining <= 7) {
-                                  color = appColors?.expiringUrgent ?? Colors.red;
-                                  icon = Icons.error_outline;
+                                  color =
+                                      appColors?.expiringUrgent ?? Colors.red;
+                                  icon = Icons.timer_outlined;
                                 } else if (daysRemaining <= 30) {
-                                  color = appColors?.expiringSoon ?? Colors.orange;
+                                  color =
+                                      appColors?.expiringSoon ?? Colors.orange;
                                   icon = Icons.warning_amber_rounded;
                                 }
                               }
-
                               return Row(
                                 children: [
                                   if (icon != null) ...[
@@ -226,22 +177,29 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                     const SizedBox(width: 4),
                                   ],
                                   Text(
-                                    _formatExpireDate(benefit.expiryDate!),
+                                    '期限: ${_formatExpireDate(benefit.expiryDate!)}',
                                     style: TextStyle(
                                       color: color,
-                                      fontSize: 14,
-                                      fontWeight: icon != null ? FontWeight.bold : FontWeight.normal,
-                                      decoration: isUsed ? TextDecoration.lineThrough : null,
+                                      fontSize: 13,
+                                      fontWeight: icon != null
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
                                   ),
-                                  if (!isUsed && daysRemaining >= 0) ...[
+                                  if (!isUsed &&
+                                      daysRemaining != null &&
+                                      daysRemaining >= 0) ...[
                                     const SizedBox(width: 8),
                                     Text(
-                                      daysRemaining == 0 ? '本日まで' : 'あと$daysRemaining日',
+                                      daysRemaining == 0
+                                          ? '本日まで'
+                                          : 'あと$daysRemaining日',
                                       style: TextStyle(
                                         color: color,
                                         fontSize: 12,
-                                        fontWeight: icon != null ? FontWeight.bold : FontWeight.normal,
+                                        fontWeight: icon != null
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                       ),
                                     ),
                                   ],
@@ -250,23 +208,25 @@ class UsersYuutaiListTile extends ConsumerWidget {
                             },
                           ),
                         ],
-                        // 優待内容
                         if (subtitle != null) ...[
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 10),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 4,
+                              horizontal: 10,
+                              vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.benefitChipBackgroundColor(context), // Themed color
-                              borderRadius: BorderRadius.circular(4),
+                              color: AppTheme.benefitChipBackgroundColor(
+                                context,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               subtitle!,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Theme.of(context).colorScheme.primary, // Themed primary color
+                              style: GoogleFonts.outfit(
+                                fontSize: 13,
+                                color: AppTheme.chipForegroundColor(context),
+                                fontWeight: FontWeight.w500,
                                 decoration: isUsed
                                     ? TextDecoration.lineThrough
                                     : null,
@@ -277,10 +237,15 @@ class UsersYuutaiListTile extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: AppTheme.dividerColor(context),
+                    size: 20,
+                  ),
                 ],
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
