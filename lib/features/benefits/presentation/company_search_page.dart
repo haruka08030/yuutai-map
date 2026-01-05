@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
+import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/app/widgets/empty_state_view.dart';
 
 class CompanySearchPage extends ConsumerStatefulWidget {
   const CompanySearchPage({super.key});
@@ -45,14 +46,19 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
       body: companyList.when(
         data: (companies) {
           if (companies.isEmpty && _query.isNotEmpty) {
-            return Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text('"$_query" を企業名として追加'),
-                onPressed: () {
-                  Navigator.of(context).pop(_query);
-                },
-              ),
+            return EmptyStateView(
+              icon: Icons.business_outlined,
+              title: '企業が見つかりません',
+              subtitle: '入力した「$_query」をそのまま使用できます',
+              actionLabel: '「$_query」を使用する',
+              onActionPressed: () => Navigator.of(context).pop(_query),
+            );
+          }
+          if (companies.isEmpty && _query.isEmpty) {
+            return const EmptyStateView(
+              icon: Icons.search,
+              title: '企業を検索',
+              subtitle: '会社名を入力してください',
             );
           }
           return ListView.builder(
