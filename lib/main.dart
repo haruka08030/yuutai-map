@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart'; // New import
 import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
+import 'package:flutter_stock/app/routing/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,20 +40,21 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends ConsumerWidget { // Changed from StatelessWidget
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Added WidgetRef ref
-    final themeMode = ref.watch(themeProvider); // Watch themeProvider
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    final router = ref.watch(routerProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'yuutai-map',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      darkTheme: AppTheme.dark, // Added darkTheme
-      themeMode: themeMode, // Used themeMode from provider
-      home: const AuthGate(),
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
+      routerConfig: router,
     );
   }
 }

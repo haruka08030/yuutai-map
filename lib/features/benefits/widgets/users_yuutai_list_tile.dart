@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,12 +38,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             icon: Icons.edit,
             label: '編集',
-            onPressed: (_) async {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UsersYuutaiEditPage(existing: benefit),
-                ),
-              );
+            onPressed: (_) {
+              context.push('/yuutai/edit', extra: benefit);
             },
           ),
           SlidableAction(
@@ -98,12 +95,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             icon: Icons.edit,
             label: '編集',
-            onPressed: (_) async {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UsersYuutaiEditPage(existing: benefit),
-                ),
-              );
+            onPressed: (_) {
+              context.push('/yuutai/edit', extra: benefit);
             },
           ),
           SlidableAction(
@@ -153,11 +146,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
       ),
       child: InkWell(
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => UsersYuutaiEditPage(existing: benefit),
-            ),
-          );
+          context.push('/yuutai/edit', extra: benefit);
         },
         child: Builder(
           builder: (context) {

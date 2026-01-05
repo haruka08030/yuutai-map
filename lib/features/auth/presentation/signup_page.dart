@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -216,13 +217,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     ),
                   const SizedBox(height: 24),
                   TextButton(
-                    onPressed: _isLoading ? null : () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      );
-                    },
+                    onPressed: _isLoading ? null : () => context.go('/login'),
                     child: const Text('すでにアカウントをお持ちですか？ ログイン'),
                   ),
                 ],
