@@ -127,9 +127,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                       // Log the full error for debugging
                       debugPrint('Failed to update profile: $e');
                       if (!currentContext.mounted) return;
-                      ScaffoldMessenger.of(
-                        currentContext,
-                      ).showSnackBar(const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')));
+                      ScaffoldMessenger.of(currentContext).showSnackBar(
+                        const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
