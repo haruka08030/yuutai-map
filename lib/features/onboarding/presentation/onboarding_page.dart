@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
-import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -56,10 +56,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     }
   }
 
-  void _onSkip() {
-    _completeOnboarding();
-  }
-
   void _onContinue() {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
@@ -73,60 +69,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final timeString = DateFormat('H:mm').format(now);
-
     return Scaffold(
       backgroundColor: const Color(0xFF24A19C),
       body: SafeArea(
         child: Stack(
           children: [
-            // Status Bar with Time and Skip button (for pages after first)
-            if (_currentPage > 0)
-              Positioned(
-                left: 0,
-                top: 0,
-                right: 0,
-                child: Container(
-                  height: 44,
-                  color: const Color(0xFF24A19C),
-                  padding: const EdgeInsets.symmetric(horizontal: 21),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        timeString,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontFamily: 'SF Pro Text',
-                          fontWeight: FontWeight.w600,
-                          height: 1.33,
-                          letterSpacing: -0.24,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: _onSkip,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                        ),
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
             // Main Content
             PageView.builder(
               controller: _pageController,
@@ -137,52 +84,50 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               },
             ),
 
-            // Page Indicators (only for first page)
-            if (_currentPage == 0)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    _pages.length,
-                    (index) => _buildPageIndicator(index == _currentPage),
-                  ),
+            // Page Indicators
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 100, // Position above the continue button
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _pages.length,
+                  (index) => _buildPageIndicator(index == _currentPage),
                 ),
               ),
+            ),
 
-            // Continue Button (for pages after first)
-            if (_currentPage > 0)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 40,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _onContinue,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF24A19C),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+            // Continue Button
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 40,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _onContinue,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF24A19C),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    ),
+                    child: Text(
+                      _currentPage == _pages.length - 1 ? '始める' : '次へ',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -198,112 +143,93 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   Widget _buildFirstPage(OnboardingContent content) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 120),
-          // Icon
-          Container(
-            width: 68,
-            height: 68,
-            decoration: ShapeDecoration(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(13.80),
-              ),
-            ),
-            child: Icon(content.icon, size: 40, color: const Color(0xFF24A19C)),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(flex: 2),
+        // Icon
+        Container(
+          width: 68,
+          height: 68,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(13.80),
           ),
-          const SizedBox(height: 32),
-          // Title and Description
-          Column(
+          child: Icon(content.icon, size: 40, color: const Color(0xFF24A19C)),
+        ),
+        const SizedBox(height: 32),
+        // Title and Description
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 250,
-                child: Text(
-                  content.title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontFamily: 'Helvetica',
-                    fontWeight: FontWeight.w700,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(0, 4),
-                        blurRadius: 4,
-                        color: Color.fromRGBO(0, 0, 0, 0.25),
-                      ),
-                    ],
-                  ),
+              Text(
+                content.title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: 250,
-                child: Text(
-                  content.description,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontFamily: 'ABeeZee',
-                    fontWeight: FontWeight.w400,
-                    height: 1.43,
-                  ),
+              Text(
+                content.description,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  height: 1.43,
                 ),
               ),
             ],
           ),
-          const Spacer(),
-        ],
-      ),
+        ),
+        const Spacer(flex: 3),
+      ],
     );
   }
 
   Widget _buildSecondaryPage(OnboardingContent content, int index) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 60),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 40),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  content.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontFamily: 'Helvetica',
-                    fontWeight: FontWeight.w700,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Spacer(flex: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                content.title,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  content.description,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                  ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                content.description,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 40),
-          Expanded(child: _buildContentCards(index)),
-        ],
-      ),
+        ),
+        const SizedBox(height: 40),
+        Expanded(child: _buildContentCards(index)),
+        const Spacer(flex: 1),
+      ],
     );
   }
 
@@ -311,7 +237,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     if (pageIndex == 1) {
       // 優待管理ページのカード
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           children: [
             _buildFeatureCard(
@@ -393,10 +319,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 const SizedBox(height: 4),

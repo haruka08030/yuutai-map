@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/features/auth/presentation/initial_auth_choice_page.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
 
 class AuthGate extends ConsumerWidget {
@@ -19,8 +18,8 @@ class AuthGate extends ConsumerWidget {
           // navigating away from this page to /yuutai.
           return const AppLoadingIndicator();
         }
-        // User is not logged in, show initial choice screen
-        return const InitialAuthChoicePage();
+        // User is not logged in, defer to GoRouter's redirect
+        return const SizedBox.shrink();
       },
       loading: () => const AppLoadingIndicator(),
       error: (error, stackTrace) =>
