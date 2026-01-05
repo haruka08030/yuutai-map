@@ -38,11 +38,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/onboarding';
       }
 
-      final isAuthPath =
-          location == '/' || location == '/login' || location == '/signup';
+      final isAuthPath = location == '/login' || location == '/signup';
 
       if (isLoggedIn && isAuthPath) {
         return '/yuutai';
+      }
+
+      if (!isLoggedIn && location == '/') {
+        return '/login';
       }
 
       final isProtectedSubRoute =
