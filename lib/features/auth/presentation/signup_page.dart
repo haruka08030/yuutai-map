@@ -1,5 +1,3 @@
-import 'package:go_router/go_router.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,7 +8,7 @@ import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -224,90 +222,17 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                       child: const Text('登録する'),
                     ),
                     const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: AppTheme.dividerColor(context)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            'または',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppTheme.secondaryTextColor(context),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: AppTheme.dividerColor(context)),
-                        ),
-                      ],
-                    ),
+                    const OrDivider(),
                     const SizedBox(height: 32),
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: const Text('Googleで登録'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).extension<AppColors>()?.googleButtonBackground,
-                        foregroundColor: Theme.of(
-                          context,
-                        ).extension<AppColors>()?.googleButtonForeground,
-                        side: BorderSide(color: AppTheme.dividerColor(context)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.borderRadius,
-                          ),
-                        ),
-                      ),
+                    SocialSignInButtons(
+                      isLoading: _isLoading,
+                      onSignInWithGoogle: _signInWithGoogle,
+                      onSignInWithApple: _signInWithApple,
+                      googleLabel: 'Googleで登録',
+                      appleLabel: 'Appleで登録',
                     ),
-                    if (!kIsWeb &&
-                        (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.macOS)) ...[
-                      const SizedBox(height: 12),
-                      ElevatedButton.icon(
-                        onPressed: _isLoading ? null : _signInWithApple,
-                        icon: const Icon(Icons.apple, size: 20),
-                        label: const Text('Appleで登録'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).extension<AppColors>()?.appleButtonBackground,
-                          foregroundColor: Theme.of(
-                            context,
-                          ).extension<AppColors>()?.appleButtonForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppTheme.borderRadius,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 48),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'すでにアカウントをお持ちですか？',
-                          style: TextStyle(
-                            color: AppTheme.secondaryTextColor(context),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () => context.go('/login'),
-                          child: const Text(
-                            'ログイン',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                    LoginPrompt(isLoading: _isLoading),
                   ],
                 ),
               ),
