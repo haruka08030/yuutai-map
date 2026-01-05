@@ -9,10 +9,11 @@ final companyListProvider = FutureProvider.family<List<String>, String>((
     return [];
   }
   final supabase = ref.watch(supabaseProvider);
+  final escapedQuery = query.replaceAll('%', r'\%').replaceAll('_', r'\_');
   final builder = supabase
       .from('companies')
       .select('name')
-      .ilike('name', '%$query%');
+      .ilike('name', escapedQuery);
 
   final response = await builder;
 

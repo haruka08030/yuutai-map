@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:flutter_stock/domain/entities/folder.dart';
 import 'package:flutter_stock/domain/repositories/folder_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FolderRepositorySupabase implements FolderRepository {
   FolderRepositorySupabase(this._supabase) {
@@ -85,23 +87,14 @@ class FolderRepositorySupabase implements FolderRepository {
       throw Exception('User not logged in');
     }
 
-    // Use RPC or rely on database cascading rules
-    // If database has ON DELETE SET NULL constraint, you can remove the first query
-    // Otherwise, consider using an RPC function for atomicity
     try {
-      await _supabase
-          .from('users_yuutai')
-          .update({'folder_id': null})
-          .eq('folder_id', id)
-          .eq('user_id', user.id);
-
       await _supabase
           .from(_tableName)
           .delete()
           .eq('id', id)
           .eq('user_id', user.id);
     } catch (e) {
-      // Consider logging or rethrowing with context
+      debugPrint('Error deleting folder: $e');
       rethrow;
     }
   }
