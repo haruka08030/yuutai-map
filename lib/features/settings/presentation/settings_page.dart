@@ -97,6 +97,13 @@ class AccountInfoPage extends ConsumerWidget {
                 context.push(FolderManagementPage.routePath);
               },
             ),
+            ListTile(
+              title: const Text('通知設定'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                context.push('/settings/notifications');
+              },
+            ),
             SwitchListTile(
               title: const Text('ダークモード'),
               value: themeMode == ThemeMode.dark,
