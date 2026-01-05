@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/features/app/presentation/main_page.dart';
 import 'package:flutter_stock/features/auth/presentation/initial_auth_choice_page.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
+import 'package:go_router/go_router.dart';
+import 'package:flutter/scheduler.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
@@ -16,8 +17,13 @@ class AuthGate extends ConsumerWidget {
       data: (state) {
         final session = state.session;
         if (session != null) {
-          // User is logged in, show main app
-          return const MainPage();
+          // User is logged in, redirect to main app shell
+          // Use addPostFrameCallback to avoid calling context.go during build
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            context.go('/yuutai');
+          });
+          // Return a placeholder while redirecting
+          return const AppLoadingIndicator();
         }
         // User is not logged in, show initial choice screen
         return const InitialAuthChoicePage();

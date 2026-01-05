@@ -1,0 +1,51 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/app/theme/theme_provider.dart';
+
+const _defaultNotifyDaysKey = 'defaultNotifyDays';
+// Default values: 30 days before, 7 days before, and on the day (0)
+const List<int> _initialDefaultDays = [30, 7, 0];
+
+class NotificationSettingsRepository {
+  NotificationSettingsRepository(this._ref);
+
+  final Ref _ref;
+
+  List<int> getDefaultNotifyDays() {
+    final prefs = _ref.read(sharedPreferencesProvider);
+    final stored = prefs.getStringList(_defaultNotifyDaysKey);
+    if (stored == null) {
+      return _initialDefaultDays;
+    }
+    return stored.map(int.parse).toList();
+  }
+
+  Future<void> setDefaultNotifyDays(List<int> days) async {
+    final prefs = _ref.read(sharedPreferencesProvider);
+    await prefs.setStringList(
+      _defaultNotifyDaysKey,
+      days.map((d) => d.toString()).toList(),
+    );
+  }
+}
+
+final notificationSettingsRepositoryProvider = Provider<NotificationSettingsRepository>((ref) {
+  return NotificationSettingsRepository(ref);
+});
+
+final defaultNotifyDaysProvider = NotifierProvider<DefaultNotifyDaysNotifier, List<int>>(
+  DefaultNotifyDaysNotifier.new,
+);
+
+class DefaultNotifyDaysNotifier extends Notifier<List<int>> {
+  @override
+  List<int> build() {
+    final repository = ref.watch(notificationSettingsRepositoryProvider);
+    return repository.getDefaultNotifyDays();
+  }
+
+  Future<void> updateDays(List<int> days) async {
+    final repository = ref.read(notificationSettingsRepositoryProvider);
+    await repository.setDefaultNotifyDays(days);
+    state = days;
+  }
+}
