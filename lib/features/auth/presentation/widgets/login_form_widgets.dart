@@ -59,11 +59,15 @@ class SocialSignInButtons extends StatelessWidget {
     required this.isLoading,
     required this.onSignInWithGoogle,
     required this.onSignInWithApple,
+    this.googleLabel = 'Googleでサインイン',
+    this.appleLabel = 'Appleでサインイン',
   });
 
   final bool isLoading;
   final VoidCallback onSignInWithGoogle;
   final VoidCallback onSignInWithApple;
+  final String googleLabel;
+  final String appleLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +77,7 @@ class SocialSignInButtons extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: isLoading ? null : onSignInWithGoogle,
           icon: const Icon(Icons.g_mobiledata, size: 28),
-          label: const Text('Googleでサインイン'),
+          label: Text(googleLabel),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(
               context,
@@ -94,7 +98,7 @@ class SocialSignInButtons extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: isLoading ? null : onSignInWithApple,
             icon: const Icon(Icons.apple, size: 20),
-            label: const Text('Appleでサインイン'),
+            label: Text(appleLabel),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(
                 context,
@@ -108,6 +112,32 @@ class SocialSignInButtons extends StatelessWidget {
             ),
           ),
         ],
+      ],
+    );
+  }
+}
+
+class LoginPrompt extends StatelessWidget {
+  const LoginPrompt({super.key, required this.isLoading});
+
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'すでにアカウントをお持ちですか？',
+          style: TextStyle(color: AppTheme.secondaryTextColor(context)),
+        ),
+        TextButton(
+          onPressed: isLoading ? null : () => context.go('/login'),
+          child: const Text(
+            'ログイン',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
     );
   }
