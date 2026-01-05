@@ -7,11 +7,16 @@ import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
+import 'package:package_info_plus/package_info_plus.dart'; // New import
 
 const String _privacyPolicyUrl =
     'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
 const String _inquiryUrl =
     'https://forms.gle/your-inquiry-form-url'; // TODO: Update with actual inquiry form URL
+
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
+  return await PackageInfo.fromPlatform();
+});
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -126,20 +131,24 @@ class AuthOptionsPage extends StatelessWidget {
           label: 'お問い合わせ',
           onTap: () => launchURL(_inquiryUrl, context),
         ),
-        _SettingsTile(
-          icon: Icons.info_outline_rounded,
-          label: 'ライセンス表記',
-          onTap: () => showLicensePage(context: context),
-        ),
         const SizedBox(height: 48),
         Center(
-          child: Text(
-            'Version 1.0.0',
-            style: TextStyle(
-              color: AppTheme.secondaryTextColor(context),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final packageInfo = ref.watch(packageInfoProvider);
+              return packageInfo.when(
+                data: (info) => Text(
+                  'Version ${info.version}',
+                  style: TextStyle(
+                    color: AppTheme.secondaryTextColor(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                loading: () => const AppLoadingIndicator(),
+                error: (err, stack) => const Text('バージョン情報取得エラー'),
+              );
+            },
           ),
         ),
       ],
@@ -275,13 +284,22 @@ class AccountInfoPage extends ConsumerWidget {
         ),
         const SizedBox(height: 48),
         Center(
-          child: Text(
-            'Version 1.0.0',
-            style: TextStyle(
-              color: AppTheme.secondaryTextColor(context),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final packageInfo = ref.watch(packageInfoProvider);
+              return packageInfo.when(
+                data: (info) => Text(
+                  'Version ${info.version}',
+                  style: TextStyle(
+                    color: AppTheme.secondaryTextColor(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                loading: () => const AppLoadingIndicator(),
+                error: (err, stack) => const Text('バージョン情報取得エラー'),
+              );
+            },
           ),
         ),
       ],

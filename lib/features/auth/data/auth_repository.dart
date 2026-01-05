@@ -3,13 +3,32 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart'; // New import for ChangeNotifier
 
-class AuthRepository {
-  AuthRepository(this._client);
+class AuthRepository extends ChangeNotifier {
+  AuthRepository(this._client) {
+    _client.auth.onAuthStateChange.listen((data) {
+      // Reset guest status if a real user logs in/out
+      if (data.event == AuthChangeEvent.signedIn ||
+          data.event == AuthChangeEvent.signedOut ||
+          data.event == AuthChangeEvent.userUpdated) {
+        _isGuest = false;
+        notifyListeners();
+      }
+    });
+  }
 
   final SupabaseClient _client;
+  bool _isGuest = false;
+
+  bool get isGuest => _isGuest;
 
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
+
+  void signInAsGuest() {
+    _isGuest = true;
+    notifyListeners();
+  }
 
   Future<void> signUpWithEmailPassword({
     required String email,
@@ -70,7 +89,9 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
+    _isGuest = false;
     await _client.auth.signOut();
+    notifyListeners();
   }
 
   Future<void> deleteAccount() async {
