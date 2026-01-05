@@ -38,7 +38,7 @@ class InitialAuthChoicePage extends StatelessWidget {
                 const SizedBox(height: 24),
                 TextButton(
                   onPressed: () {
-                    context.go('/main');
+                    context.go('/yuutai');
                   },
                   child: const Text('ゲストモードで続ける'),
                 ),

@@ -216,11 +216,7 @@ class _$UsersYuutaiEditStateImpl implements _UsersYuutaiEditState {
     this.initialBenefit,
     this.expireOn,
     this.selectedFolderId,
-    final Map<int, bool> selectedPredefinedDays = const {
-      30: false,
-      7: false,
-      0: false,
-    },
+    final Map<int, bool> selectedPredefinedDays = const {},
     this.customDayEnabled = false,
     this.customDayValue = '',
     this.isLoading = false,

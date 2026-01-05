@@ -39,6 +39,14 @@ class NotificationService {
     }
   }
 
+  Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+    return await _plugin.pendingNotificationRequests();
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await _plugin.cancel(id);
+  }
+
   Future<void> reschedulePresetReminders(UsersYuutai b) async {
     if (b.id == null) return;
     final idStr = b.id.toString();

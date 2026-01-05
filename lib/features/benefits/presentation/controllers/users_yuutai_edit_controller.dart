@@ -5,6 +5,7 @@ import 'package:flutter_stock/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +17,7 @@ class UsersYuutaiEditState with _$UsersYuutaiEditState {
     UsersYuutai? initialBenefit,
     DateTime? expireOn,
     String? selectedFolderId,
-    @Default({30: false, 7: false, 0: false}) Map<int, bool> selectedPredefinedDays,
+    @Default({}) Map<int, bool> selectedPredefinedDays,
     @Default(false) bool customDayEnabled,
     @Default('') String customDayValue,
     @Default(false) bool isLoading,
@@ -47,19 +48,38 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
   @override
   UsersYuutaiEditState build() {
-    final Map<int, bool> selectedDays = {30: false, 7: false, 0: false};
+    final Map<int, bool> selectedDays = {
+      30: false,
+      7: false,
+      3: false,
+      1: false,
+      0: false,
+    };
     bool customEnabled = false;
     String customValue = '';
-    final existingDays = initialBenefit?.notifyDaysBefore ?? [];
-    if (initialBenefit?.alertEnabled == true && existingDays.isNotEmpty) {
-      for (final day in existingDays) {
+    
+    if (initialBenefit == null) {
+      // For new benefits, use global defaults
+      final defaultDays = ref.watch(defaultNotifyDaysProvider);
+      for (final day in defaultDays) {
         if (selectedDays.containsKey(day)) {
           selectedDays[day] = true;
         } else {
-          customEnabled = true;
-          customValue = day.toString();
-          // Assuming only one custom day is supported for now.
-          break;
+          // If it's a custom day not in the predefined map, we'd need more logic
+          // but for now we only support the standard options in settings.
+        }
+      }
+    } else {
+      // For existing benefits, use their specific settings
+      final existingDays = initialBenefit?.notifyDaysBefore ?? [];
+      if (initialBenefit?.alertEnabled == true && existingDays.isNotEmpty) {
+        for (final day in existingDays) {
+          if (selectedDays.containsKey(day)) {
+            selectedDays[day] = true;
+          } else {
+            customEnabled = true;
+            customValue = day.toString();
+          }
         }
       }
     }
