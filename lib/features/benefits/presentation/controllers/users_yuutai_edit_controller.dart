@@ -61,18 +61,16 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     String customValue = '';
     
     if (initialBenefit == null) {
-      // For new benefits, use global defaults
       final defaultDays = ref.watch(defaultNotifyDaysProvider);
       for (final day in defaultDays) {
         if (selectedDays.containsKey(day)) {
           selectedDays[day] = true;
         } else {
-          // If it's a custom day not in the predefined map, we'd need more logic
-          // but for now we only support the standard options in settings.
+          customEnabled = true;
+          customValue = day.toString();
         }
       }
     } else {
-      // For existing benefits, use their specific settings
       final existingDays = initialBenefit?.notifyDaysBefore ?? [];
       if (initialBenefit?.alertEnabled == true && existingDays.isNotEmpty) {
         for (final day in existingDays) {
