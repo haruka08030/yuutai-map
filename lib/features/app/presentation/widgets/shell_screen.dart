@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart'; // Assuming this provides selectedFolderIdProvider
-import 'package:flutter_stock/features/auth/data/auth_repository.dart'; // Assuming this provides isGuestProvider
+
 
 class ShellScreen extends ConsumerStatefulWidget {
   const ShellScreen({
@@ -21,6 +21,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
   // Keeping track of history and search query for initial tab might be handled by each branch's root page
   // or by passing initial state via extra if needed. For now, removing from here.
 
+
   void _goBranch(int index) {
     widget.navigationShell.goBranch(
       index,
@@ -30,27 +31,13 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isGuest = ref.watch(isGuestProvider);
+
     final selectedFolderId = ref.watch(selectedFolderIdProvider);
     final bool isLargeScreen = MediaQuery.of(context).size.width >= 600;
 
-    // TODO: Add FloatingActionButton logic here if needed.
-    // This will likely involve checking the current route or branch to decide
-    // if a FAB should be shown and what it should do.
-    final FloatingActionButton? fab =
-        widget.navigationShell.currentIndex == 0 && !isGuest
-            ? FloatingActionButton(
-                onPressed: () {
-                  context.push('/yuutai/add'); // Assumes /yuutai/add is directly accessible or handled by a specific branch
-                },
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add),
-              )
-            : null;
 
     if (isLargeScreen) {
       return Scaffold(
-        appBar: AppBar(),
         body: Row(
           children: [
             NavigationRail(
@@ -60,15 +47,15 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               destinations: const [
                 NavigationRailDestination(
                   icon: Icon(Icons.list),
-                  label: Text('優待'),
+                  label: Text(''),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.map),
-                  label: Text('マップ'),
+                  label: Text(''),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.settings),
-                  label: Text('設定'),
+                  label: Text(''),
                 ),
               ],
             ),
@@ -77,12 +64,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               child: Stack(
                 children: [
                   widget.navigationShell, // Displays the currently selected branch
-                  if (fab != null)
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: fab,
-                    ),
+
                 ],
               ),
             ),
@@ -91,7 +73,47 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       );
     } else {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: widget.navigationShell.currentIndex == 0
+            ? AppBar(
+                title: const Text(''),
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () async {
+                      // Get the current search query from the URL if it exists
+                      final currentSearchQuery = GoRouter.of(context)
+                          .routerDelegate
+                          .currentConfiguration
+                          .uri
+                          .queryParameters['search'];
+                      final String? result = await context.push<String?>(
+                        Uri(
+                          path: '/yuutai/search',
+                          queryParameters: currentSearchQuery != null
+                              ? {'q': currentSearchQuery}
+                              : null,
+                        ).toString(),
+                      );
+
+                      if (!context.mounted) return;
+
+                      if (result != null && result.isNotEmpty) {
+                        context.go('/yuutai?search=$result');
+                      } else if (result != null && result.isEmpty) {
+                        // If result is empty, clear the search query
+                        context.go('/yuutai');
+                      }
+                    },
+                  ),
+                ],
+              )
+            : null,
         drawer: AppDrawer(
           selectedFolderId: selectedFolderId,
           onFolderSelected: (folderId) {
@@ -121,19 +143,17 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         body: widget.navigationShell, // Displays the currently selected branch
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.list), label: '優待'),
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'マップ'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: '設定'),
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.map), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
           ],
           currentIndex: widget.navigationShell.currentIndex,
           onTap: _goBranch,
           showSelectedLabels: false,
           showUnselectedLabels: false,
         ),
-        floatingActionButton: fab,
+
       );
     }
-  }
-
   }
 }

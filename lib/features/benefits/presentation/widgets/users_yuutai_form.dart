@@ -145,15 +145,15 @@ class UsersYuutaiForm extends ConsumerWidget {
     return '$dateStr $tail';
   }
 
-  String _buildReminderSubtitle(UsersYuutaiEditState controller) {
+  String _buildReminderSubtitle(UsersYuutaiEditState state) {
     final List<String> parts = [];
-    controller.selectedPredefinedDays.forEach((day, selected) {
+    state.selectedPredefinedDays.forEach((day, selected) {
       if (selected) {
         parts.add(day == 0 ? '当日' : '$day日前');
       }
     });
-    if (controller.customDayEnabled && controller.customDayValue.isNotEmpty) {
-      parts.add('${controller.customDayValue}日前 (カスタム)');
+    if (state.customDayEnabled && state.customDayValue.isNotEmpty) {
+      parts.add('${state.customDayValue}日前 (カスタム)');
     }
 
     if (parts.isEmpty) return 'なし';
