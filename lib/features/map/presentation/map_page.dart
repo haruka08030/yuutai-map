@@ -1,6 +1,6 @@
+import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,14 +78,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                     width: double.infinity,
                     child: FilledButton(
                       child: const Text('登録・ログイン画面へ'),
-                      onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) => const InitialAuthChoicePage(),
-                          ),
-                          (route) => false,
-                        );
-                      },
+                      onPressed: () => context.go('/'),
                     ),
                   ),
                 ],

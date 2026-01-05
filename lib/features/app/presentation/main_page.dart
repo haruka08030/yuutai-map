@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
@@ -77,11 +78,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         _selectedIndex == 0 && !isGuest // Only show FAB on the benefits page for non-guests
             ? FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const UsersYuutaiEditPage(),
-                    ),
-                  );
+                  context.push('/yuutai/add');
                 },
                 shape: const CircleBorder(),
                 child: const Icon(Icons.add),

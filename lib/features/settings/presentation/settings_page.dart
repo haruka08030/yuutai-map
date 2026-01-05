@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
@@ -39,18 +39,14 @@ class AuthOptionsPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                context.push('/login');
               },
               child: const Text('ログイン'),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SignUpPage()),
-                );
+                context.push('/signup');
               },
               child: const Text('新規登録'),
             ),
@@ -81,10 +77,7 @@ class AccountInfoPage extends ConsumerWidget {
               title: const Text('フォルダ管理'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => const FolderManagementPage()),
-                );
+                context.push(FolderManagementPage.routePath);
               },
             ),
             SwitchListTile(
