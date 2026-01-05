@@ -2,12 +2,10 @@
     {
         "name": "",
         "store_brand": "",
-        "store_tag": "",
         "address": "",
-        "latitude": "",
-        "longitude": "",
-        "phone": "",
-        "business_hours": "",
-        "company_id": ""
+        "lat": 0,
+        "lng": 0,
+        "company_id": "",
+        "category_tag": ""
     }
 ]

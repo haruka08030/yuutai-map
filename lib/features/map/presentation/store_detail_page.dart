@@ -3,21 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_stock/core/utils/url_launcher_utils.dart'; // New import
 
 class StoreDetailPage extends ConsumerWidget {
   const StoreDetailPage({super.key, required this.place});
 
   final Place place;
-
-  Future<void> _openGoogleMaps() async {
-    final url = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${place.latLng.latitude},${place.latLng.longitude}',
-    );
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,7 +79,11 @@ class StoreDetailPage extends ConsumerWidget {
                   ],
                   const SizedBox(height: 24),
                   FilledButton.icon(
-                    onPressed: _openGoogleMaps,
+                    onPressed: () => launchGoogleMaps(
+                      context: context,
+                      latitude: place.latLng.latitude,
+                      longitude: place.latLng.longitude,
+                    ),
                     icon: const Icon(Icons.map_outlined),
                     label: const Text('Googleマップで開く'),
                   ),
