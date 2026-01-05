@@ -19,8 +19,6 @@ import 'package:flutter_stock/features/settings/presentation/notification_settin
 import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 
-
-
 import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart'; // New Import
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -32,57 +30,57 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
       final location = state.uri.path;
-      
+
       // If the user is logged in, they shouldn't be on the landing page/login/signup
-      final isAuthPath = location == '/' || location == '/login' || location == '/signup';
-      
+      final isAuthPath =
+          location == '/' || location == '/login' || location == '/signup';
+
       if (isLoggedIn && isAuthPath) {
         return '/yuutai';
       }
-      
+
       // Define sub-routes that require authentication
       // Main tabs (/yuutai, /map, /settings) are allowed for guests
-      final isProtectedSubRoute = location.startsWith('/yuutai/') || 
-                                 location.startsWith('/settings/') ||
-                                 location == '/folders'; // or other specific sensitive paths
-      
+      final isProtectedSubRoute =
+          location.startsWith('/yuutai/') ||
+          location.startsWith('/settings/') ||
+          location == '/folders'; // or other specific sensitive paths
+
       if (!isLoggedIn && isProtectedSubRoute) {
         return '/';
       }
-      
+
       return null;
     },
     routes: <RouteBase>[
       // Authentication Routes
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const AuthGate(),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) => const SignUpPage(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const AuthGate()),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+      GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
 
       // Main application shell with bottom navigation
       StatefulShellRoute.indexedStack(
-        builder: (BuildContext context, GoRouterState state, StatefulNavigationShell navigationShell) {
-          return ShellScreen(navigationShell: navigationShell);
-        },
+        builder:
+            (
+              BuildContext context,
+              GoRouterState state,
+              StatefulNavigationShell navigationShell,
+            ) {
+              return ShellScreen(navigationShell: navigationShell);
+            },
         branches: <StatefulShellBranch>[
           // Yuutai List Branch
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
                 path: '/yuutai', // Root for Yuutai List tab
-                builder: (BuildContext context, GoRouterState state) => UsersYuutaiPage(
-                  searchQuery: state.uri.queryParameters['search'] ?? '',
-                  selectedFolderId: state.uri.queryParameters['folderId'],
-                  showHistory: state.uri.queryParameters['showHistory'] == 'true',
-                ),
+                builder: (BuildContext context, GoRouterState state) =>
+                    UsersYuutaiPage(
+                      searchQuery: state.uri.queryParameters['search'] ?? '',
+                      selectedFolderId: state.uri.queryParameters['folderId'],
+                      showHistory:
+                          state.uri.queryParameters['showHistory'] == 'true',
+                    ),
                 routes: [
                   GoRoute(
                     path: 'add',
@@ -106,7 +104,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       GoRoute(
                         path: 'select',
-                        builder: (context, state) => const FolderSelectionPage(),
+                        builder: (context, state) =>
+                            const FolderSelectionPage(),
                       ),
                     ],
                   ),
@@ -118,22 +117,25 @@ final routerProvider = Provider<GoRouter>((ref) {
                         child: const CompanySearchPage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(1.0, 0.0);
-                          const end = Offset.zero;
-                          const curve = Curves.ease;
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.ease;
 
-                          final tween =
-                              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              final tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
                       );
                     },
                   ),
-                  GoRoute( // New route for Yuutai Search
+                  GoRoute(
+                    // New route for Yuutai Search
                     path: 'search',
                     builder: (context, state) => YuutaiSearchPage(
                       initialQuery: state.uri.queryParameters['q'],
@@ -149,7 +151,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: '/map', // Root for Map tab
-                builder: (BuildContext context, GoRouterState state) => const MapPage(),
+                builder: (BuildContext context, GoRouterState state) =>
+                    const MapPage(),
                 routes: [
                   GoRoute(
                     path: 'store/detail',
@@ -173,11 +176,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: '/settings', // Root for Settings tab
-                builder: (BuildContext context, GoRouterState state) => const SettingsPage(),
+                builder: (BuildContext context, GoRouterState state) =>
+                    const SettingsPage(),
                 routes: [
                   GoRoute(
                     path: 'notifications',
-                    builder: (context, state) => const NotificationSettingsPage(),
+                    builder: (context, state) =>
+                        const NotificationSettingsPage(),
                   ),
                   GoRoute(
                     path: 'account',

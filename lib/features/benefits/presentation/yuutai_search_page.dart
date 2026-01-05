@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 
 class YuutaiSearchPage extends ConsumerStatefulWidget {
-  const YuutaiSearchPage({
-    super.key,
-    this.initialQuery,
-  });
+  const YuutaiSearchPage({super.key, this.initialQuery});
 
   final String? initialQuery;
 
@@ -54,7 +51,7 @@ class _YuutaiSearchPageState extends ConsumerState<YuutaiSearchPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // Pop with the current query, in case user started typing and then decided to go back
-            Navigator.of(context).pop(_currentQuery); 
+            Navigator.of(context).pop(_currentQuery);
           },
         ),
       ),

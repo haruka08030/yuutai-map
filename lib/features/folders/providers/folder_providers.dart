@@ -5,9 +5,7 @@ import 'package:flutter_stock/domain/entities/folder.dart';
 import 'package:flutter_stock/domain/repositories/folder_repository.dart';
 
 final folderRepositoryProvider = Provider<FolderRepository>((ref) {
-  return FolderRepositorySupabase(
-    ref.watch(supabaseProvider),
-  );
+  return FolderRepositorySupabase(ref.watch(supabaseProvider));
 });
 
 final foldersProvider = StreamProvider<List<Folder>>((ref) {

@@ -15,9 +15,7 @@ class FolderManagementPage extends ConsumerWidget {
     final foldersAsync = ref.watch(foldersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Folder Management'),
-      ),
+      appBar: AppBar(title: const Text('Folder Management')),
       body: foldersAsync.when(
         data: (folders) {
           if (folders.isEmpty) {
@@ -40,7 +38,8 @@ class FolderManagementPage extends ConsumerWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      onPressed: () => _showEditFolderDialog(context, ref, folder),
+                      onPressed: () =>
+                          _showEditFolderDialog(context, ref, folder),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
@@ -54,9 +53,7 @@ class FolderManagementPage extends ConsumerWidget {
           );
         },
         loading: () => const AppLoadingIndicator(),
-        error: (err, stack) => Center(
-          child: Text('Error: $err'),
-        ),
+        error: (err, stack) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddFolderDialog(context, ref),
@@ -100,7 +97,10 @@ class FolderManagementPage extends ConsumerWidget {
   }
 
   void _showEditFolderDialog(
-      BuildContext context, WidgetRef ref, Folder folder) {
+    BuildContext context,
+    WidgetRef ref,
+    Folder folder,
+  ) {
     final controller = TextEditingController(text: folder.name);
     showDialog(
       context: context,
@@ -120,7 +120,9 @@ class FolderManagementPage extends ConsumerWidget {
             TextButton(
               onPressed: () {
                 if (controller.text.isNotEmpty) {
-                  ref.read(folderRepositoryProvider).updateFolder(
+                  ref
+                      .read(folderRepositoryProvider)
+                      .updateFolder(
                         folder.id!,
                         controller.text,
                         folder.sortOrder,
@@ -137,7 +139,10 @@ class FolderManagementPage extends ConsumerWidget {
   }
 
   void _showDeleteConfirmDialog(
-      BuildContext context, WidgetRef ref, Folder folder) {
+    BuildContext context,
+    WidgetRef ref,
+    Folder folder,
+  ) {
     showDialog(
       context: context,
       builder: (context) {

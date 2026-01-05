@@ -18,8 +18,9 @@ class OcrService {
     final textRecognizer = TextRecognizer();
     RecognizedText recognizedText;
     try {
-      recognizedText =
-          await textRecognizer.processImage(InputImage.fromFilePath(image.path));
+      recognizedText = await textRecognizer.processImage(
+        InputImage.fromFilePath(image.path),
+      );
     } catch (e) {
       await textRecognizer.close();
       // Handle error appropriately (log, rethrow, return null, etc.)

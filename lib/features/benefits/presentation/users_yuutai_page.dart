@@ -1,3 +1,5 @@
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
@@ -12,6 +14,7 @@ import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class UsersYuutaiPage extends ConsumerStatefulWidget {
   const UsersYuutaiPage({
@@ -30,7 +33,6 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 }
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
-
   @override
   void initState() {
     super.initState();
@@ -59,7 +61,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
             child: asyncBenefits.when(
               loading: () => ListView.builder(
                 itemCount: 8,
-                itemBuilder: (context, index) => const UsersYuutaiSkeletonTile(),
+                itemBuilder: (context, index) =>
+                    const UsersYuutaiSkeletonTile(),
               ),
               error: (err, stack) => AppErrorView(
                 message: AppException.from(err).message,
@@ -69,7 +72,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 var items = data;
 
                 // Apply folder filter from URL or settings
-                final effectiveFolderId = widget.selectedFolderId ?? settings.folderId;
+                final effectiveFolderId =
+                    widget.selectedFolderId ?? settings.folderId;
                 if (effectiveFolderId != null) {
                   items = items
                       .where((benefit) => benefit.folderId == effectiveFolderId)
@@ -91,14 +95,17 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   case YuutaiSortOrder.expiryDate:
                     // For expiryDate, we keep nulls (no expiry) at the end
                     items.sort((a, b) {
-                      if (a.expiryDate == null && b.expiryDate == null) return 0;
+                      if (a.expiryDate == null && b.expiryDate == null)
+                        return 0;
                       if (a.expiryDate == null) return 1;
                       if (b.expiryDate == null) return -1;
                       return a.expiryDate!.compareTo(b.expiryDate!);
                     });
                     break;
                   case YuutaiSortOrder.companyName:
-                    items.sort((a, b) => a.companyName.compareTo(b.companyName));
+                    items.sort(
+                      (a, b) => a.companyName.compareTo(b.companyName),
+                    );
                     break;
                   case YuutaiSortOrder.createdAt:
                     // id is auto-incrementing in many cases, or we can use id as proxy for creation order
@@ -126,9 +133,15 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   }
 
                   return EmptyStateView(
-                    icon: Icons.inbox_outlined,
+                    imagePath: 'assets/images/empty_state.png',
                     title: '優待を登録しよう！',
-                    subtitle: isGuest ? 'ログインすると優待を登録して管理できます' : '右上の「＋」ボタンから追加できます',
+                    subtitle: isGuest
+                        ? 'ログインすると優待を登録して管理できます'
+                        : '右上の「＋」ボタンから追加できます',
+                    actionLabel: isGuest ? null : '新規追加',
+                    onActionPressed: isGuest
+                        ? null
+                        : () => context.push('/yuutai/add'),
                   );
                 }
 
@@ -141,28 +154,44 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   final expiringSoon = items.where((b) {
                     if (b.expiryDate == null) return false;
                     final today = DateTime.now();
-                    final diff = DateTime(
-                            b.expiryDate!.year, b.expiryDate!.month, b.expiryDate!.day)
-                        .difference(DateTime(today.year, today.month, today.day))
-                        .inDays;
+                    final diff =
+                        DateTime(
+                              b.expiryDate!.year,
+                              b.expiryDate!.month,
+                              b.expiryDate!.day,
+                            )
+                            .difference(
+                              DateTime(today.year, today.month, today.day),
+                            )
+                            .inDays;
                     return diff >= 0 && diff <= 30;
                   }).toList();
 
-                  final others =
-                      items.where((b) => !expiringSoon.contains(b)).toList();
+                  final others = items
+                      .where((b) => !expiringSoon.contains(b))
+                      .toList();
 
                   return ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     children: [
                       if (expiringSoon.isNotEmpty) ...[
                         _buildSectionHeader(
-                            context, '期限間近', Icons.timer_outlined, Colors.orange),
+                          context,
+                          '期限間近',
+                          Icons.timer_outlined,
+                          const Color(0xFFEF4444),
+                        ),
                         ...expiringSoon.map((b) => _buildTile(b)),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                       ],
                       if (others.isNotEmpty) ...[
                         if (expiringSoon.isNotEmpty)
                           _buildSectionHeader(
-                              context, 'すべて', Icons.list_alt, null),
+                            context,
+                            'すべて',
+                            Icons.list_alt_rounded,
+                            null,
+                          ),
                         ...others.map((b) => _buildTile(b)),
                       ],
                     ],
@@ -171,6 +200,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
 
                 // Plain list for other sort orders
                 return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,
                   itemBuilder: (context, index) => _buildTile(items[index]),
                 );
@@ -183,54 +213,77 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
           ? null
           : FloatingActionButton(
               onPressed: () => context.push('/yuutai/add'),
-              child: const Icon(Icons.add),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Colors.white,
+              elevation: 4,
+              child: const Icon(Icons.add, size: 28),
             ),
     );
   }
 
-  Widget _buildSortBar(BuildContext context, YuutaiListSettings settings,
-      YuutaiListSettingsNotifier notifier) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          _SortChip(
-            label: '期限順',
-            selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
-            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.expiryDate),
-          ),
-          const SizedBox(width: 8),
-          _SortChip(
-            label: '企業名順',
-            selected: settings.sortOrder == YuutaiSortOrder.companyName,
-            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.companyName),
-          ),
-          const SizedBox(width: 8),
-          _SortChip(
-            label: '新着順',
-            selected: settings.sortOrder == YuutaiSortOrder.createdAt,
-            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.createdAt),
-          ),
-        ],
+  Widget _buildSortBar(
+    BuildContext context,
+    YuutaiListSettings settings,
+    YuutaiListSettingsNotifier notifier,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border(
+          bottom: BorderSide(color: AppTheme.dividerColor(context)),
+        ),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            _SortChip(
+              label: '期限順',
+              selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
+              onSelected: (_) =>
+                  notifier.setSortOrder(YuutaiSortOrder.expiryDate),
+            ),
+            const SizedBox(width: 8),
+            _SortChip(
+              label: '企業名順',
+              selected: settings.sortOrder == YuutaiSortOrder.companyName,
+              onSelected: (_) =>
+                  notifier.setSortOrder(YuutaiSortOrder.companyName),
+            ),
+            const SizedBox(width: 8),
+            _SortChip(
+              label: '新着順',
+              selected: settings.sortOrder == YuutaiSortOrder.createdAt,
+              onSelected: (_) =>
+                  notifier.setSortOrder(YuutaiSortOrder.createdAt),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSectionHeader(
-      BuildContext context, String title, IconData icon, Color? color) {
+    BuildContext context,
+    String title,
+    IconData icon,
+    Color? color,
+  ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
       child: Row(
         children: [
-          Icon(icon, 
-               size: 18, 
-               color: color ?? Theme.of(context).colorScheme.primary),
+          Icon(
+            icon,
+            size: 18,
+            color: color ?? Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(width: 8),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 14,
+            style: GoogleFonts.outfit(
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: color ?? Theme.of(context).colorScheme.primary,
             ),
@@ -241,46 +294,17 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   }
 
   Widget _buildTile(UsersYuutai b) {
-    return Column(
-      children: [
-        UsersYuutaiListTile(
-          benefit: b,
-          subtitle:
-              (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
-        ),
-        Builder(
-          builder: (context) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(
-              height: 1,
-              thickness: 0.5,
-              color: AppTheme.dividerColor(context),
-            ),
-          ),
-        ),
-      ],
+    return UsersYuutaiListTile(
+      benefit: b,
+      subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
     );
   }
 
   Widget _buildSimpleList(List<UsersYuutai> items) {
-    return ListView.separated(
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
-      separatorBuilder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Divider(
-          height: 1,
-          thickness: 0.5,
-          color: AppTheme.dividerColor(context),
-        ),
-      ),
-      itemBuilder: (context, index) {
-        final b = items[index];
-        return UsersYuutaiListTile(
-          benefit: b,
-          subtitle:
-              (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
-        );
-      },
+      itemBuilder: (context, index) => _buildTile(items[index]),
     );
   }
 }
@@ -301,26 +325,28 @@ class _SortChip extends StatelessWidget {
     return ChoiceChip(
       label: Text(
         label,
-        style: TextStyle(
-          fontSize: 12,
-          color: selected
-              ? Theme.of(context).colorScheme.onPrimary
-              : Theme.of(context).colorScheme.onSurface,
+        style: GoogleFonts.outfit(
+          fontSize: 13,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          color: selected ? Colors.white : AppTheme.secondaryTextColor(context),
         ),
       ),
       selected: selected,
       onSelected: onSelected,
       selectedColor: Theme.of(context).colorScheme.primary,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      backgroundColor: Colors.transparent,
       showCheckmark: false,
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       visualDensity: VisualDensity.compact,
+      elevation: 0,
+      pressElevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
         side: BorderSide(
           color: selected
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              : AppTheme.dividerColor(context),
+          width: 1,
         ),
       ),
     );

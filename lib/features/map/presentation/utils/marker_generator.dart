@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MarkerGenerator {
-  Future<BitmapDescriptor> getMarkerBitmap(int size, {String? text, Color? color}) async {
+  Future<BitmapDescriptor> getMarkerBitmap(
+    int size, {
+    String? text,
+    Color? color,
+  }) async {
     if (kIsWeb) size = (size / 2).round();
 
     final pictureRecorder = PictureRecorder();
@@ -22,15 +26,18 @@ class MarkerGenerator {
       textPainter.text = TextSpan(
         text: text,
         style: TextStyle(
-            fontSize: size / 3,
-            color: Colors.white,
-            fontWeight: FontWeight.normal),
+          fontSize: size / 3,
+          color: Colors.white,
+          fontWeight: FontWeight.normal,
+        ),
       );
       textPainter.layout();
       textPainter.paint(
         canvas,
         Offset(
-            size / 2 - textPainter.width / 2, size / 2 - textPainter.height / 2),
+          size / 2 - textPainter.width / 2,
+          size / 2 - textPainter.height / 2,
+        ),
       );
     }
 

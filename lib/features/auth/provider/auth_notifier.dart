@@ -15,15 +15,19 @@ class AuthNotifier extends ChangeNotifier {
   bool get isLoggedIn => _isLoggedIn;
 
   void _init() {
-    _subscription = _ref.listen(authStateChangesProvider, (previous, next) {
-      next.whenData((state) {
-        final newIsLoggedIn = state.session != null;
-        if (_isLoggedIn != newIsLoggedIn) {
-          _isLoggedIn = newIsLoggedIn;
-          notifyListeners();
-        }
-      });
-    }, fireImmediately: true); // Added fireImmediately for initial state if needed
+    _subscription = _ref.listen(
+      authStateChangesProvider,
+      (previous, next) {
+        next.whenData((state) {
+          final newIsLoggedIn = state.session != null;
+          if (_isLoggedIn != newIsLoggedIn) {
+            _isLoggedIn = newIsLoggedIn;
+            notifyListeners();
+          }
+        });
+      },
+      fireImmediately: true,
+    ); // Added fireImmediately for initial state if needed
 
     // Set initial state
     final authState = _ref.read(authStateChangesProvider).value;

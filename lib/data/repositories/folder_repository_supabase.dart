@@ -28,6 +28,7 @@ class FolderRepositorySupabase implements FolderRepository {
         .order('sort_order')
         .map(_rowsToEntities);
   }
+
   @override
   Future<List<Folder>> getFolders() async {
     final user = _user;
@@ -65,16 +66,16 @@ class FolderRepositorySupabase implements FolderRepository {
     });
   }
 
-
   @override
   Future<void> updateFolder(String id, String name, int sortOrder) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
-    await _supabase.from(_tableName).update({
-      'name': name,
-      'sort_order': sortOrder,
-    }).eq('id', id).eq('user_id', _user!.id);
+    await _supabase
+        .from(_tableName)
+        .update({'name': name, 'sort_order': sortOrder})
+        .eq('id', id)
+        .eq('user_id', _user!.id);
   }
 
   @override
@@ -83,29 +84,27 @@ class FolderRepositorySupabase implements FolderRepository {
     if (user == null) {
       throw Exception('User not logged in');
     }
-    
+
     // Use RPC or rely on database cascading rules
     // If database has ON DELETE SET NULL constraint, you can remove the first query
     // Otherwise, consider using an RPC function for atomicity
     try {
-    await _supabase
-        .from('users_yuutai')
-        .update({'folder_id': null})
-        .eq('folder_id', id)
-        .eq('user_id', user.id);
-    
-    await _supabase
-        .from(_tableName)
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
-  } catch (e) {
-    // Consider logging or rethrowing with context
-    rethrow;
+      await _supabase
+          .from('users_yuutai')
+          .update({'folder_id': null})
+          .eq('folder_id', id)
+          .eq('user_id', user.id);
+
+      await _supabase
+          .from(_tableName)
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+    } catch (e) {
+      // Consider logging or rethrowing with context
+      rethrow;
+    }
   }
- }
-
-
 
   List<Folder> _rowsToEntities(List<Map<String, dynamic>> rows) =>
       rows.map((r) => Folder.fromJson(r)).toList();

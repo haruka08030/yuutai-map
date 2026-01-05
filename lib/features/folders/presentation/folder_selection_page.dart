@@ -10,9 +10,7 @@ class FolderSelectionPage extends ConsumerWidget {
     final foldersAsync = ref.watch(foldersProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('フォルダを選択'),
-      ),
+      appBar: AppBar(title: const Text('フォルダを選択')),
       body: foldersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('エラー: $err')),

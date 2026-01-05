@@ -21,7 +21,8 @@ sealed class AppException implements Exception {
       }
     }
 
-    if (error.toString().contains('SocketException') || error.toString().contains('Network')) {
+    if (error.toString().contains('SocketException') ||
+        error.toString().contains('Network')) {
       return NetworkExceptionApp('ネットワーク接続エラーが発生しました。通信環境を確認してください。');
     }
 

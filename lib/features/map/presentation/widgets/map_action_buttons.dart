@@ -12,21 +12,30 @@ class MapActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        FloatingActionButton.small(
-          heroTag: 'location_fab',
-          onPressed: onLocationPressed,
-          child: const Icon(Icons.my_location),
-        ),
-        const SizedBox(height: 16),
-        FloatingActionButton(
-          heroTag: 'filter_fab',
-          onPressed: onFilterPressed,
-          child: const Icon(Icons.filter_list),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0, bottom: 20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'location_fab',
+            onPressed: onLocationPressed,
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF24A19C),
+            elevation: 4,
+            child: const Icon(Icons.my_location, size: 20),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
+            heroTag: 'filter_fab',
+            onPressed: onFilterPressed,
+            backgroundColor: const Color(0xFF24A19C),
+            foregroundColor: Colors.white,
+            elevation: 6,
+            child: const Icon(Icons.filter_list_rounded, size: 28),
+          ),
+        ],
+      ),
     );
   }
 }

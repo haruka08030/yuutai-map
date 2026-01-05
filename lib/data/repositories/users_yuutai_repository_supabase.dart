@@ -35,8 +35,9 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
 
   @override
   Stream<List<domain.UsersYuutai>> watchActive() {
-    return watchAll().map((list) =>
-        list.where((i) => i.status == BenefitStatus.active).toList());
+    return watchAll().map(
+      (list) => list.where((i) => i.status == BenefitStatus.active).toList(),
+    );
   }
 
   @override
@@ -67,24 +68,31 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
     if (data['id'] == null) {
       data.remove('id');
     }
-    
+
     final res = await _supabase.from(_tableName).upsert(data).select().single();
     final inserted = domain.UsersYuutai.fromJson(res);
 
     if (scheduleReminders) {
-      await _ref.read(notificationServiceProvider).reschedulePresetReminders(inserted);
+      await _ref
+          .read(notificationServiceProvider)
+          .reschedulePresetReminders(inserted);
     }
   }
 
   @override
-  Future<void> updateStatus(int id, BenefitStatus status,
-      {bool scheduleReminders = true}) async {
+  Future<void> updateStatus(
+    int id,
+    BenefitStatus status, {
+    bool scheduleReminders = true,
+  }) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
-    await _supabase.from(_tableName).update({
-      'status': status.name,
-    }).eq('id', id).eq('user_id', _user!.id);
+    await _supabase
+        .from(_tableName)
+        .update({'status': status.name})
+        .eq('id', id)
+        .eq('user_id', _user!.id);
 
     if (status == BenefitStatus.used && scheduleReminders) {
       await _ref.read(notificationServiceProvider).cancelAllFor(id.toString());
