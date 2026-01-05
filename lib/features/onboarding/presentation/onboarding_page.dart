@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_stock/app/theme/theme_provider.dart';
+import 'package:intl/intl.dart';
 
-class OnboardingPage extends StatefulWidget {
+class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
   @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
+class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
   final List<OnboardingContent> _pages = [
     const OnboardingContent(
       title: '優待マップ',
-      description: '優待を管理するためのマップ',
+      description: 'The best to do list application for you',
       icon: Icons.map_outlined,
+      isFirstPage: true,
     ),
     const OnboardingContent(
       title: '優待を管理',
-      description: 'あなたの優待券を簡単に管理できます',
+      description: 'あなたの優待券を簡単に管理できます\n期限や使用状況を一目で確認できます',
       icon: Icons.card_giftcard_outlined,
+      isFirstPage: false,
     ),
     const OnboardingContent(
       title: '期限を確認',
-      description: '期限が近い優待券をお知らせします',
+      description: '期限が近い優待券をお知らせします\n通知で見逃しを防ぎます',
       icon: Icons.notifications_outlined,
+      isFirstPage: false,
     ),
   ];
 
@@ -41,107 +48,84 @@ class _OnboardingPageState extends State<OnboardingPage> {
     });
   }
 
+  Future<void> _completeOnboarding() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setBool('onboardingCompleted', true);
+    if (mounted) {
+      context.go('/');
+    }
+  }
+
+  void _onSkip() {
+    _completeOnboarding();
+  }
+
+  void _onContinue() {
+    if (_currentPage < _pages.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _completeOnboarding();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final now = DateTime.now();
+    final timeString = DateFormat('H:mm').format(now);
 
     return Scaffold(
       backgroundColor: const Color(0xFF24A19C),
       body: SafeArea(
         child: Stack(
           children: [
-            // Status Bar
-            Positioned(
-              left: 0,
-              top: 0,
-              child: Container(
-                width: screenWidth,
-                height: 44,
-                color: const Color(0xFF24A19C),
-                child: Stack(
-                  children: [
-                    // Battery indicator
-                    Positioned(
-                      right: 21,
-                      top: 17.33,
-                      child: Opacity(
-                        opacity: 0.35,
-                        child: Container(
-                          width: 22,
-                          height: 11.33,
-                          decoration: ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                width: 1,
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(2.67),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 19.33,
-                      top: 19.33,
-                      child: Container(
-                        width: 18,
-                        height: 7.33,
-                        decoration: ShapeDecoration(
+            // Status Bar with Time and Skip button (for pages after first)
+            if (_currentPage > 0)
+              Positioned(
+                left: 0,
+                top: 0,
+                right: 0,
+                child: Container(
+                  height: 44,
+                  color: const Color(0xFF24A19C),
+                  padding: const EdgeInsets.symmetric(horizontal: 21),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        timeString,
+                        style: const TextStyle(
                           color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(1.33),
-                          ),
+                          fontSize: 15,
+                          fontFamily: 'SF Pro Text',
+                          fontWeight: FontWeight.w600,
+                          height: 1.33,
+                          letterSpacing: -0.24,
                         ),
                       ),
-                    ),
-                    // Time
-                    const Positioned(
-                      left: 21,
-                      top: 7,
-                      child: SizedBox(
-                        width: 54,
-                        child: Text(
-                          '9:41',
-                          textAlign: TextAlign.center,
+                      TextButton(
+                        onPressed: _onSkip,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                        ),
+                        child: const Text(
+                          'Skip',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 15,
-                            fontFamily: 'SF Pro Text',
-                            fontWeight: FontWeight.w600,
-                            height: 1.33,
-                            letterSpacing: -0.24,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Home Indicator
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: Container(
-                width: screenWidth,
-                height: 34,
-                color: const Color(0xFF24A19C),
-                child: Center(
-                  child: Container(
-                    width: 134,
-                    height: 5,
-                    decoration: ShapeDecoration(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ),
 
             // Main Content
             PageView.builder(
@@ -149,30 +133,71 @@ class _OnboardingPageState extends State<OnboardingPage> {
               onPageChanged: _onPageChanged,
               itemCount: _pages.length,
               itemBuilder: (context, index) {
-                return _buildPage(_pages[index]);
+                return _buildPage(_pages[index], index);
               },
             ),
 
-            // Page Indicators
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  _pages.length,
-                  (index) => _buildPageIndicator(index == _currentPage),
+            // Page Indicators (only for first page)
+            if (_currentPage == 0)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _pages.length,
+                    (index) => _buildPageIndicator(index == _currentPage),
+                  ),
                 ),
               ),
-            ),
+
+            // Continue Button (for pages after first)
+            if (_currentPage > 0)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 40,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _onContinue,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF24A19C),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPage(OnboardingContent content) {
+  Widget _buildPage(OnboardingContent content, int index) {
+    if (content.isFirstPage) {
+      return _buildFirstPage(content);
+    } else {
+      return _buildSecondaryPage(content, index);
+    }
+  }
+
+  Widget _buildFirstPage(OnboardingContent content) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -241,6 +266,155 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
+  Widget _buildSecondaryPage(OnboardingContent content, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 60),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  content.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontFamily: 'Helvetica',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  content.description,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          Expanded(child: _buildContentCards(index)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentCards(int pageIndex) {
+    if (pageIndex == 1) {
+      // 優待管理ページのカード
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            _buildFeatureCard(
+              title: '優待券を追加',
+              description: '会社名や期限を登録',
+              icon: Icons.add_circle_outline,
+              color: Colors.blue,
+            ),
+            const SizedBox(height: 16),
+            _buildFeatureCard(
+              title: 'フォルダで整理',
+              description: 'カテゴリー別に分類',
+              icon: Icons.folder_outlined,
+              color: Colors.orange,
+            ),
+          ],
+        ),
+      );
+    } else if (pageIndex == 2) {
+      // 期限確認ページのカード
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            _buildFeatureCard(
+              title: '期限通知',
+              description: '期限が近づいたら通知',
+              icon: Icons.notifications_active_outlined,
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            _buildFeatureCard(
+              title: 'マップで確認',
+              description: '優待が使える店舗をマップで表示',
+              icon: Icons.map_outlined,
+              color: Colors.green,
+            ),
+          ],
+        ),
+      );
+    }
+    return const SizedBox();
+  }
+
+  Widget _buildFeatureCard({
+    required String title,
+    required String description,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withAlpha(10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPageIndicator(bool isActive) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 3),
@@ -258,10 +432,12 @@ class OnboardingContent {
   final String title;
   final String description;
   final IconData icon;
+  final bool isFirstPage;
 
   const OnboardingContent({
     required this.title,
     required this.description,
     required this.icon,
+    required this.isFirstPage,
   });
 }

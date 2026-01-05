@@ -1,6 +1,3 @@
-import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,6 +7,8 @@ import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart'; // New import
+import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart'; // New import
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -105,67 +104,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
-  Future<void> _showForgotPasswordDialog() async {
-    final emailController = TextEditingController();
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('パスワードをリセット'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('登録したメールアドレスを入力してください。パスワードリセット用のメールを送信します。'),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('キャンセル'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-                if (email.isEmpty) {
-                  return;
-                }
-                final scaffoldMessenger = ScaffoldMessenger.of(dialogContext);
-                final navigator = Navigator.of(dialogContext);
-                try {
-                  await ref
-                      .read(authRepositoryProvider)
-                      .resetPasswordForEmail(email: email);
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text('パスワードリセット用のメールを送信しました。')),
-                  );
-                  navigator.pop();
-                } on AuthException catch (e) {
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text(AppException.from(e).message)),
-                  );
-                } catch (e) {
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text(AppException.from(e).message)),
-                  );
-                }
-              },
-              child: const Text('送信'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,7 +185,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: TextButton(
                         onPressed: _isLoading
                             ? null
-                            : _showForgotPasswordDialog,
+                            : () => showForgotPasswordDialog(context, ref),
                         child: const Text(
                           'パスワードを忘れましたか？',
                           style: TextStyle(
@@ -264,90 +202,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: const Text('ログイン'),
                     ),
                     const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: AppTheme.dividerColor(context)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            'または',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppTheme.secondaryTextColor(context),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: AppTheme.dividerColor(context)),
-                        ),
-                      ],
-                    ),
+                    const OrDivider(),
                     const SizedBox(height: 32),
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: const Text('Googleでサインイン'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).extension<AppColors>()?.googleButtonBackground,
-                        foregroundColor: Theme.of(
-                          context,
-                        ).extension<AppColors>()?.googleButtonForeground,
-                        side: BorderSide(color: AppTheme.dividerColor(context)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppTheme.borderRadius,
-                          ),
-                        ),
-                      ),
+                    SocialSignInButtons(
+                      isLoading: _isLoading,
+                      onSignInWithGoogle: _signInWithGoogle,
+                      onSignInWithApple: _signInWithApple,
                     ),
-                    if (!kIsWeb &&
-                        (defaultTargetPlatform == TargetPlatform.iOS ||
-                            defaultTargetPlatform == TargetPlatform.macOS)) ...[
-                      const SizedBox(height: 12),
-                      ElevatedButton.icon(
-                        onPressed: _isLoading ? null : _signInWithApple,
-                        icon: const Icon(Icons.apple, size: 20),
-                        label: const Text('Appleでサインイン'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).extension<AppColors>()?.appleButtonBackground,
-                          foregroundColor: Theme.of(
-                            context,
-                          ).extension<AppColors>()?.appleButtonForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppTheme.borderRadius,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 48),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'アカウントをお持ちでないですか？',
-                          style: TextStyle(
-                            color: AppTheme.secondaryTextColor(context),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () => context.go('/signup'),
-                          child: const Text(
-                            '新規登録',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                    SignUpPrompt(isLoading: _isLoading),
                   ],
                 ),
               ),
