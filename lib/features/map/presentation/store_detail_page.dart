@@ -24,9 +24,7 @@ class StoreDetailPage extends ConsumerWidget {
     final benefitsAsync = ref.watch(activeUsersYuutaiProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('店舗詳細'),
-      ),
+      appBar: AppBar(title: const Text('店舗詳細')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -34,7 +32,9 @@ class StoreDetailPage extends ConsumerWidget {
             // Store Info Header
             Container(
               padding: const EdgeInsets.all(24),
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -42,9 +42,14 @@ class StoreDetailPage extends ConsumerWidget {
                     children: [
                       if (place.category != null)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -62,8 +67,8 @@ class StoreDetailPage extends ConsumerWidget {
                   Text(
                     place.name,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   if (place.address != null) ...[
                     const SizedBox(height: 8),
@@ -100,14 +105,16 @@ class StoreDetailPage extends ConsumerWidget {
                   Text(
                     '利用可能な優待',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   benefitsAsync.when(
                     data: (benefits) {
-                      final matchingBenefits = benefits.where((b) => b.companyId == place.companyId).toList();
-                      
+                      final matchingBenefits = benefits
+                          .where((b) => b.companyId == place.companyId)
+                          .toList();
+
                       if (matchingBenefits.isEmpty) {
                         return Center(
                           child: Padding(
@@ -122,7 +129,9 @@ class StoreDetailPage extends ConsumerWidget {
                                 const SizedBox(height: 8),
                                 Text(
                                   'この店舗で利用可能な優待はありません',
-                                  style: TextStyle(color: Theme.of(context).disabledColor),
+                                  style: TextStyle(
+                                    color: Theme.of(context).disabledColor,
+                                  ),
                                 ),
                               ],
                             ),
@@ -134,13 +143,17 @@ class StoreDetailPage extends ConsumerWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: matchingBenefits.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
                         itemBuilder: (context, index) {
-                          return UsersYuutaiListTile(benefit: matchingBenefits[index]);
+                          return UsersYuutaiListTile(
+                            benefit: matchingBenefits[index],
+                          );
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (error, _) => Text('エラー: $error'),
                   ),
                 ],

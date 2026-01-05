@@ -2,11 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'yuutai_list_settings.freezed.dart';
 
-enum YuutaiSortOrder {
-  expiryDate,
-  companyName,
-  createdAt,
-}
+enum YuutaiSortOrder { expiryDate, companyName, createdAt }
 
 @freezed
 class YuutaiListSettings with _$YuutaiListSettings {

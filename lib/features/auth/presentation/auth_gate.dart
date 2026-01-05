@@ -15,7 +15,7 @@ class AuthGate extends ConsumerWidget {
       data: (state) {
         final session = state.session;
         if (session != null) {
-          // User is logged in. GoRouter's redirect logic will handle 
+          // User is logged in. GoRouter's redirect logic will handle
           // navigating away from this page to /yuutai.
           return const AppLoadingIndicator();
         }

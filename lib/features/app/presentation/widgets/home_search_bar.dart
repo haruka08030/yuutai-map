@@ -103,7 +103,9 @@ class _CompanySearchBarState extends State<CompanySearchBar> {
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
           filled: true,
-          fillColor: Theme.of(context).colorScheme.surface, // Background is surface color
+          fillColor: Theme.of(
+            context,
+          ).colorScheme.surface, // Background is surface color
           enabledBorder: baseBorder,
           disabledBorder: baseBorder,
           focusedBorder: baseBorder, // 焦点時も色はほぼ変えない（スクショ準拠）

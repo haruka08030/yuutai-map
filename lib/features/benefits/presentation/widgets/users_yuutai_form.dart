@@ -15,11 +15,15 @@ class UsersYuutaiForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(usersYuutaiEditControllerProvider(existing));
-    final notifier = ref.read(usersYuutaiEditControllerProvider(existing).notifier);
+    final notifier = ref.read(
+      usersYuutaiEditControllerProvider(existing).notifier,
+    );
     final titleCtl = ref.watch(titleControllerProvider(existing));
-    final benefitContentCtl = ref.watch(benefitContentControllerProvider(existing));
+    final benefitContentCtl = ref.watch(
+      benefitContentControllerProvider(existing),
+    );
     final notesCtl = ref.watch(notesControllerProvider(existing));
-    
+
     return Form(
       key: formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -34,7 +38,8 @@ class UsersYuutaiForm extends ConsumerWidget {
               hintText: '例: 〇〇ホールディングス',
               suffixIcon: Icon(Icons.search),
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? '企業名を入力してください' : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? '企業名を入力してください' : null,
             readOnly: true,
             onTap: () async {
               final company = await context.push<String>('/company/search');
@@ -84,12 +89,20 @@ class UsersYuutaiForm extends ConsumerWidget {
                   ),
                 const SizedBox(width: 8),
                 TextButton(
-                  onPressed: () => _openExpireSheet(context, controller.expireOn, notifier.setExpireOn),
+                  onPressed: () => _openExpireSheet(
+                    context,
+                    controller.expireOn,
+                    notifier.setExpireOn,
+                  ),
                   child: const Text('選択'),
                 ),
               ],
             ),
-            onTap: () => _openExpireSheet(context, controller.expireOn, notifier.setExpireOn),
+            onTap: () => _openExpireSheet(
+              context,
+              controller.expireOn,
+              notifier.setExpireOn,
+            ),
           ),
           // Folder Selector
           Consumer(
@@ -103,17 +116,24 @@ class UsersYuutaiForm extends ConsumerWidget {
                     return const SizedBox.shrink();
                   }
                   final selectedFolder = controller.selectedFolderId != null
-                      ? folders.firstWhere((f) => f.id == controller.selectedFolderId, orElse: () => folders.first)
+                      ? folders.firstWhere(
+                          (f) => f.id == controller.selectedFolderId,
+                          orElse: () => folders.first,
+                        )
                       : null;
                   return ListTile(
-                     contentPadding: EdgeInsets.zero,
-                     title: const Text('フォルダ'),
-                     subtitle: Text(selectedFolder == null ? '未分類' : selectedFolder.name),
-                     trailing: const Icon(Icons.chevron_right),
-                     onTap: () async {
-                       final result = await context.push<String?>('/folders/select');
-                       notifier.setSelectedFolderId(result);
-                     },
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('フォルダ'),
+                    subtitle: Text(
+                      selectedFolder == null ? '未分類' : selectedFolder.name,
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () async {
+                      final result = await context.push<String?>(
+                        '/folders/select',
+                      );
+                      notifier.setSelectedFolderId(result);
+                    },
                   );
                 },
               );
@@ -138,9 +158,11 @@ class UsersYuutaiForm extends ConsumerWidget {
     final fmt = DateFormat('yyyy/MM/dd (E)', 'ja');
     final dateStr = fmt.format(expireOn);
     final today = DateTime.now();
-    final dd = DateTime(expireOn.year, expireOn.month, expireOn.day)
-        .difference(DateTime(today.year, today.month, today.day))
-        .inDays;
+    final dd = DateTime(
+      expireOn.year,
+      expireOn.month,
+      expireOn.day,
+    ).difference(DateTime(today.year, today.month, today.day)).inDays;
     final tail = dd < 0 ? '・期限切れ' : (dd == 0 ? '・本日' : '・残り$dd日');
     return '$dateStr $tail';
   }
@@ -160,7 +182,11 @@ class UsersYuutaiForm extends ConsumerWidget {
     return parts.join(', ');
   }
 
-  Future<void> _openExpireSheet(BuildContext context, DateTime? currentExpireOn, Function(DateTime?) onDateChanged) async {
+  Future<void> _openExpireSheet(
+    BuildContext context,
+    DateTime? currentExpireOn,
+    Function(DateTime?) onDateChanged,
+  ) async {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -172,22 +198,37 @@ class UsersYuutaiForm extends ConsumerWidget {
           builder: (ctx, setLocalState) {
             return SafeArea(
               child: Padding(
-                padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: MediaQuery.of(ctx).viewInsets.bottom + 12),
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('キャンセル')),
-                        FilledButton(onPressed: () { onDateChanged(pending); Navigator.of(ctx).pop(); }, child: const Text('決定')),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('キャンセル'),
+                        ),
+                        FilledButton(
+                          onPressed: () {
+                            onDateChanged(pending);
+                            Navigator.of(ctx).pop();
+                          },
+                          child: const Text('決定'),
+                        ),
                       ],
                     ),
                     CalendarDatePicker(
                       initialDate: pending ?? today(now),
                       firstDate: today(now),
                       lastDate: DateTime(now.year + 5),
-                      onDateChanged: (d) => setLocalState(() => pending = today(d)),
+                      onDateChanged: (d) =>
+                          setLocalState(() => pending = today(d)),
                     ),
                   ],
                 ),
@@ -199,10 +240,18 @@ class UsersYuutaiForm extends ConsumerWidget {
     );
   }
 
-  Future<void> _openReminderPicker(BuildContext context, UsersYuutaiEditController notifier, UsersYuutaiEditState controller) async {
-    final tempSelectedDays = Map<int, bool>.from(controller.selectedPredefinedDays);
+  Future<void> _openReminderPicker(
+    BuildContext context,
+    UsersYuutaiEditController notifier,
+    UsersYuutaiEditState controller,
+  ) async {
+    final tempSelectedDays = Map<int, bool>.from(
+      controller.selectedPredefinedDays,
+    );
     bool tempCustomEnabled = controller.customDayEnabled;
-    final tempCustomCtl = TextEditingController(text: controller.customDayValue);
+    final tempCustomCtl = TextEditingController(
+      text: controller.customDayValue,
+    );
 
     try {
       await showModalBottomSheet(
@@ -213,7 +262,12 @@ class UsersYuutaiForm extends ConsumerWidget {
             builder: (dialogContext, setDialogState) {
               return SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12),
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +278,9 @@ class UsersYuutaiForm extends ConsumerWidget {
                           TextButton(
                             onPressed: () {
                               setDialogState(() {
-                                tempSelectedDays.updateAll((key, value) => false);
+                                tempSelectedDays.updateAll(
+                                  (key, value) => false,
+                                );
                                 tempCustomEnabled = false;
                                 tempCustomCtl.clear();
                               });
@@ -233,7 +289,11 @@ class UsersYuutaiForm extends ConsumerWidget {
                           ),
                           FilledButton(
                             onPressed: () {
-                              notifier.updateReminderSettings(tempSelectedDays, tempCustomEnabled, tempCustomCtl.text);
+                              notifier.updateReminderSettings(
+                                tempSelectedDays,
+                                tempCustomEnabled,
+                                tempCustomCtl.text,
+                              );
                               Navigator.of(dialogContext).pop();
                             },
                             child: const Text('決定'),
@@ -262,9 +322,13 @@ class UsersYuutaiForm extends ConsumerWidget {
                               child: TextFormField(
                                 controller: tempCustomCtl,
                                 keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 textAlign: TextAlign.center,
-                                decoration: const InputDecoration(isDense: true),
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                ),
                                 enabled: tempCustomEnabled,
                               ),
                             ),

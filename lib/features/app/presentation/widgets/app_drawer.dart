@@ -27,24 +27,24 @@ class AppDrawer extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-          FoldersSection(
-            selectedFolderId: selectedFolderId,
-            onFolderSelected: onFolderSelected,
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.confirmation_number),
-            title: const Text('すべて'),
-            selected: selectedFolderId == null,
-            onTap: onAllCouponsTapped,
-          ),
-          const Divider(),
-          // Used Coupons (Moved to bottom)
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('使用済み'),
-            onTap: onHistoryTapped,
-          ),
+            FoldersSection(
+              selectedFolderId: selectedFolderId,
+              onFolderSelected: onFolderSelected,
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.confirmation_number),
+              title: const Text('すべて'),
+              selected: selectedFolderId == null,
+              onTap: onAllCouponsTapped,
+            ),
+            const Divider(),
+            // Used Coupons (Moved to bottom)
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text('使用済み'),
+              onTap: onHistoryTapped,
+            ),
           ],
         ),
       ), // Corrected: Added missing closing parenthesis for SafeArea

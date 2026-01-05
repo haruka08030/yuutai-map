@@ -15,6 +15,5 @@ abstract class Folder with _$Folder {
     @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _Folder;
 
-  factory Folder.fromJson(Map<String, dynamic> json) =>
-      _$FolderFromJson(json);
+  factory Folder.fromJson(Map<String, dynamic> json) => _$FolderFromJson(json);
 }

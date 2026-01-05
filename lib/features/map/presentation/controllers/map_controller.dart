@@ -10,10 +10,11 @@ import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-final mapControllerProvider =
-    AsyncNotifierProvider<MapController, MapState>(() {
-  return MapController();
-});
+final mapControllerProvider = AsyncNotifierProvider<MapController, MapState>(
+  () {
+    return MapController();
+  },
+);
 
 class MapController extends AsyncNotifier<MapState> {
   @override
@@ -71,7 +72,8 @@ class MapController extends AsyncNotifier<MapState> {
 
     if (permission == LocationPermission.deniedForever) {
       throw Exception(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
     return Geolocator.getCurrentPosition();
@@ -91,21 +93,23 @@ class MapController extends AsyncNotifier<MapState> {
     final List<Place> items = [];
 
     if (showAllStores) {
-      final stores =
-          await storeRepo.getStores(categories: selectedCategories.toList());
+      final stores = await storeRepo.getStores(
+        categories: selectedCategories.toList(),
+      );
       for (final store in stores) {
-        items.add(Place(
-          id: store.id,
-          name: store.name,
-          latLng: LatLng(store.latitude, store.longitude),
-          category: store.category,
-          address: store.address,
-          companyId: store.companyId,
-        ));
+        items.add(
+          Place(
+            id: store.id,
+            name: store.name,
+            latLng: LatLng(store.latitude, store.longitude),
+            category: store.category,
+            address: store.address,
+            companyId: store.companyId,
+          ),
+        );
       }
     } else {
-      var benefits =
-          await ref.read(usersYuutaiRepositoryProvider).getActive();
+      var benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
       if (folderId != null) {
         benefits = benefits.where((b) => b.folderId == folderId).toList();
       }
@@ -116,14 +120,16 @@ class MapController extends AsyncNotifier<MapState> {
             categories: selectedCategories.toList(),
           );
           for (final store in stores) {
-            items.add(Place(
-              id: store.id,
-              name: store.name,
-              latLng: LatLng(store.latitude, store.longitude),
-              category: store.category,
-              address: store.address,
-              companyId: store.companyId,
-            ));
+            items.add(
+              Place(
+                id: store.id,
+                name: store.name,
+                latLng: LatLng(store.latitude, store.longitude),
+                category: store.category,
+                address: store.address,
+                companyId: store.companyId,
+              ),
+            );
           }
         }
       }
@@ -138,7 +144,9 @@ class MapController extends AsyncNotifier<MapState> {
   }) async {
     final oldState = await future;
     // ignore: invalid_use_of_internal_member
-    state = const AsyncLoading<MapState>().copyWithPrevious(AsyncData(oldState));
+    state = const AsyncLoading<MapState>().copyWithPrevious(
+      AsyncData(oldState),
+    );
 
     try {
       final items = await _fetchItems(
@@ -146,12 +154,14 @@ class MapController extends AsyncNotifier<MapState> {
         selectedCategories: selectedCategories,
         folderId: folderId,
       );
-      state = AsyncData(oldState.copyWith(
-        items: items,
-        showAllStores: showAllStores,
-        selectedCategories: selectedCategories,
-        folderId: folderId,
-      ));
+      state = AsyncData(
+        oldState.copyWith(
+          items: items,
+          showAllStores: showAllStores,
+          selectedCategories: selectedCategories,
+          folderId: folderId,
+        ),
+      );
     } catch (e, st) {
       // ignore: invalid_use_of_internal_member
       state = AsyncError<MapState>(e, st).copyWithPrevious(AsyncData(oldState));

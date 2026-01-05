@@ -26,5 +26,5 @@ class YuutaiListSettingsNotifier extends Notifier<YuutaiListSettings> {
 
 final yuutaiListSettingsProvider =
     NotifierProvider<YuutaiListSettingsNotifier, YuutaiListSettings>(() {
-  return YuutaiListSettingsNotifier();
-});
+      return YuutaiListSettingsNotifier();
+    });

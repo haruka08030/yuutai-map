@@ -32,10 +32,9 @@ class MapStatusBanner extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.only(left: 12),
           decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .secondaryContainer
-                .withAlpha(242),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondaryContainer.withAlpha(242),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -49,21 +48,17 @@ class MapStatusBanner extends StatelessWidget {
                 child: Text(
                   '保有優待の対象店舗のみ表示中です。',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
                 ),
               ),
-              TextButton(
-                onPressed: onShowAll,
-                child: const Text('すべて表示'),
-              ),
+              TextButton(onPressed: onShowAll, child: const Text('すべて表示')),
               IconButton(
                 icon: const Icon(Icons.close),
                 iconSize: 20,
                 color: Theme.of(context).colorScheme.onSecondaryContainer,
                 onPressed: onClose,
-              )
+              ),
             ],
           ),
         ),

@@ -6,10 +6,11 @@ import 'package:flutter_stock/features/settings/data/notification_settings_repos
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final pendingNotificationsProvider = FutureProvider<List<PendingNotificationRequest>>((ref) {
-  final service = ref.watch(notificationServiceProvider);
-  return service.getPendingNotifications();
-});
+final pendingNotificationsProvider =
+    FutureProvider<List<PendingNotificationRequest>>((ref) {
+      final service = ref.watch(notificationServiceProvider);
+      return service.getPendingNotifications();
+    });
 
 class NotificationSettingsPage extends ConsumerWidget {
   const NotificationSettingsPage({super.key});
@@ -21,9 +22,7 @@ class NotificationSettingsPage extends ConsumerWidget {
     final activeBenefitsAsync = ref.watch(activeUsersYuutaiProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('通知設定'),
-      ),
+      appBar: AppBar(title: const Text('通知設定')),
       body: ListView(
         children: [
           _buildSectionHeader(context, 'デフォルトの通知タイミング'),
@@ -46,7 +45,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                   final benefit = activeBenefitsAsync.value?.firstWhereOrNull(
                     (b) => b.id.toString() == n.payload,
                   );
-                  
+
                   return ListTile(
                     leading: const Icon(Icons.notifications_active_outlined),
                     title: Text(benefit?.companyName ?? '不明な優待'),
@@ -55,7 +54,9 @@ class NotificationSettingsPage extends ConsumerWidget {
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () async {
                         try {
-                          await ref.read(notificationServiceProvider).cancelNotification(n.id);
+                          await ref
+                              .read(notificationServiceProvider)
+                              .cancelNotification(n.id);
                           ref.invalidate(pendingNotificationsProvider);
                         } catch (e) {
                           if (context.mounted) {
@@ -84,21 +85,19 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
-  Widget _buildDefaultTimingSettings(BuildContext context, WidgetRef ref, List<int> currentDays) {
-    final options = {
-      30: '30日前',
-      7: '7日前',
-      3: '3日前',
-      1: '1日前',
-      0: '当日',
-    };
+  Widget _buildDefaultTimingSettings(
+    BuildContext context,
+    WidgetRef ref,
+    List<int> currentDays,
+  ) {
+    final options = {30: '30日前', 7: '7日前', 3: '3日前', 1: '1日前', 0: '当日'};
 
     return Column(
       children: options.entries.map((entry) {

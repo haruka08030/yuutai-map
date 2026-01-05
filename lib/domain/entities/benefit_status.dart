@@ -1,5 +1,1 @@
-enum BenefitStatus {
-  active,
-  used,
-  expired,
-}
+enum BenefitStatus { active, used, expired }

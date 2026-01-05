@@ -32,25 +32,28 @@ class UsersYuutaiEditState with _$UsersYuutaiEditState {
   }) = _UsersYuutaiEditState;
 }
 
-final titleControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  final controller = TextEditingController(text: arg?.companyName ?? '');
-  ref.onDispose(() => controller.dispose());
-  return controller;
-});
-final benefitContentControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  final controller = TextEditingController(text: arg?.benefitDetail ?? '');
-  ref.onDispose(() => controller.dispose());
-  return controller;
-});
-final notesControllerProvider = Provider.autoDispose.family<TextEditingController, UsersYuutai?>((ref, arg) {
-  final controller = TextEditingController(text: arg?.notes ?? '');
-  ref.onDispose(() => controller.dispose());
-  return controller;
-});
+final titleControllerProvider = Provider.autoDispose
+    .family<TextEditingController, UsersYuutai?>((ref, arg) {
+      final controller = TextEditingController(text: arg?.companyName ?? '');
+      ref.onDispose(() => controller.dispose());
+      return controller;
+    });
+final benefitContentControllerProvider = Provider.autoDispose
+    .family<TextEditingController, UsersYuutai?>((ref, arg) {
+      final controller = TextEditingController(text: arg?.benefitDetail ?? '');
+      ref.onDispose(() => controller.dispose());
+      return controller;
+    });
+final notesControllerProvider = Provider.autoDispose
+    .family<TextEditingController, UsersYuutai?>((ref, arg) {
+      final controller = TextEditingController(text: arg?.notes ?? '');
+      ref.onDispose(() => controller.dispose());
+      return controller;
+    });
 
 class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   UsersYuutaiEditController(this.initialBenefit);
-  
+
   final UsersYuutai? initialBenefit;
   final _ocrService = OcrService();
 
@@ -59,7 +62,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     final Map<int, bool> selectedDays = Map.from(_predefinedDayOptions);
     bool customEnabled = false;
     String customValue = '';
-    
+
     if (initialBenefit == null) {
       final defaultDays = ref.watch(defaultNotifyDaysProvider);
       for (final day in defaultDays) {
@@ -102,7 +105,11 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     state = state.copyWith(selectedFolderId: id);
   }
 
-  void updateReminderSettings(Map<int, bool> predefined, bool customDayEnabled, String customDayValue) {
+  void updateReminderSettings(
+    Map<int, bool> predefined,
+    bool customDayEnabled,
+    String customDayValue,
+  ) {
     state = state.copyWith(
       selectedPredefinedDays: predefined,
       customDayEnabled: customDayEnabled,
@@ -117,9 +124,18 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
     try {
       final repo = ref.read(usersYuutaiRepositoryProvider);
-      final title = ref.read(titleControllerProvider(state.initialBenefit)).text.trim();
-      final benefitContent = ref.read(benefitContentControllerProvider(state.initialBenefit)).text.trim();
-      final notes = ref.read(notesControllerProvider(state.initialBenefit)).text.trim();
+      final title = ref
+          .read(titleControllerProvider(state.initialBenefit))
+          .text
+          .trim();
+      final benefitContent = ref
+          .read(benefitContentControllerProvider(state.initialBenefit))
+          .text
+          .trim();
+      final notes = ref
+          .read(notesControllerProvider(state.initialBenefit))
+          .text
+          .trim();
 
       final List<int> notifyDays = [];
       state.selectedPredefinedDays.forEach((day, isSelected) {
@@ -149,16 +165,16 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       await repo.upsert(entity, scheduleReminders: true);
       ref.invalidate(activeUsersYuutaiProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('保存しました')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('保存しました')));
         context.pop();
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppException.from(e).message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
       }
     } finally {
       state = state.copyWith(isLoading: false);
@@ -169,7 +185,8 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     final result = await _ocrService.pickAndRecognizeText();
     if (result == null) return;
 
-    ref.read(benefitContentControllerProvider(state.initialBenefit)).text = result.text;
+    ref.read(benefitContentControllerProvider(state.initialBenefit)).text =
+        result.text;
     if (result.expiryDate != null) {
       state = state.copyWith(expireOn: result.expiryDate);
     }
@@ -180,6 +197,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   }
 }
 
-final usersYuutaiEditControllerProvider =
-    NotifierProvider.autoDispose.family<UsersYuutaiEditController, UsersYuutaiEditState, UsersYuutai?>(
-        UsersYuutaiEditController.new);
+final usersYuutaiEditControllerProvider = NotifierProvider.autoDispose
+    .family<UsersYuutaiEditController, UsersYuutaiEditState, UsersYuutai?>(
+      UsersYuutaiEditController.new,
+    );

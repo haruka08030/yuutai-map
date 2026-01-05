@@ -13,7 +13,9 @@ class UsersYuutaiEditPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final controller = ref.watch(usersYuutaiEditControllerProvider(existing));
-    final notifier = ref.read(usersYuutaiEditControllerProvider(existing).notifier);
+    final notifier = ref.read(
+      usersYuutaiEditControllerProvider(existing).notifier,
+    );
 
     return Scaffold(
       appBar: AppBar(

@@ -18,7 +18,8 @@ class PasswordStrengthIndicator extends StatelessWidget {
     if (password.contains(RegExp(r'[A-Z]'))) score++; // Uppercase
     if (password.contains(RegExp(r'[a-z]'))) score++; // Lowercase
     if (password.contains(RegExp(r'[0-9]'))) score++; // Digits
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) score++; // Symbols
+    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')))
+      score++; // Symbols
 
     if (score < 2) return PasswordStrength.weak;
     if (score < 4) return PasswordStrength.medium;
@@ -73,19 +74,11 @@ class PasswordStrengthIndicator extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
-            text,
-            style: TextStyle(color: color, fontSize: 12),
-          ),
+          child: Text(text, style: TextStyle(color: color, fontSize: 12)),
         ),
       ],
     );
   }
 }
 
-enum PasswordStrength {
-  none,
-  weak,
-  medium,
-  strong,
-}
+enum PasswordStrength { none, weak, medium, strong }

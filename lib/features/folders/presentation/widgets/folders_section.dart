@@ -35,9 +35,9 @@ class FoldersSection extends ConsumerWidget {
                   Text(
                     'フォルダ',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, size: 20),
@@ -46,16 +46,18 @@ class FoldersSection extends ConsumerWidget {
                 ],
               ),
             ),
-            ...folders.map((folder) => ListTile(
-                  leading: const Icon(Icons.folder),
-                  title: Text(folder.name),
-                  selected: selectedFolderId == folder.id,
-                  onTap: () => onFolderSelected(folder.id),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.more_vert, size: 20),
-                    onPressed: () => _showFolderOptions(context, ref, folder),
-                  ),
-                )),
+            ...folders.map(
+              (folder) => ListTile(
+                leading: const Icon(Icons.folder),
+                title: Text(folder.name),
+                selected: selectedFolderId == folder.id,
+                onTap: () => onFolderSelected(folder.id),
+                trailing: IconButton(
+                  icon: const Icon(Icons.more_vert, size: 20),
+                  onPressed: () => _showFolderOptions(context, ref, folder),
+                ),
+              ),
+            ),
           ],
         );
       },
@@ -159,12 +161,14 @@ class FoldersSection extends ConsumerWidget {
                   final folderId = folder.id;
                   if (folderId == null) return;
                   try {
-                    await ref.read(folderRepositoryProvider).deleteFolder(folderId);
+                    await ref
+                        .read(folderRepositoryProvider)
+                        .deleteFolder(folderId);
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('削除に失敗しました: $e')),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('削除に失敗しました: $e')));
                     }
                   }
                 }
@@ -176,7 +180,11 @@ class FoldersSection extends ConsumerWidget {
     );
   }
 
-  void _showRenameFolderDialog(BuildContext context, WidgetRef ref, Folder folder) {
+  void _showRenameFolderDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Folder folder,
+  ) {
     final controller = TextEditingController(text: folder.name);
     showDialog(
       context: context,
@@ -205,7 +213,9 @@ class FoldersSection extends ConsumerWidget {
                   return;
                 }
                 try {
-                  await ref.read(folderRepositoryProvider).updateFolder(
+                  await ref
+                      .read(folderRepositoryProvider)
+                      .updateFolder(
                         folderId,
                         controller.text.trim(),
                         folder.sortOrder,
@@ -213,9 +223,9 @@ class FoldersSection extends ConsumerWidget {
                   if (ctx.mounted) Navigator.pop(ctx);
                 } catch (e) {
                   if (ctx.mounted) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text('更新に失敗しました: $e')),
-                    );
+                    ScaffoldMessenger.of(
+                      ctx,
+                    ).showSnackBar(SnackBar(content: Text('更新に失敗しました: $e')));
                   }
                 }
               }

@@ -16,10 +16,7 @@ class NotificationSettingsRepository {
     if (stored == null) {
       return _initialDefaultDays;
     }
-    final parsed = stored
-        .map((s) => int.tryParse(s))
-        .whereType<int>()
-        .toList();
+    final parsed = stored.map((s) => int.tryParse(s)).whereType<int>().toList();
     // Return default if parsing failed or resulted in empty list
     return parsed.isEmpty ? _initialDefaultDays : parsed;
   }
@@ -33,13 +30,15 @@ class NotificationSettingsRepository {
   }
 }
 
-final notificationSettingsRepositoryProvider = Provider<NotificationSettingsRepository>((ref) {
-  return NotificationSettingsRepository(ref);
-});
+final notificationSettingsRepositoryProvider =
+    Provider<NotificationSettingsRepository>((ref) {
+      return NotificationSettingsRepository(ref);
+    });
 
-final defaultNotifyDaysProvider = NotifierProvider<DefaultNotifyDaysNotifier, List<int>>(
-  DefaultNotifyDaysNotifier.new,
-);
+final defaultNotifyDaysProvider =
+    NotifierProvider<DefaultNotifyDaysNotifier, List<int>>(
+      DefaultNotifyDaysNotifier.new,
+    );
 
 class DefaultNotifyDaysNotifier extends Notifier<List<int>> {
   @override
