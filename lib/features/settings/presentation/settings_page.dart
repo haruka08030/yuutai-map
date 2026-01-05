@@ -13,24 +13,16 @@ const String _privacyPolicyUrl =
 const String _inquiryUrl =
     'https://forms.gle/your-inquiry-form-url'; // TODO: Update with actual inquiry form URL
 
-/// Helper function to launch URLs and show a SnackBar on failure.
-Future<void> _openExternalUrl(String url, BuildContext context) async {
-  try {
-    if (!await launchUrl(Uri.parse(url))) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
-      }
-    }
-  } catch (e) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('リンクを開けませんでした')));
-    }
-  }
-}
+class SettingsPage extends ConsumerWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isGuest = ref.watch(isGuestProvider);
+    final user = ref.watch(authRepositoryProvider).currentUser;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('設定'), centerTitle: true),
       body: isGuest
           ? const AuthOptionsPage()
           : user != null

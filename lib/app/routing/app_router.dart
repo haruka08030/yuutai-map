@@ -2,36 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
-import 'package:flutter_stock/features/app/presentation/widgets/shell_screen.dart'; // New import
+import 'package:flutter_stock/features/app/presentation/widgets/shell_screen.dart';
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';
 import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
 import 'package:flutter_stock/features/auth/provider/auth_notifier.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
-import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart'; // Explicitly import UsersYuutaiPage
+import 'package:flutter_stock/features/benefits/presentation/users_yuutai_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_management_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
-import 'package:flutter_stock/features/map/presentation/map_page.dart'; // Explicitly import MapPage
+import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/map/presentation/store_detail_page.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/settings/presentation/notification_settings_page.dart';
 import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
-
-import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart'; // New Import
+import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart';
+import 'package:flutter_stock/features/onboarding/presentation/onboarding_page.dart';
+import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authNotifierProvider);
+  final onboardingCompleted = ref.watch(onboardingCompletedProvider);
 
   return GoRouter(
-    initialLocation: '/', // AuthGate is still the initial entry point
+    initialLocation: '/',
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
       final location = state.uri.path;
 
-      // If the user is logged in, they shouldn't be on the landing page/login/signup
+      // Check if onboarding needs to be shown (only on first launch)
+      if (!onboardingCompleted && location != '/onboarding') {
+        return '/onboarding';
+      }
+
       final isAuthPath =
           location == '/' || location == '/login' || location == '/signup';
 
@@ -39,12 +45,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/yuutai';
       }
 
-      // Define sub-routes that require authentication
-      // Main tabs (/yuutai, /map, /settings) are allowed for guests
       final isProtectedSubRoute =
           location.startsWith('/yuutai/') ||
           location.startsWith('/settings/') ||
-          location == '/folders'; // or other specific sensitive paths
+          location == '/folders';
 
       if (!isLoggedIn && isProtectedSubRoute) {
         return '/';
@@ -53,12 +57,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: <RouteBase>[
-      // Authentication Routes
       GoRoute(path: '/', builder: (context, state) => const AuthGate()),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingPage(),
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
 
-      // Main application shell with bottom navigation
       StatefulShellRoute.indexedStack(
         builder:
             (
@@ -69,11 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               return ShellScreen(navigationShell: navigationShell);
             },
         branches: <StatefulShellBranch>[
-          // Yuutai List Branch
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/yuutai', // Root for Yuutai List tab
+                path: '/yuutai',
                 builder: (BuildContext context, GoRouterState state) =>
                     UsersYuutaiPage(
                       searchQuery: state.uri.queryParameters['search'] ?? '',
@@ -99,7 +104,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                    path: 'folders', // Nested route for folder management
+                    path: 'folders',
                     builder: (context, state) => const FolderManagementPage(),
                     routes: [
                       GoRoute(
@@ -135,7 +140,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                    // New route for Yuutai Search
                     path: 'search',
                     builder: (context, state) => YuutaiSearchPage(
                       initialQuery: state.uri.queryParameters['q'],
@@ -146,11 +150,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
-          // Map Branch
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/map', // Root for Map tab
+                path: '/map',
                 builder: (BuildContext context, GoRouterState state) =>
                     const MapPage(),
                 routes: [
@@ -171,11 +174,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
-          // Settings Branch
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/settings', // Root for Settings tab
+                path: '/settings',
                 builder: (BuildContext context, GoRouterState state) =>
                     const SettingsPage(),
                 routes: [
