@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
+import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
+import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -8,8 +10,6 @@ import 'package:flutter_stock/app/widgets/empty_state_view.dart';
 import 'package:flutter_stock/app/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/domain/entities/users_yuutai.dart';
-
-
 
 class UsersYuutaiPage extends ConsumerWidget {
   const UsersYuutaiPage({
@@ -25,12 +25,16 @@ class UsersYuutaiPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(yuutaiListSettingsProvider);
+    final settingsNotifier = ref.read(yuutaiListSettingsProvider.notifier);
+
     final asyncBenefits = !showHistory
         ? ref.watch(activeUsersYuutaiProvider)
         : ref.watch(historyUsersYuutaiProvider);
 
     return Column(
       children: [
+        _buildSortBar(context, settings, settingsNotifier),
         Expanded(
           child: asyncBenefits.when(
             loading: () => ListView.builder(
@@ -43,12 +47,15 @@ class UsersYuutaiPage extends ConsumerWidget {
             ),
             data: (data) {
               var items = data;
-              
-              // Apply folder filter
-              if (selectedFolderId != null) {
-                items = items.where((benefit) => benefit.folderId == selectedFolderId).toList();
+
+              // Apply folder filter from URL or settings
+              final effectiveFolderId = selectedFolderId ?? settings.folderId;
+              if (effectiveFolderId != null) {
+                items = items
+                    .where((benefit) => benefit.folderId == effectiveFolderId)
+                    .toList();
               }
-              
+
               if (searchQuery.isNotEmpty) {
                 items = items.where((benefit) {
                   final query = searchQuery.toLowerCase();
@@ -57,6 +64,28 @@ class UsersYuutaiPage extends ConsumerWidget {
                       benefit.benefitDetail?.toLowerCase() ?? '';
                   return title.contains(query) || benefitText.contains(query);
                 }).toList();
+              }
+
+              // Apply Sorting
+              switch (settings.sortOrder) {
+                case YuutaiSortOrder.expiryDate:
+                  // For expiryDate, we keep nulls (no expiry) at the end
+                  items.sort((a, b) {
+                    if (a.expiryDate == null && b.expiryDate == null) return 0;
+                    if (a.expiryDate == null) return 1;
+                    if (b.expiryDate == null) return -1;
+                    return a.expiryDate!.compareTo(b.expiryDate!);
+                  });
+                  break;
+                case YuutaiSortOrder.companyName:
+                  items.sort((a, b) => a.companyName.compareTo(b.companyName));
+                  break;
+                case YuutaiSortOrder.createdAt:
+                  // id is auto-incrementing in many cases, or we can use id as proxy for creation order
+                  // If we had createdAt in UsersYuutai, we would use that.
+                  // For now, let's sort by id descending (newest first)
+                  items.sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+                  break;
               }
 
               if (items.isEmpty) {
@@ -87,34 +116,43 @@ class UsersYuutaiPage extends ConsumerWidget {
                 return _buildSimpleList(items);
               }
 
-              // Filter for active benefits only when grouping
-              final expiringSoon = items.where((b) {
-                if (b.expiryDate == null) return false;
-                final today = DateTime.now();
-                final diff = DateTime(b.expiryDate!.year, b.expiryDate!.month, b.expiryDate!.day)
-                    .difference(DateTime(today.year, today.month, today.day))
-                    .inDays;
-                return diff >= 0 && diff <= 30;
-              }).toList();
+              // Grouping logic (Only if sorting by expiry date)
+              if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
+                final expiringSoon = items.where((b) {
+                  if (b.expiryDate == null) return false;
+                  final today = DateTime.now();
+                  final diff = DateTime(
+                          b.expiryDate!.year, b.expiryDate!.month, b.expiryDate!.day)
+                      .difference(DateTime(today.year, today.month, today.day))
+                      .inDays;
+                  return diff >= 0 && diff <= 30;
+                }).toList();
 
-              // Sort expiring soon by date
-              expiringSoon.sort((a, b) => a.expiryDate!.compareTo(b.expiryDate!));
+                final others =
+                    items.where((b) => !expiringSoon.contains(b)).toList();
 
-              final others = items.where((b) => !expiringSoon.contains(b)).toList();
-
-              return ListView(
-                children: [
-                  if (expiringSoon.isNotEmpty) ...[
-                    _buildSectionHeader(context, '期限間近', Icons.timer_outlined, Colors.orange),
-                    ...expiringSoon.map((b) => _buildTile(b)),
-                    const SizedBox(height: 16),
+                return ListView(
+                  children: [
+                    if (expiringSoon.isNotEmpty) ...[
+                      _buildSectionHeader(
+                          context, '期限間近', Icons.timer_outlined, Colors.orange),
+                      ...expiringSoon.map((b) => _buildTile(b)),
+                      const SizedBox(height: 16),
+                    ],
+                    if (others.isNotEmpty) ...[
+                      if (expiringSoon.isNotEmpty)
+                        _buildSectionHeader(
+                            context, 'すべて', Icons.list_alt, null),
+                      ...others.map((b) => _buildTile(b)),
+                    ],
                   ],
-                  if (others.isNotEmpty) ...[
-                    if (expiringSoon.isNotEmpty)
-                      _buildSectionHeader(context, 'すべて', Icons.list_alt, null),
-                    ...others.map((b) => _buildTile(b)),
-                  ],
-                ],
+                );
+              }
+
+              // Plain list for other sort orders
+              return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) => _buildTile(items[index]),
               );
             },
           ),
@@ -123,12 +161,44 @@ class UsersYuutaiPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, IconData icon, Color? color) {
+  Widget _buildSortBar(BuildContext context, YuutaiListSettings settings,
+      YuutaiListSettingsNotifier notifier) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          _SortChip(
+            label: '期限順',
+            selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
+            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.expiryDate),
+          ),
+          const SizedBox(width: 8),
+          _SortChip(
+            label: '企業名順',
+            selected: settings.sortOrder == YuutaiSortOrder.companyName,
+            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.companyName),
+          ),
+          const SizedBox(width: 8),
+          _SortChip(
+            label: '新着順',
+            selected: settings.sortOrder == YuutaiSortOrder.createdAt,
+            onSelected: (_) => notifier.setSortOrder(YuutaiSortOrder.createdAt),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(
+      BuildContext context, String title, IconData icon, Color? color) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: color ?? Theme.of(context).colorScheme.primary),
+          Icon(icon, 
+               size: 18, 
+               color: color ?? Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Text(
             title,
@@ -148,7 +218,8 @@ class UsersYuutaiPage extends ConsumerWidget {
       children: [
         UsersYuutaiListTile(
           benefit: b,
-          subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
+          subtitle:
+              (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
         ),
         Builder(
           builder: (context) => Padding(
@@ -179,9 +250,52 @@ class UsersYuutaiPage extends ConsumerWidget {
         final b = items[index];
         return UsersYuutaiListTile(
           benefit: b,
-          subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
+          subtitle:
+              (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
         );
       },
+    );
+  }
+}
+
+class _SortChip extends StatelessWidget {
+  const _SortChip({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String label;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: selected
+              ? Theme.of(context).colorScheme.onPrimary
+              : Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      selectedColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      showCheckmark: false,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
     );
   }
 }

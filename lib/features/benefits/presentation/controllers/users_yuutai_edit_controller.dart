@@ -11,13 +11,21 @@ import 'package:go_router/go_router.dart';
 
 part 'users_yuutai_edit_controller.freezed.dart';
 
+const Map<int, bool> _predefinedDayOptions = {
+  30: false,
+  7: false,
+  3: false,
+  1: false,
+  0: false,
+};
+
 @freezed
 class UsersYuutaiEditState with _$UsersYuutaiEditState {
   const factory UsersYuutaiEditState({
     UsersYuutai? initialBenefit,
     DateTime? expireOn,
     String? selectedFolderId,
-    @Default({}) Map<int, bool> selectedPredefinedDays,
+    @Default(_predefinedDayOptions) Map<int, bool> selectedPredefinedDays,
     @Default(false) bool customDayEnabled,
     @Default('') String customDayValue,
     @Default(false) bool isLoading,
@@ -48,13 +56,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
   @override
   UsersYuutaiEditState build() {
-    final Map<int, bool> selectedDays = {
-      30: false,
-      7: false,
-      3: false,
-      1: false,
-      0: false,
-    };
+    final Map<int, bool> selectedDays = Map.from(_predefinedDayOptions);
     bool customEnabled = false;
     String customValue = '';
     

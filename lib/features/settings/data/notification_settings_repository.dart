@@ -16,7 +16,12 @@ class NotificationSettingsRepository {
     if (stored == null) {
       return _initialDefaultDays;
     }
-    return stored.map(int.parse).toList();
+    final parsed = stored
+        .map((s) => int.tryParse(s))
+        .whereType<int>()
+        .toList();
+    // Return default if parsing failed or resulted in empty list
+    return parsed.isEmpty ? _initialDefaultDays : parsed;
   }
 
   Future<void> setDefaultNotifyDays(List<int> days) async {

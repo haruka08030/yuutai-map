@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
 import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
@@ -17,7 +18,7 @@ class NotificationSettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final defaultDays = ref.watch(defaultNotifyDaysProvider);
     final pendingNotifications = ref.watch(pendingNotificationsProvider);
-    final activeBenefits = ref.watch(activeUsersYuutaiProvider).value ?? [];
+    final activeBenefitsAsync = ref.watch(activeUsersYuutaiProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -42,9 +43,8 @@ class NotificationSettingsPage extends ConsumerWidget {
               // For now, just list them.
               return Column(
                 children: notifications.map((n) {
-                  final benefit = activeBenefits.cast().firstWhere(
+                  final benefit = activeBenefitsAsync.value?.firstWhereOrNull(
                     (b) => b.id.toString() == n.payload,
-                    orElse: () => null,
                   );
                   
                   return ListTile(
@@ -54,8 +54,16 @@ class NotificationSettingsPage extends ConsumerWidget {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () async {
-                        await ref.read(notificationServiceProvider).cancelNotification(n.id);
-                        ref.invalidate(pendingNotificationsProvider);
+                        try {
+                          await ref.read(notificationServiceProvider).cancelNotification(n.id);
+                          ref.invalidate(pendingNotificationsProvider);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('通知の削除に失敗しました: $e')),
+                            );
+                          }
+                        }
                       },
                     ),
                   );
