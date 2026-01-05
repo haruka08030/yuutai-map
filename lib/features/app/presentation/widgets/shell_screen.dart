@@ -50,15 +50,13 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
 
     if (isLargeScreen) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppBarTitle(widget.navigationShell.currentIndex)),
-        ),
+        appBar: AppBar(),
         body: Row(
           children: [
             NavigationRail(
               selectedIndex: widget.navigationShell.currentIndex,
               onDestinationSelected: _goBranch,
-              labelType: NavigationRailLabelType.all,
+              labelType: NavigationRailLabelType.none,
               destinations: const [
                 NavigationRailDestination(
                   icon: Icon(Icons.list),
@@ -93,9 +91,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
       );
     } else {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppBarTitle(widget.navigationShell.currentIndex)),
-        ),
+        appBar: AppBar(),
         drawer: AppDrawer(
           selectedFolderId: selectedFolderId,
           onFolderSelected: (folderId) {
@@ -131,22 +127,13 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           ],
           currentIndex: widget.navigationShell.currentIndex,
           onTap: _goBranch,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ),
         floatingActionButton: fab,
       );
     }
   }
 
-  String _getAppBarTitle(int index) {
-    switch (index) {
-      case 0:
-        return '優待リスト';
-      case 1:
-        return 'マップ';
-      case 2:
-        return '設定';
-      default:
-        return 'Yuutai';
-    }
   }
 }
