@@ -31,6 +31,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
+      final isGuest = authNotifier.isGuest; // New
       final location = state.uri.path;
 
       // Check if onboarding needs to be shown (only on first launch)
@@ -40,22 +41,35 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final isAuthPath = location == '/login' || location == '/signup';
 
-      if (isLoggedIn && isAuthPath) {
+      // If already logged in or guest, and trying to access auth path, go to yuutai
+      if ((isLoggedIn || isGuest) && isAuthPath) {
         return '/yuutai';
       }
 
-      if (!isLoggedIn && location == '/') {
+      // If not logged in AND not a guest, and on root, go to login
+      if (!isLoggedIn && !isGuest && location == '/') {
         return '/login';
       }
 
       final isProtectedSubRoute =
-          location.startsWith('/yuutai/') ||
+          location.startsWith('/yuutai/add') || // Add/Edit require login
+          location.startsWith('/yuutai/edit') ||
           location.startsWith('/settings/') ||
           location == '/folders';
 
-      if (!isLoggedIn && isProtectedSubRoute) {
-        return '/';
+      // If not logged in AND not a guest, and trying to access a protected sub-route, go to login
+      if (!isLoggedIn && !isGuest && isProtectedSubRoute) {
+        return '/login';
       }
+
+      // If not logged in AND not a guest, and trying to access root after onboarding, go to login.
+      // This handles cases where a guest navigates away and then tries to come back.
+      if (!isLoggedIn && !isGuest && location == '/') {
+        return '/login';
+      }
+
+      // Allow guests to browse main yuutai and map pages without explicit redirect
+      // For example, if isGuest is true and location is /yuutai or /map, no redirect.
 
       return null;
     },
