@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_stock/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 
 part 'users_yuutai.freezed.dart';
 part 'users_yuutai.g.dart';

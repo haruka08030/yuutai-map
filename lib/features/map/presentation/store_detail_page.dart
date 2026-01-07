@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
-import 'package:flutter_stock/core/utils/url_launcher_utils.dart'; // New import
+import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 
 class StoreDetailPage extends ConsumerWidget {
   const StoreDetailPage({super.key, required this.place});

@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/benefit_status.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {

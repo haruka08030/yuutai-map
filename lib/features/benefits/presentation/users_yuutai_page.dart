@@ -6,10 +6,10 @@ import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/app/widgets/empty_state_view.dart';
-import 'package:flutter_stock/app/widgets/app_error_view.dart';
+import 'package:flutter_stock/core/widgets/empty_state_view.dart';
+import 'package:flutter_stock/core/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:google_fonts/google_fonts.dart';

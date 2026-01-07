@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart';
-import 'package:flutter_stock/app/widgets/loading_elevated_button.dart';
+import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:google_fonts/google_fonts.dart';

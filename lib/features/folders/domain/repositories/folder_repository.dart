@@ -1,4 +1,4 @@
-import 'package:flutter_stock/domain/entities/folder.dart';
+import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
 
 abstract class FolderRepository {
   Stream<List<Folder>> watchFolders();
