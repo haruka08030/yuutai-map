@@ -318,7 +318,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFF030712), // Gray 950
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFFF9FAFB),
+        backgroundColor: base.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,

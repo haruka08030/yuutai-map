@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
+import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -51,6 +52,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Future<void> _completeOnboarding() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool('onboardingCompleted', true);
+    ref.invalidate(onboardingCompletedProvider);
     if (mounted) {
       context.go('/');
     }
