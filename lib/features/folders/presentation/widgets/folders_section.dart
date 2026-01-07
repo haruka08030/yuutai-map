@@ -35,13 +35,13 @@ class FoldersSection extends ConsumerWidget {
                   Text(
                     'フォルダ',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, size: 20),
-                    onPressed: () => _showCreateFolderDialog(context, ref),
+                    onPressed: () => _showCreateFolderDialog(context),
                   ),
                 ],
               ),
@@ -64,57 +64,11 @@ class FoldersSection extends ConsumerWidget {
     );
   }
 
-  void _showCreateFolderDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
+  void _showCreateFolderDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('新しいフォルダ'),
-              content: TextField(
-                controller: controller,
-                decoration: const InputDecoration(
-                  labelText: 'フォルダ名',
-                  hintText: '例: 食事、旅行',
-                ),
-                autofocus: true,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    controller.dispose();
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text('キャンセル'),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    if (controller.text.trim().isNotEmpty) {
-                      try {
-                        await ref
-                            .read(folderRepositoryProvider)
-                            .createFolder(controller.text.trim());
-                        controller.dispose();
-                        if (ctx.mounted) Navigator.pop(ctx);
-                      } catch (e) {
-                        if (ctx.mounted) {
-                          ScaffoldMessenger.of(ctx).showSnackBar(
-                            SnackBar(content: Text('作成に失敗しました: $e')),
-                          );
-                        }
-                      }
-                    }
-                  },
-                  child: const Text('作成'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ).then((_) => controller.dispose());
+      builder: (ctx) => const _CreateFolderDialog(),
+    );
   }
 
   void _showFolderOptions(BuildContext context, WidgetRef ref, Folder folder) {
@@ -129,7 +83,7 @@ class FoldersSection extends ConsumerWidget {
               title: const Text('名前を変更'),
               onTap: () {
                 Navigator.pop(ctx);
-                _showRenameFolderDialog(context, ref, folder);
+                _showRenameFolderDialog(context, folder);
               },
             ),
             ListTile(
@@ -182,58 +136,156 @@ class FoldersSection extends ConsumerWidget {
 
   void _showRenameFolderDialog(
     BuildContext context,
-    WidgetRef ref,
     Folder folder,
   ) {
-    final controller = TextEditingController(text: folder.name);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('フォルダ名を変更'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'フォルダ名'),
-          autofocus: true,
+      builder: (ctx) => _RenameFolderDialog(folder: folder),
+    );
+  }
+}
+
+class _CreateFolderDialog extends ConsumerStatefulWidget {
+  const _CreateFolderDialog();
+
+  @override
+  ConsumerState<_CreateFolderDialog> createState() => _CreateFolderDialogState();
+}
+
+class _CreateFolderDialogState extends ConsumerState<_CreateFolderDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('新しいフォルダ'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          labelText: 'フォルダ名',
+          hintText: '例: 食事、旅行',
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('キャンセル'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (controller.text.trim().isNotEmpty) {
-                final folderId = folder.id;
-                if (folderId == null) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('フォルダIDが不正です')),
-                    );
-                  }
-                  return;
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('キャンセル'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            if (_controller.text.trim().isNotEmpty) {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                await ref
+                    .read(folderRepositoryProvider)
+                    .createFolder(_controller.text.trim());
+
+                if (mounted) {
+                  navigator.pop();
                 }
-                try {
-                  await ref
-                      .read(folderRepositoryProvider)
-                      .updateFolder(
-                        folderId,
-                        controller.text.trim(),
-                        folder.sortOrder,
-                      );
-                  if (ctx.mounted) Navigator.pop(ctx);
-                } catch (e) {
-                  if (ctx.mounted) {
-                    ScaffoldMessenger.of(
-                      ctx,
-                    ).showSnackBar(SnackBar(content: Text('更新に失敗しました: $e')));
-                  }
+              } catch (e) {
+                if (mounted) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text('作成に失敗しました: $e')),
+                  );
                 }
               }
-            },
-            child: const Text('保存'),
-          ),
-        ],
+            }
+          },
+          child: const Text('作成'),
+        ),
+      ],
+    );
+  }
+}
+
+class _RenameFolderDialog extends ConsumerStatefulWidget {
+  const _RenameFolderDialog({required this.folder});
+  final Folder folder;
+
+  @override
+  ConsumerState<_RenameFolderDialog> createState() =>
+      _RenameFolderDialogState();
+}
+
+class _RenameFolderDialogState extends ConsumerState<_RenameFolderDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.folder.name);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('フォルダ名を変更'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(labelText: 'フォルダ名'),
+        autofocus: true,
       ),
-    ).then((_) => controller.dispose());
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('キャンセル'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            if (_controller.text.trim().isNotEmpty) {
+              final folderId = widget.folder.id;
+              if (folderId == null) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('フォルダIDが不正です')),
+                  );
+                }
+                return;
+              }
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                await ref.read(folderRepositoryProvider).updateFolder(
+                      folderId,
+                      _controller.text.trim(),
+                      widget.folder.sortOrder,
+                    );
+                if (mounted) {
+                  navigator.pop();
+                }
+              } catch (e) {
+                if (mounted) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text('更新に失敗しました: $e')),
+                  );
+                }
+              }
+            }
+          },
+          child: const Text('保存'),
+        ),
+      ],
+    );
   }
 }

@@ -1,7 +1,9 @@
 # 優待マップ (Yuutai Map)
+
 株主優待情報を登録し、地図上で優待店舗を確認できる Flutter アプリです。
 
 ### 目的
+
 株主優待の管理をシンプルにし、機会損失（使い忘れ、期限切れ）を防止する。
 地図上で「今使える場所」を可視化し、ユーザーの意思決定コストを低減する。
 
@@ -37,18 +39,13 @@ cd yuutai-map
 
 ### 2. 環境変数の設定
 
-```bash
-# .envファイルを作成
-cp .env.example .env
+以下のAPIキーを設定してください：
 
-# Android用のlocal.propertiesを作成
-cp android/local.properties.example android/local.properties
-```
-
-`.env` と `android/local.properties` を編集して、以下のAPIキーを設定してください：
-
-- **Google Maps API Key**: [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK を有効化して取得
-- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/) でプロジェクト作成後に取得
+- **Google Maps API Key**:
+  [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK
+  を有効化して取得
+- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/)
+  でプロジェクト作成後に取得
 
 ### 3. 依存関係のインストール
 
@@ -59,7 +56,8 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 ### 4. Supabase データベースセットアップ
 
-Supabase ダッシュボードの SQL Editor で `supabase/migrations/` 内のファイルを順番に実行してください：
+Supabase ダッシュボードの SQL Editor で `supabase/migrations/`
+内のファイルを順番に実行してください：
 
 1. `001_create_companies.sql` - 企業マスタテーブル
 2. `002_create_stores.sql` - 店舗テーブル
@@ -67,6 +65,7 @@ Supabase ダッシュボードの SQL Editor で `supabase/migrations/` 内の�
 4. `004_add_folders.sql` - フォルダ機能
 
 または、Supabase CLI を使用している場合：
+
 ```bash
 supabase db push
 ```
@@ -76,11 +75,13 @@ supabase db push
 ### 5. アプリの起動
 
 **Android の場合**:
+
 ```bash
 flutter run
 ```
 
 **iOS の場合**:
+
 ```bash
 flutter run --dart-define=Maps_API_KEY=your_api_key_here
 ```
@@ -121,6 +122,7 @@ lib/
 ```
 
 **設計パターン**:
+
 - Repository Pattern: データアクセスの抽象化
 - Facade Pattern: ローカル/リモートデータソースの切り替え
 - Observer Pattern: Riverpod による状態管理

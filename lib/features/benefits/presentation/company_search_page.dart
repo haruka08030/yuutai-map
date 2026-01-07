@@ -4,6 +4,8 @@ import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/app/widgets/empty_state_view.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_empty_state_with_request.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_results_list.dart';
 
 class CompanySearchPage extends ConsumerStatefulWidget {
   const CompanySearchPage({super.key});
@@ -13,22 +15,22 @@ class CompanySearchPage extends ConsumerStatefulWidget {
 }
 
 class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
-  final _searchCtl = TextEditingController();
+  final _searchController = TextEditingController();
   String _query = '';
 
   @override
   void initState() {
     super.initState();
-    _searchCtl.addListener(() {
+    _searchController.addListener(() {
       setState(() {
-        _query = _searchCtl.text;
+        _query = _searchController.text;
       });
     });
   }
 
   @override
   void dispose() {
-    _searchCtl.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -38,7 +40,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: CompanySearchBar(
-          controller: _searchCtl,
+          controller: _searchController,
           autofocus: true,
           hintText: '企業名で検索',
         ),
@@ -46,13 +48,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
       body: companyList.when(
         data: (companies) {
           if (companies.isEmpty && _query.isNotEmpty) {
-            return EmptyStateView(
-              icon: Icons.business_outlined,
-              title: '企業が見つかりません',
-              subtitle: '入力した「$_query」をそのまま使用できます',
-              actionLabel: '「$_query」を使用する',
-              onActionPressed: () => Navigator.of(context).pop(_query),
-            );
+            return CompanySearchEmptyStateWithRequest(query: _query);
           }
           if (companies.isEmpty && _query.isEmpty) {
             return const EmptyStateView(
@@ -61,16 +57,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
               subtitle: '会社名を入力してください',
             );
           }
-          return ListView.builder(
-            itemCount: companies.length,
-            itemBuilder: (context, index) {
-              final company = companies[index];
-              return ListTile(
-                title: Text(company),
-                onTap: () => Navigator.of(context).pop(company),
-              );
-            },
-          );
+          return CompanySearchResultsList(companies: companies);
         },
         loading: () => const AppLoadingIndicator(),
         error: (error, stack) => Center(child: Text('Error: $error')),

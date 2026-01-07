@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -219,9 +220,7 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
         if (!currentContext.mounted) return;
         // Navigate to login/home after successful deletion
         if (currentContext.mounted) {
-          Navigator.of(currentContext).popUntil((route) => route.isFirst);
-          // Or navigate to a specific route:
-          // Navigator.of(currentContext).pushReplacementNamed('/login');
+          currentContext.go('/login');
         }
       } catch (e) {
         debugPrint('Failed to delete account: $e');
