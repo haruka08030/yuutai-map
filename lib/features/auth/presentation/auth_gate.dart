@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart'; // New Import
+import 'package:flutter_stock/core/widgets/app_loading_indicator.dart'; // New Import
 import 'package:flutter_stock/features/auth/provider/auth_notifier.dart'; // New Import
 
 class AuthGate extends ConsumerWidget {

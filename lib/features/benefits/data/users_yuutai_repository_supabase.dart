@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
-import 'package:flutter_stock/domain/entities/benefit_status.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart' as domain;
-import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart' as domain;
+import 'package:flutter_stock/features/benefits/domain/repositories/users_yuutai_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {

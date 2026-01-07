@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/folder.dart';
+import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 

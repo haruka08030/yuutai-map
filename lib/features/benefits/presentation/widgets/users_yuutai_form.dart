@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/presentation/controllers/users_yuutai_edit_controller.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:intl/intl.dart';
 
 class UsersYuutaiForm extends ConsumerWidget {
@@ -41,12 +41,7 @@ class UsersYuutaiForm extends ConsumerWidget {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? '企業名を入力してください' : null,
             readOnly: true,
-            onTap: () async {
-              final company = await context.push<String>('/company/search');
-              if (company != null) {
-                notifier.setCompanyName(company);
-              }
-            },
+            onTap: () => notifier.selectCompany(context),
           ),
           const SizedBox(height: 12),
           // Benefit Content
@@ -89,20 +84,12 @@ class UsersYuutaiForm extends ConsumerWidget {
                   ),
                 const SizedBox(width: 8),
                 TextButton(
-                  onPressed: () => _openExpireSheet(
-                    context,
-                    controller.expireOn,
-                    notifier.setExpireOn,
-                  ),
+                  onPressed: () => notifier.showExpiryPicker(context),
                   child: const Text('選択'),
                 ),
               ],
             ),
-            onTap: () => _openExpireSheet(
-              context,
-              controller.expireOn,
-              notifier.setExpireOn,
-            ),
+            onTap: () => notifier.showExpiryPicker(context),
           ),
           // Folder Selector
           Consumer(
@@ -128,12 +115,7 @@ class UsersYuutaiForm extends ConsumerWidget {
                       selectedFolder == null ? '未分類' : selectedFolder.name,
                     ),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
-                      final result = await context.push<String?>(
-                        '/folders/select',
-                      );
-                      notifier.setSelectedFolderId(result);
-                    },
+                    onTap: () => notifier.selectFolder(context),
                   );
                 },
               );
@@ -145,7 +127,7 @@ class UsersYuutaiForm extends ConsumerWidget {
             title: const Text('通知タイミング'),
             subtitle: Text(_buildReminderSubtitle(controller)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _openReminderPicker(context, notifier, controller),
+            onTap: () => notifier.showReminderPicker(context),
           ),
           const SizedBox(height: 8),
         ],
@@ -182,177 +164,7 @@ class UsersYuutaiForm extends ConsumerWidget {
     return parts.join(', ');
   }
 
-  Future<void> _openExpireSheet(
-    BuildContext context,
-    DateTime? currentExpireOn,
-    Function(DateTime?) onDateChanged,
-  ) async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        final now = DateTime.now();
-        DateTime today(DateTime d) => DateTime(d.year, d.month, d.day);
-        DateTime? pending = currentExpireOn;
-        return StatefulBuilder(
-          builder: (ctx, setLocalState) {
-            return SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  top: 12,
-                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: const Text('キャンセル'),
-                        ),
-                        FilledButton(
-                          onPressed: () {
-                            onDateChanged(pending);
-                            Navigator.of(ctx).pop();
-                          },
-                          child: const Text('決定'),
-                        ),
-                      ],
-                    ),
-                    CalendarDatePicker(
-                      initialDate: pending ?? today(now),
-                      firstDate: today(now),
-                      lastDate: DateTime(now.year + 5),
-                      onDateChanged: (d) =>
-                          setLocalState(() => pending = today(d)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
-  Future<void> _openReminderPicker(
-    BuildContext context,
-    UsersYuutaiEditController notifier,
-    UsersYuutaiEditState controller,
-  ) async {
-    final tempSelectedDays = Map<int, bool>.from(
-      controller.selectedPredefinedDays,
-    );
-    bool tempCustomEnabled = controller.customDayEnabled;
-    final tempCustomCtl = TextEditingController(
-      text: controller.customDayValue,
-    );
 
-    try {
-      await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          return StatefulBuilder(
-            builder: (dialogContext, setDialogState) {
-              return SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 12,
-                    bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setDialogState(() {
-                                tempSelectedDays.updateAll(
-                                  (key, value) => false,
-                                );
-                                tempCustomEnabled = false;
-                                tempCustomCtl.clear();
-                              });
-                            },
-                            child: const Text('クリア'),
-                          ),
-                          FilledButton(
-                            onPressed: () {
-                              notifier.updateReminderSettings(
-                                tempSelectedDays,
-                                tempCustomEnabled,
-                                tempCustomCtl.text,
-                              );
-                              Navigator.of(dialogContext).pop();
-                            },
-                            child: const Text('決定'),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      ...tempSelectedDays.entries.map((entry) {
-                        return CheckboxListTile(
-                          title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
-                          value: entry.value,
-                          onChanged: (bool? value) {
-                            setDialogState(() {
-                              tempSelectedDays[entry.key] = value!;
-                            });
-                          },
-                        );
-                      }),
-                      CheckboxListTile(
-                        title: Row(
-                          children: [
-                            const Text('カスタム:'),
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              width: 60,
-                              child: TextFormField(
-                                controller: tempCustomCtl,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                textAlign: TextAlign.center,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                ),
-                                enabled: tempCustomEnabled,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text('日前'),
-                          ],
-                        ),
-                        value: tempCustomEnabled,
-                        onChanged: (bool? value) {
-                          setDialogState(() {
-                            tempCustomEnabled = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-    } finally {
-      tempCustomCtl.dispose();
-    }
-  }
+
 }

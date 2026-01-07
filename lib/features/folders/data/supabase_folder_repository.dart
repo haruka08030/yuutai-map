@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:flutter_stock/domain/entities/folder.dart';
-import 'package:flutter_stock/domain/repositories/folder_repository.dart';
+import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
+import 'package:flutter_stock/features/folders/domain/repositories/folder_repository.dart';
 
 class FolderRepositorySupabase implements FolderRepository {
   FolderRepositorySupabase(this._supabase) {

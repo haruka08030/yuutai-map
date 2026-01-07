@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
-import 'package:flutter_stock/app/widgets/app_loading_indicator.dart';
-import 'package:flutter_stock/app/widgets/empty_state_view.dart';
+import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_empty_state_with_request.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_results_list.dart';
 

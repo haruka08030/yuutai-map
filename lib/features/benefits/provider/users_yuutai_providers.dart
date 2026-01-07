@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/data/repositories/users_yuutai_repository_supabase.dart';
-import 'package:flutter_stock/data/supabase/supabase_client_provider.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
-import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
-import 'package:flutter_stock/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/data/users_yuutai_repository_supabase.dart';
+import 'package:flutter_stock/core/supabase/supabase_client_provider.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/repositories/users_yuutai_repository.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 
 final usersYuutaiRepositoryProvider = Provider<UsersYuutaiRepository>((ref) {
   return UsersYuutaiRepositorySupabase(ref, ref.watch(supabaseProvider));
