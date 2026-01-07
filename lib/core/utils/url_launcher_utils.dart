@@ -9,7 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 Future<void> launchURL(String url, BuildContext context) async {
   try {
     final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) { // Changed to externalApplication
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      // Changed to externalApplication
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
