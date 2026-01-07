@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart'; // To get benefit.expiryDate
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart'; // To get benefit.expiryDate
 
 class ExpiryDateDisplay extends StatelessWidget {
   const ExpiryDateDisplay({

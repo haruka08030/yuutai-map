@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/store.dart';
+import 'package:flutter_stock/features/map/domain/entities/store.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StoreRepository {

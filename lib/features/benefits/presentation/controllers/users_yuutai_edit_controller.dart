@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/core/ocr/ocr_service.dart';
-import 'package:flutter_stock/domain/entities/benefit_status.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 
 part 'users_yuutai_edit_controller.freezed.dart';
 
@@ -194,6 +195,187 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
   void setCompanyName(String name) {
     ref.read(titleControllerProvider(state.initialBenefit)).text = name;
+  }
+
+  Future<void> showExpiryPicker(BuildContext context) async {
+    final now = DateTime.now();
+    DateTime today(DateTime d) => DateTime(d.year, d.month, d.day);
+    DateTime? pending = state.expireOn;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocalState) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('キャンセル'),
+                        ),
+                        FilledButton(
+                          onPressed: () {
+                            setExpireOn(pending);
+                            Navigator.of(ctx).pop();
+                          },
+                          child: const Text('決定'),
+                        ),
+                      ],
+                    ),
+                    CalendarDatePicker(
+                      initialDate: pending ?? today(now),
+                      firstDate: today(now),
+                      lastDate: DateTime(now.year + 5),
+                      onDateChanged: (d) =>
+                          setLocalState(() => pending = today(d)),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> selectCompany(BuildContext context) async {
+    final company = await context.push<String>('/company/search');
+    if (company != null) {
+      setCompanyName(company);
+    }
+  }
+
+  Future<void> selectFolder(BuildContext context) async {
+    final result = await context.push<String?>(
+      '/folders/select',
+    );
+    setSelectedFolderId(result);
+  }
+
+  Future<void> showReminderPicker(BuildContext context) async {
+    final tempSelectedDays = Map<int, bool>.from(
+      state.selectedPredefinedDays,
+    );
+    bool tempCustomEnabled = state.customDayEnabled;
+    final tempCustomCtl = TextEditingController(
+      text: state.customDayValue,
+    );
+
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) {
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              return SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 12,
+                    bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setDialogState(() {
+                                tempSelectedDays.updateAll(
+                                  (key, value) => false,
+                                );
+                                tempCustomEnabled = false;
+                                tempCustomCtl.clear();
+                              });
+                            },
+                            child: const Text('クリア'),
+                          ),
+                          FilledButton(
+                            onPressed: () {
+                              updateReminderSettings(
+                                tempSelectedDays,
+                                tempCustomEnabled,
+                                tempCustomCtl.text,
+                              );
+                              Navigator.of(dialogContext).pop();
+                            },
+                            child: const Text('決定'),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      ...tempSelectedDays.entries.map((entry) {
+                        return CheckboxListTile(
+                          title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
+                          value: entry.value,
+                          onChanged: (bool? value) {
+                            setDialogState(() {
+                              tempSelectedDays[entry.key] = value!;
+                            });
+                          },
+                        );
+                      }),
+                      CheckboxListTile(
+                        title: Row(
+                          children: [
+                            const Text('カスタム:'),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              width: 60,
+                              child: TextFormField(
+                                controller: tempCustomCtl,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                ),
+                                enabled: tempCustomEnabled,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('日前'),
+                          ],
+                        ),
+                        value: tempCustomEnabled,
+                        onChanged: (bool? value) {
+                          setDialogState(() {
+                            tempCustomEnabled = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      tempCustomCtl.dispose();
+    }
   }
 }
 

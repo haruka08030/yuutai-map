@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/shell_screen.dart';
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
 import 'package:flutter_stock/features/auth/presentation/login_page.dart';

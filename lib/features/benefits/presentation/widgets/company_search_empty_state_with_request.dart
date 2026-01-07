@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/app/widgets/empty_state_view.dart';
+import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 
 const String _inquiryUrl =
