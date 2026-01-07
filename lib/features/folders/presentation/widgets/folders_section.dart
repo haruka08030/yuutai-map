@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/domain/entities/folder.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
 class FoldersSection extends ConsumerWidget {
   const FoldersSection({
@@ -16,6 +17,7 @@ class FoldersSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final foldersAsync = ref.watch(foldersProvider);
+    final isGuest = ref.watch(isGuestProvider); // Watch guest status
 
     return foldersAsync.when(
       loading: () => const SizedBox.shrink(),
@@ -41,7 +43,7 @@ class FoldersSection extends ConsumerWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, size: 20),
-                    onPressed: () => _showCreateFolderDialog(context),
+                    onPressed: isGuest ? null : () => _showCreateFolderDialog(context),
                   ),
                 ],
               ),
@@ -51,11 +53,13 @@ class FoldersSection extends ConsumerWidget {
                 leading: const Icon(Icons.folder),
                 title: Text(folder.name),
                 selected: selectedFolderId == folder.id,
-                onTap: () => onFolderSelected(folder.id),
-                trailing: IconButton(
-                  icon: const Icon(Icons.more_vert, size: 20),
-                  onPressed: () => _showFolderOptions(context, ref, folder),
-                ),
+                onTap: isGuest ? null : () => onFolderSelected(folder.id),
+                trailing: isGuest
+                    ? null // Disable trailing icon for guests
+                    : IconButton(
+                        icon: const Icon(Icons.more_vert, size: 20),
+                        onPressed: () => _showFolderOptions(context, ref, folder),
+                      ),
               ),
             ),
           ],
