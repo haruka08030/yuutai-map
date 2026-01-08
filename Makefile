@@ -2,8 +2,13 @@
 
 # Seed stores data to Supabase
 seed-stores:
-	@echo "Seeding stores data to Supabase..."
-	dart scripts/seed_stores.dart
+	@echo "📦 Seeding stores data to Supabase..."
+	@dart scripts/seed_stores.dart
+
+# Deploy Supabase Edge Functions
+deploy-functions:
+	@echo "🚀 Deploying Supabase Edge Functions..."
+	@./scripts/deploy_functions.sh
 
 # Install dependencies
 install:
@@ -22,17 +27,16 @@ build:
 
 # Clean build files
 clean:
-	@echo "Cleaning build files..."
 	flutter clean
 
 # Help
 help:
 	@echo "Available commands:"
-	@echo "  seed-stores  - Seed stores data to Supabase"
-	@echo "  install      - Install Flutter dependencies"
-	@echo "  run          - Run the Flutter app"
-	@echo "  build        - Build for release"
-	@echo "  clean        - Clean build files"
-	@echo "  help         - Show this help message"
+	@echo "  make install          - Flutter dependencies"
+	@echo "  make run             - Run the Flutter app"
+	@echo "  make build           - Build for release"
+	@echo "  make clean           - Clean build files"
+	@echo "  make seed-stores     - Seed stores data to Supabase"
+	@echo "  make deploy-functions - Deploy Supabase Edge Functions"
 
-.PHONY: seed-stores install run build clean help
+.PHONY: seed-stores deploy-functions install run build clean help
