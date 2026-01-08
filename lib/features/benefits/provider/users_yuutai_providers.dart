@@ -1,22 +1,28 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/data/local/drift/database.dart';
-import 'package:flutter_stock/data/repositories/users_yuutai_repository_facade.dart';
-import 'package:flutter_stock/data/repositories/users_yuutai_repository_local.dart';
-import 'package:flutter_stock/data/repositories/users_yuutai_repository_supabase.dart';
-import 'package:flutter_stock/data/supabase/supabase_client_provider.dart';
-import 'package:flutter_stock/domain/repositories/users_yuutai_repository.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-
-final _dbProvider = Provider<AppDatabase>((ref) => AppDatabase());
+import 'package:flutter_stock/features/benefits/data/users_yuutai_repository_supabase.dart';
+import 'package:flutter_stock/core/supabase/supabase_client_provider.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/repositories/users_yuutai_repository.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 
 final usersYuutaiRepositoryProvider = Provider<UsersYuutaiRepository>((ref) {
-  final authRepository = ref.watch(authRepositoryProvider);
-  final localRepository = UsersYuutaiRepositoryLocal(ref.watch(_dbProvider));
-  final supabaseRepository = UsersYuutaiRepositorySupabase(ref.watch(supabaseProvider));
+  return UsersYuutaiRepositorySupabase(ref, ref.watch(supabaseProvider));
+});
 
-  return UsersYuutaiRepositoryFacade(
-    authRepository: authRepository,
-    localRepository: localRepository,
-    supabaseRepository: supabaseRepository,
+final activeUsersYuutaiProvider = StreamProvider<List<UsersYuutai>>((ref) {
+  final repo = ref.watch(usersYuutaiRepositoryProvider);
+  return repo.watchActive();
+});
+
+final historyUsersYuutaiProvider = StreamProvider<List<UsersYuutai>>((ref) {
+  final repo = ref.watch(usersYuutaiRepositoryProvider);
+  return repo.watchAll().map(
+    (list) => list
+        .where(
+          (i) =>
+              i.status == BenefitStatus.used ||
+              i.status == BenefitStatus.expired,
+        )
+        .toList(),
   );
 });

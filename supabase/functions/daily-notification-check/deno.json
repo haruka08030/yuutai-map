@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "date-fns/": "https://deno.land/x/date_fns@v2.22.1/",
+    "date-fns-tz/": "https://deno.land/x/date_fns_tz@v1.3.0/"
+  }
+}

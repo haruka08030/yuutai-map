@@ -1,14 +1,19 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/data/supabase/supabase_client_provider.dart';
+import 'package:flutter_stock/core/supabase/supabase_client_provider.dart';
 
-final companyListProvider =
-    FutureProvider.family<List<String>, String>((ref, query) async {
+final companyListProvider = FutureProvider.family<List<String>, String>((
+  ref,
+  query,
+) async {
   if (query.isEmpty) {
     return [];
   }
   final supabase = ref.watch(supabaseProvider);
-  final builder = supabase.from('companies').select('name').ilike('name', '%$query%');
+  final escapedQuery = query.replaceAll('%', r'\%').replaceAll('_', r'\_');
+  final builder = supabase
+      .from('companies')
+      .select('name')
+      .ilike('name', '%$escapedQuery%');
 
   final response = await builder;
 

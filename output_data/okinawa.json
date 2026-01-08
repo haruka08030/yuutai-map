@@ -1,0 +1,56 @@
+[
+  {
+    "company_id": 10,
+    "store_brand": "ひとにぎり",
+    "name": "ひとにぎり イオンモール沖縄ライカム",
+    "address": "沖縄県中頭郡北中城村字ライカム1番地 イオンモール沖縄ライカム3Fフードコート",
+    "lat": 26.3137504,
+    "lng": 127.7966025,
+    "category_tag": "飲食"
+  },
+  {
+    "company_id": 10,
+    "store_brand": "Manoa Pancake House",
+    "name": "Manoa Pancake House イオンモール沖縄ライカム",
+    "address": "沖縄県中頭郡北中城村字ライカム1番地 イオンモール沖縄ライカム3F",
+    "lat": 26.3137504,
+    "lng": 127.7966025,
+    "category_tag": "飲食"
+  },
+  {
+    "company_id": 10,
+    "store_brand": "ローストビーフ星",
+    "name": "ローストビーフ星 イオンモール沖縄ライカム",
+    "address": "沖縄県中頭郡北中城村字ライカム1番地 イオンモール沖縄ライカム3F",
+    "lat": 26.3137504,
+    "lng": 127.7966025,
+    "category_tag": "飲食"
+  },
+  {
+    "company_id": 10,
+    "store_brand": "デザート王国",
+    "name": "デザート王国 イオンモール沖縄ライカム",
+    "address": "沖縄県中頭郡北中城村字ライカム1番地 イオンモール沖縄ライカム4F",
+    "lat": 26.3137504,
+    "lng": 127.7966025,
+    "category_tag": "飲食"
+  },
+  {
+    "company_id": 10,
+    "store_brand": "THE PLATINUM",
+    "name": "THE PLATINUM 沖縄",
+    "address": "沖縄県浦添市西洲3-1-1 サンエー浦添西海岸パルコシティ3階",
+    "lat": 26.2617542,
+    "lng": 127.6981799,
+    "category_tag": "飲食"
+  },
+  {
+    "company_id": 10,
+    "store_brand": "Creperie Cafe Sucre",
+    "name": "Creperie Cafe Sucre サンエー浦添西海岸PARCO CITY",
+    "address": "沖縄県浦添市西洲3 サンエー浦添西海岸パルコシティ",
+    "lat": 26.2617542,
+    "lng": 127.6981799,
+    "category_tag": "飲食"
+  }
+]
