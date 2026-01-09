@@ -47,14 +47,16 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
 
 class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
   late bool _tempShowAll;
-  late Set<String> _tempSelectedCategories;
+  late String? _tempSelectedCategory;
   String? _tempFolderId;
 
   @override
   void initState() {
     super.initState();
     _tempShowAll = widget.state.showAllStores;
-    _tempSelectedCategories = Set<String>.from(widget.state.selectedCategories);
+    _tempSelectedCategory = widget.state.selectedCategories.length <= 1
+        ? widget.state.selectedCategories.firstOrNull
+        : null;
     _tempFolderId = widget.state.folderId;
   }
 
@@ -163,42 +165,33 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
               ),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 10,
-              children: widget.state.availableCategories.map((category) {
-                final isSelected = _tempSelectedCategories.contains(category);
-                return FilterChip(
-                  label: Text(category),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _tempSelectedCategories.add(category);
-                      } else {
-                        _tempSelectedCategories.remove(category);
-                      }
-                    });
-                  },
-                  backgroundColor: Colors.transparent,
-                  selectedColor: const Color(0xFF24A19C),
-                  checkmarkColor: Colors.white,
-                  labelStyle: GoogleFonts.outfit(
-                    color: isSelected
-                        ? Colors.white
-                        : AppTheme.secondaryTextColor(context),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFF24A19C)
-                          : AppTheme.dividerColor(context),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.dividerColor(context)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _tempSelectedCategory,
+                  isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('すべてのカテゴリ'),
                     ),
-                  ),
-                );
-              }).toList(),
+                    ...widget.state.availableCategories.map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) =>
+                      setState(() => _tempSelectedCategory = value),
+                ),
+              ),
             ),
             const SizedBox(height: 40),
             SizedBox(
@@ -207,7 +200,9 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 onPressed: () {
                   widget.onApply(
                     showAllStores: _tempShowAll,
-                    selectedCategories: _tempSelectedCategories,
+                    selectedCategories: _tempSelectedCategory != null
+                        ? {_tempSelectedCategory!}
+                        : {},
                     folderId: _tempFolderId,
                   );
                   context.pop();

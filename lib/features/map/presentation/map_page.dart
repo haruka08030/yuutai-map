@@ -1,3 +1,4 @@
+import 'package:flutter_stock/features/map/presentation/widgets/map_control_buttons.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       markerBuilder: (cluster) async {
         final Color markerColor = cluster.isMultiple
             ? Colors
-                  .orange // Default color for clusters
+                .orange // Default color for clusters
             : _getCategoryColor(cluster.items.first.category);
 
         return Marker(
@@ -110,20 +111,17 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply:
-          ({
-            required bool showAllStores,
-            required Set<String> selectedCategories,
-            String? folderId,
-          }) {
-            ref
-                .read(mapControllerProvider.notifier)
-                .applyFilters(
-                  showAllStores: showAllStores,
-                  selectedCategories: selectedCategories,
-                  folderId: folderId,
-                );
-          },
+      onApply: ({
+        required bool showAllStores,
+        required Set<String> selectedCategories,
+        String? folderId,
+      }) {
+        ref.read(mapControllerProvider.notifier).applyFilters(
+              showAllStores: showAllStores,
+              selectedCategories: selectedCategories,
+              folderId: folderId,
+            );
+      },
     );
   }
 
@@ -193,14 +191,27 @@ class _MapPageState extends ConsumerState<MapPage> {
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false, // Disable default button
               ),
+              Positioned(
+                top: 60,
+                right: 16,
+                child: MapControlButtons(
+                  showAllStores: state.showAllStores,
+                  onTogglePressed: (index) {
+                    ref.read(mapControllerProvider.notifier).applyFilters(
+                          showAllStores: index == 1,
+                          selectedCategories: state.selectedCategories,
+                          folderId: state.folderId,
+                        );
+                  },
+                  onFilterPressed: () => _showFilterSheet(state),
+                ),
+              ),
               MapStatusBanner(
                 showAllStores: state.showAllStores,
                 isGuest: state.isGuest,
                 bannerDismissed: _bannerDismissed,
                 onShowAll: () {
-                  ref
-                      .read(mapControllerProvider.notifier)
-                      .applyFilters(
+                  ref.read(mapControllerProvider.notifier).applyFilters(
                         showAllStores: true,
                         selectedCategories: state.selectedCategories,
                         folderId: state.folderId,
@@ -217,7 +228,6 @@ class _MapPageState extends ConsumerState<MapPage> {
           floatingActionButton: MapActionButtons(
             onLocationPressed: () =>
                 _goToCurrentLocation(state.currentPosition),
-            onFilterPressed: () => _showFilterSheet(state),
           ),
         );
       },
