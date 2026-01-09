@@ -41,8 +41,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final isAuthPath = location == '/login' || location == '/signup';
 
-      // If already logged in or guest, and trying to access auth path, go to yuutai
-      if ((isLoggedIn || isGuest) && isAuthPath) {
+      // If already logged in, and trying to access auth path, go to yuutai
+      if (isLoggedIn && isAuthPath) {
         return '/yuutai';
       }
 
