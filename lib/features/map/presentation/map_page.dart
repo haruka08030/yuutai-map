@@ -203,7 +203,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                           folderId: state.folderId,
                         );
                   },
-                  onFilterPressed: () => _showFilterSheet(state),
                 ),
               ),
               MapStatusBanner(
@@ -228,6 +227,7 @@ class _MapPageState extends ConsumerState<MapPage> {
           floatingActionButton: MapActionButtons(
             onLocationPressed: () =>
                 _goToCurrentLocation(state.currentPosition),
+            onFilterPressed: () => _showFilterSheet(state),
           ),
         );
       },
