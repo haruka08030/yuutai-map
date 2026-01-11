@@ -20,12 +20,13 @@
 ## 技術スタック
 
 - **Framework**: Flutter (Stable 3.22.0+)
-- **State Management**: Riverpod
+- **State Management**: Hooks Riverpod, Riverpod Generator
+- **Navigation**: GoRouter
 - **Database**:
   - Remote: Supabase (PostgreSQL)
-  - Local: Drift (SQLite)
+  - Local: Drift (SQLite) - (Phase 2)
 - **地図**: Google Maps Platform
-- **通知**: flutter_local_notifications
+- **通知**: flutter_local_notifications, FCM
 - **認証**: Supabase Auth
 
 ## クイックスタート
@@ -39,51 +40,76 @@ cd yuutai-map
 
 ### 2. 環境変数の設定
 
-以下のAPIキーを設定してください：
+`local.properties.example` を参考に `android/local.properties` を作成し、各種APIキーを設定してください。
 
 - **Google Maps API Key**:
-  [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK
-  を有効化して取得
-- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/)
-  でプロジェクト作成後に取得
+  [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK を有効化して取得
+- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/) でプロジェクト作成後に取得
 
-### 3. 依存関係のインストール
+### 3. 依存関係のインストールとコード生成
 
 ```bash
+# Flutterパッケージをインストール
 flutter pub get
-flutter pub run build_runner build --delete-conflicting-outputs
+
+# iOSの場合、CocoaPodsをインストール
+make pod_install
+
+# build_runnerでコードを生成
+make build_runner
 ```
 
 ### 4. Supabase データベースセットアップ
 
-Supabase ダッシュボードの SQL Editor で `supabase/migrations/`
-内のファイルを順番に実行してください：
+Supabase ダッシュボードの SQL Editor で `supabase/migrations/` 内のファイルを順番に実行してください。
+詳細は `supabase/migrations/README.md` を参照してください。
 
-1. `001_create_companies.sql` - 企業マスタテーブル
-2. `002_create_stores.sql` - 店舗テーブル
-3. `003_create_users_yuutai.sql` - 優待管理テーブル
-4. `004_add_folders.sql` - フォルダ機能
-
-または、Supabase CLI を使用している場合：
+もしくは、Supabase CLI を使用している場合：
 
 ```bash
 supabase db push
 ```
 
-詳細は `supabase/migrations/README.md` を参照してください。
-
 ### 5. アプリの起動
 
-**Android の場合**:
-
 ```bash
+# Android/iOSでアプリを起動
 flutter run
 ```
 
-**iOS の場合**:
+## 詳細仕様
 
-```bash
-flutter run --dart-define=Maps_API_KEY=your_api_key_here
+機能仕様、DBスキーマ、コーディング規約などの詳細なドキュメントは `GEMINI.md` を参照してください。
+
+## アーキテクチャ
+
+`Feature-First` アプローチを採用しています。
+各機能（feature）は `data`, `domain`, `presentation` のレイヤーに関するコードを内包します。
+
+```
+lib/
+├── app/              # アプリ全体の設定（ルーティング、テーマ）
+│   ├── routing/
+│   └── theme/
+├── core/             # 複数機能で共有されるコア機能
+│   ├── exceptions/
+│   ├── notifications/
+│   ├── supabase/
+│   └── utils/
+├── features/         # 機能ごとのモジュール
+│   ├── auth/         # 認証
+│   │   ├── data/
+│   │   ├── presentation/
+│   │   └── provider/
+│   ├── benefits/     # 優待管理
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   └── map/          # 地図表示
+│       ├── data/
+│       ├── domain/
+│       └── presentation/
+└── main.dart
 ```
 
 ## テスト
@@ -96,55 +122,33 @@ flutter test
 flutter test --coverage
 ```
 
-## アーキテクチャ
-
-```
-lib/
-├── core/               # コア機能（通知、ユーティリティなど）
-│   ├── notifications/
-│   └── utils/
-├── data/              # データ層（Repository実装、DB）
-│   ├── local/        # ローカルDB (Drift)
-│   ├── repositories/
-│   └── supabase/
-├── domain/            # ドメイン層（エンティティ、Repository インターフェース）
-│   ├── entities/
-│   └── repositories/
-├── features/          # 機能ごとのモジュール
-│   ├── auth/         # 認証
-│   ├── benefits/     # 優待管理
-│   ├── map/          # 地図表示
-│   └── settings/     # 設定
-├── app/              # アプリ全体の設定
-│   ├── routing/
-│   └── theme/
-└── main.dart
-```
-
-**設計パターン**:
-
-- Repository Pattern: データアクセスの抽象化
-- Facade Pattern: ローカル/リモートデータソースの切り替え
-- Observer Pattern: Riverpod による状態管理
-
 ## トラブルシューティング
 
-### ビルドエラー
+### "Generated.xcconfig must exist" or "Pod install failed"
+
+iOSビルド時に上記のエラーが発生した場合、`ios/` ディレクトリの `Podfile.lock` や `Pods/` が古くなっている可能性があります。
+クリーンインストールを試してください。
 
 ```bash
-# クリーンビルド
-flutter clean
-flutter pub get
-flutter pub run build_runner build --delete-conflicting-outputs
+make pod_clean
+```
+
+### "Conflicting outputs" ビルドエラー
+
+`build_runner` の実行時にエラーが発生する場合、生成ファイルが競合している可能性があります。
+一度クリーンしてから再実行してください。
+
+```bash
+make build_runner
 ```
 
 ### Google Maps が表示されない
 
-- `.env` と `android/local.properties` にAPIキーが正しく設定されているか確認
+- `android/local.properties` にAPIキーが正しく設定されているか確認
 - Google Cloud Console で Maps SDK for Android/iOS が有効化されているか確認
-- iOS の場合、`--dart-define=Maps_API_KEY=...` を指定して起動
+- iOS の場合、ビルド時に `GoogleMap-Info.plist` が正しく読み込まれているか確認
 
 ### Supabase 接続エラー
 
-- `.env` の `SUPABASE_URL` と `SUPABASE_ANON_KEY` が正しいか確認
+- Supabase URL と Anon Key が環境変数経由で正しく設定されているか確認
 - Supabase ダッシュボードでテーブルとRLSポリシーが作成されているか確認

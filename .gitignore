@@ -62,7 +62,3 @@ android/local.properties
 GEMINI.md
 IMPROVEMENTS.md
 design_rules.md
-
-
-ios/Flutter/Debug.xcconfig
-ios/Flutter/Release.xcconfig
