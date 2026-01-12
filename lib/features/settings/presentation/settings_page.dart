@@ -388,7 +388,7 @@ class _SettingsTile extends StatelessWidget {
                 child: Text(
                   label,
                   style: GoogleFonts.outfit(
-                    color: labelColor ?? const Color(0xFF111827),
+                    color: labelColor ?? Theme.of(context).colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
