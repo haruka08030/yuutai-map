@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/benefits/provider/yuutai_folder_count_provider.dart';
 import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
@@ -18,6 +19,7 @@ class FoldersSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final foldersAsync = ref.watch(foldersProvider);
     final isGuest = ref.watch(isGuestProvider); // Watch guest status
+    final yuutaiCounts = ref.watch(yuutaiCountPerFolderProvider);
 
     return foldersAsync.when(
       loading: () => const SizedBox.shrink(),
@@ -37,13 +39,22 @@ class FoldersSection extends ConsumerWidget {
                   Text(
                     'フォルダ',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.add, size: 20),
-                    onPressed: isGuest ? null : () => _showCreateFolderDialog(context),
+                  ClipOval(
+                    child: Material(
+                      color: Theme.of(context).colorScheme.primary.withValues(
+                        alpha: 0.1,
+                      ), // Background color for the circle
+                      child: IconButton(
+                        icon: const Icon(Icons.add, size: 20),
+                        onPressed: isGuest
+                            ? null
+                            : () => _showCreateFolderDialog(context),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -56,9 +67,16 @@ class FoldersSection extends ConsumerWidget {
                 onTap: isGuest ? null : () => onFolderSelected(folder.id),
                 trailing: isGuest
                     ? null // Disable trailing icon for guests
-                    : IconButton(
-                        icon: const Icon(Icons.more_vert, size: 20),
-                        onPressed: () => _showFolderOptions(context, ref, folder),
+                    : GestureDetector(
+                        onTap: () => _showFolderOptions(context, ref, folder),
+                        child: Text(
+                          '${yuutaiCounts[folder.id] ?? 0}',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                        ),
                       ),
               ),
             ),
@@ -69,10 +87,7 @@ class FoldersSection extends ConsumerWidget {
   }
 
   void _showCreateFolderDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => const _CreateFolderDialog(),
-    );
+    showDialog(context: context, builder: (ctx) => const _CreateFolderDialog());
   }
 
   void _showFolderOptions(BuildContext context, WidgetRef ref, Folder folder) {
@@ -138,10 +153,7 @@ class FoldersSection extends ConsumerWidget {
     );
   }
 
-  void _showRenameFolderDialog(
-    BuildContext context,
-    Folder folder,
-  ) {
+  void _showRenameFolderDialog(BuildContext context, Folder folder) {
     showDialog(
       context: context,
       builder: (ctx) => _RenameFolderDialog(folder: folder),
@@ -153,7 +165,8 @@ class _CreateFolderDialog extends ConsumerStatefulWidget {
   const _CreateFolderDialog();
 
   @override
-  ConsumerState<_CreateFolderDialog> createState() => _CreateFolderDialogState();
+  ConsumerState<_CreateFolderDialog> createState() =>
+      _CreateFolderDialogState();
 }
 
 class _CreateFolderDialogState extends ConsumerState<_CreateFolderDialog> {
@@ -261,16 +274,18 @@ class _RenameFolderDialogState extends ConsumerState<_RenameFolderDialog> {
               final folderId = widget.folder.id;
               if (folderId == null) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('フォルダIDが不正です')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('フォルダIDが不正です')));
                 }
                 return;
               }
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
               try {
-                await ref.read(folderRepositoryProvider).updateFolder(
+                await ref
+                    .read(folderRepositoryProvider)
+                    .updateFolder(
                       folderId,
                       _controller.text.trim(),
                       widget.folder.sortOrder,

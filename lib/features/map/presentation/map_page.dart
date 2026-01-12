@@ -61,7 +61,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       markerBuilder: (cluster) async {
         final Color markerColor = cluster.isMultiple
             ? Colors
-                .orange // Default color for clusters
+                  .orange // Default color for clusters
             : _getCategoryColor(cluster.items.first.category);
 
         return Marker(
@@ -110,17 +110,20 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply: ({
-        required bool showAllStores,
-        required Set<String> selectedCategories,
-        String? folderId,
-      }) {
-        ref.read(mapControllerProvider.notifier).applyFilters(
-              showAllStores: showAllStores,
-              selectedCategories: selectedCategories,
-              folderId: folderId,
-            );
-      },
+      onApply:
+          ({
+            required bool showAllStores,
+            required Set<String> selectedCategories,
+            String? folderId,
+          }) {
+            ref
+                .read(mapControllerProvider.notifier)
+                .applyFilters(
+                  showAllStores: showAllStores,
+                  selectedCategories: selectedCategories,
+                  folderId: folderId,
+                );
+          },
     );
   }
 
@@ -195,7 +198,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                 isGuest: state.isGuest,
                 bannerDismissed: _bannerDismissed,
                 onShowAll: () {
-                  ref.read(mapControllerProvider.notifier).applyFilters(
+                  ref
+                      .read(mapControllerProvider.notifier)
+                      .applyFilters(
                         showAllStores: true,
                         selectedCategories: state.selectedCategories,
                         folderId: state.folderId,

@@ -116,7 +116,6 @@ class AuthRepository extends ChangeNotifier {
 
     await _client.auth.updateUser(UserAttributes(data: newUserMetadata));
     notifyListeners(); // Notify listeners after profile update
-
   }
 
   Future<void> updateUserEmail({required String newEmail}) async {

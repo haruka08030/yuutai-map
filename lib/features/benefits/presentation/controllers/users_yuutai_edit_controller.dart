@@ -260,20 +260,14 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   }
 
   Future<void> selectFolder(BuildContext context) async {
-    final result = await context.push<String?>(
-      '/folders/select',
-    );
+    final result = await context.push<String?>('/folders/select');
     setSelectedFolderId(result);
   }
 
   Future<void> showReminderPicker(BuildContext context) async {
-    final tempSelectedDays = Map<int, bool>.from(
-      state.selectedPredefinedDays,
-    );
+    final tempSelectedDays = Map<int, bool>.from(state.selectedPredefinedDays);
     bool tempCustomEnabled = state.customDayEnabled;
-    final tempCustomCtl = TextEditingController(
-      text: state.customDayValue,
-    );
+    final tempCustomCtl = TextEditingController(text: state.customDayValue);
 
     try {
       await showModalBottomSheet(
