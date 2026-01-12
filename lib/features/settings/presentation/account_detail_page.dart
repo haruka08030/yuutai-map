@@ -53,54 +53,51 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                   const SizedBox(height: 24),
                   _buildFieldLabel('メールアドレス'),
                   const SizedBox(height: 12),
-                  _buildTextField(
-                    _emailController,
-                    'name@example.com',
-                    readOnly: true,
+                  GestureDetector(
+                    onTap: () {
+                      context.go('/settings/account/email/edit');
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              _emailController.text.isNotEmpty
+                                  ? _emailController.text
+                                  : '未設定',
+                              style: GoogleFonts.outfit(
+                                color: _emailController.text.isNotEmpty
+                                    ? const Color(0xFF1B1C1F)
+                                    : AppTheme.secondaryTextColor(context),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 48),
 
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.redAccent.withValues(alpha: 0.2),
+                  Center(
+                    child: TextButton(
+                      onPressed: _showDeleteConfirmation,
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppTheme.secondaryTextColor(context),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '危険な操作',
-                          style: GoogleFonts.outfit(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'アカウントを削除すると、すべてのデータが完全に消去されます。',
-                          style: TextStyle(
-                            color: AppTheme.secondaryTextColor(context),
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: _showDeleteConfirmation,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.redAccent,
-                              side: const BorderSide(color: Colors.redAccent),
-                            ),
-                            child: const Text('アカウントを削除する'),
-                          ),
-                        ),
-                      ],
+                      child: const Text('アカウントを削除する'),
                     ),
                   ),
                 ],

@@ -20,6 +20,8 @@ import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
 import 'package:flutter_stock/features/map/presentation/map_page.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
+import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
+import 'package:flutter_stock/features/settings/presentation/email_edit_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -87,6 +89,9 @@ class MockAuthRepository extends ChangeNotifier implements AuthRepository {
 
   @override
   Future<void> deleteAccount() async {}
+
+  @override
+  Future<void> updateUserEmail({required String newEmail}) async {}
 }
 
 class MockUsersYuutaiRepository implements UsersYuutaiRepository {
@@ -296,7 +301,13 @@ void main() async {
                         routes: [
                           GoRoute(
                             path: 'account',
-                            builder: (context, state) => Scaffold(appBar: AppBar(title: const Text('Account Edit Placeholder'))),
+                            builder: (context, state) => const AccountDetailPage(),
+                            routes: [
+                              GoRoute(
+                                path: 'email/edit',
+                                builder: (context, state) => const EmailEditPage(),
+                              ),
+                            ]
                           )
                         ]
                       ),
