@@ -70,10 +70,17 @@ class MockAuthRepository extends ChangeNotifier implements AuthRepository {
   Future<void> updateUserProfile({String? username}) async {}
 
   @override
-  Future<void> signInWithEmailPassword({required String email, required String password}) async {}
+  Future<void> signInWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {}
 
   @override
-  Future<void> signUpWithEmailPassword({required String email, required String password, required String username}) async {}
+  Future<void> signUpWithEmailPassword({
+    required String email,
+    required String password,
+    required String username,
+  }) async {}
 
   @override
   Future<void> resendConfirmationEmail({required String email}) async {}
@@ -149,7 +156,8 @@ class MockFolderRepository implements FolderRepository {
 }
 
 // Mock Map Controller
-class MockMapController extends AsyncNotifier<MapState> implements MapController {
+class MockMapController extends AsyncNotifier<MapState>
+    implements MapController {
   @override
   Future<MapState> build() async {
     return MapState(
@@ -164,7 +172,7 @@ class MockMapController extends AsyncNotifier<MapState> implements MapController
         speed: 0,
         speedAccuracy: 0,
         altitudeAccuracy: 0,
-        headingAccuracy: 0
+        headingAccuracy: 0,
       ),
       availableCategories: ['飲食', 'ファッション'],
       showAllStores: true,
@@ -172,7 +180,7 @@ class MockMapController extends AsyncNotifier<MapState> implements MapController
       isGuest: false,
     );
   }
-  
+
   @override
   Future<void> applyFilters({
     required bool showAllStores,
@@ -185,7 +193,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
   await initializeDateFormatting('ja_JP');
-  
+
   // SharedPreferencesの初期化（モック）
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -197,8 +205,8 @@ void main() async {
       companyName: 'テスト株式会社',
       benefitDetail: '10%割引券',
       status: BenefitStatus.active,
-      expiryDate: null, 
-      folderId: null,
+      expiryDate: null,
+      folderId: '1',
     ),
     UsersYuutai(
       id: 2,
@@ -206,10 +214,10 @@ void main() async {
       benefitDetail: '食事券 1000円分',
       status: BenefitStatus.active,
       expiryDate: DateTime.now().add(const Duration(days: 30)),
-      folderId: null,
+      folderId: '1',
     ),
   ];
-  
+
   // Mock Repository initialization
   final mockUsersYuutaiRepository = MockUsersYuutaiRepository();
   final mockFolderRepository = MockFolderRepository();
@@ -226,20 +234,26 @@ void main() async {
         activeUsersYuutaiProvider.overrideWith(
           (ref) => Stream.value(mockYuutaiList),
         ),
-        usersYuutaiRepositoryProvider.overrideWithValue(mockUsersYuutaiRepository),
+        usersYuutaiRepositoryProvider.overrideWithValue(
+          mockUsersYuutaiRepository,
+        ),
         folderRepositoryProvider.overrideWithValue(mockFolderRepository),
-        foldersProvider.overrideWith((ref) => mockFolderRepository.watchFolders()),
-        
+        foldersProvider.overrideWith(
+          (ref) => mockFolderRepository.watchFolders(),
+        ),
+
         // Map Mock
         mapControllerProvider.overrideWith(() => MockMapController()),
-        
+
         // Package Info Mock
-        packageInfoProvider.overrideWith((ref) async => PackageInfo(
-          appName: 'Flutter Stock', 
-          packageName: 'com.example.flutter_stock', 
-          version: '1.0.0', 
-          buildNumber: '1'
-        )),
+        packageInfoProvider.overrideWith(
+          (ref) async => PackageInfo(
+            appName: 'Flutter Stock',
+            packageName: 'com.example.flutter_stock',
+            version: '1.0.0',
+            buildNumber: '1',
+          ),
+        ),
 
         // Router Override for Full App Experience
         routerProvider.overrideWith((ref) {
@@ -254,19 +268,23 @@ void main() async {
                   // List Branch
                   StatefulShellBranch(
                     routes: [
-                       GoRoute(
+                      GoRoute(
                         path: '/yuutai',
                         builder: (context, state) {
-                          final folderId = state.uri.queryParameters['folderId'];
-                          final searchQuery = state.uri.queryParameters['search'] ?? '';
+                          final folderId =
+                              state.uri.queryParameters['folderId'];
+                          final searchQuery =
+                              state.uri.queryParameters['search'] ?? '';
 
                           // Update provider if needed based on query params (simplified for preview)
                           if (folderId != null) {
-                             Future.microtask(() => 
-                               ref.read(selectedFolderIdProvider.notifier).setSelectedFolderId(folderId)
-                             );
+                            Future.microtask(
+                              () => ref
+                                  .read(selectedFolderIdProvider.notifier)
+                                  .setSelectedFolderId(folderId),
+                            );
                           }
-                          
+
                           return UsersYuutaiPage(
                             searchQuery: searchQuery,
                             selectedFolderId: folderId,
@@ -274,14 +292,18 @@ void main() async {
                         },
                         routes: [
                           GoRoute(
-                            path: 'search', 
-                            builder: (context, state) => Scaffold(appBar: AppBar(title: const Text('Search Placeholder'))),
+                            path: 'search',
+                            builder: (context, state) => Scaffold(
+                              appBar: AppBar(
+                                title: const Text('Search Placeholder'),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  
+
                   // Map Branch
                   StatefulShellBranch(
                     routes: [
@@ -301,21 +323,23 @@ void main() async {
                         routes: [
                           GoRoute(
                             path: 'account',
-                            builder: (context, state) => const AccountDetailPage(),
+                            builder: (context, state) =>
+                                const AccountDetailPage(),
                             routes: [
                               GoRoute(
                                 path: 'email/edit',
-                                builder: (context, state) => const EmailEditPage(),
+                                builder: (context, state) =>
+                                    const EmailEditPage(),
                               ),
-                            ]
-                          )
-                        ]
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
-              
+
               // Other global routes
               GoRoute(
                 path: '/yuutai/add',
@@ -331,8 +355,16 @@ void main() async {
                   return const UsersYuutaiEditPage();
                 },
               ),
-              GoRoute(path: '/login', builder: (context, state) => const Scaffold(body: Center(child: Text('Login')))),
-              GoRoute(path: '/signup', builder: (context, state) => const Scaffold(body: Center(child: Text('Signup')))),
+              GoRoute(
+                path: '/login',
+                builder: (context, state) =>
+                    const Scaffold(body: Center(child: Text('Login'))),
+              ),
+              GoRoute(
+                path: '/signup',
+                builder: (context, state) =>
+                    const Scaffold(body: Center(child: Text('Signup'))),
+              ),
             ],
           );
         }),

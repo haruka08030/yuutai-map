@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
-import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class EmailEditPage extends ConsumerStatefulWidget {
   const EmailEditPage({super.key});
@@ -39,9 +38,7 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
       });
       try {
         final authRepository = ref.read(authRepositoryProvider);
-        await authRepository.updateUserEmail(
-          newEmail: _emailController.text,
-        );
+        await authRepository.updateUserEmail(newEmail: _emailController.text);
         ref.invalidate(authRepositoryProvider); // Refresh auth state
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -51,9 +48,9 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
       } catch (e) {
         debugPrint('Failed to update email: $e');
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('更新に失敗しました: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('更新に失敗しました: ${e.toString()}')));
       } finally {
         setState(() {
           _isLoading = false;

@@ -163,8 +163,4 @@ class UsersYuutaiForm extends ConsumerWidget {
     if (parts.isEmpty) return 'なし';
     return parts.join(', ');
   }
-
-
-
-
 }

@@ -116,12 +116,10 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                     color: Colors.grey.shade600,
                     constraints: BoxConstraints(
                       minHeight: 40,
-                      minWidth: (MediaQuery.of(context).size.width - 48 - 4) / 2,
+                      minWidth:
+                          (MediaQuery.of(context).size.width - 48 - 4) / 2,
                     ),
-                    children: const [
-                      Text('優待あり'),
-                      Text('全店舗'),
-                    ],
+                    children: const [Text('優待あり'), Text('全店舗')],
                   ),
                 ),
               ),
@@ -147,7 +145,9 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 child: Text(
                   'ログインするとフォルダで絞り込みができます',
                   style: TextStyle(
-                    color: Colors.grey.shade800, // Ensure contrast on light background
+                    color: Colors
+                        .grey
+                        .shade800, // Ensure contrast on light background
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,

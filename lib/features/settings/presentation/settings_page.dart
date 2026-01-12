@@ -168,7 +168,6 @@ class AccountInfoPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       children: [
-
         // Profile Section
         Container(
           margin: const EdgeInsets.only(bottom: 40),
@@ -388,7 +387,8 @@ class _SettingsTile extends StatelessWidget {
                 child: Text(
                   label,
                   style: GoogleFonts.outfit(
-                    color: labelColor ?? Theme.of(context).colorScheme.onSurface,
+                    color:
+                        labelColor ?? Theme.of(context).colorScheme.onSurface,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
