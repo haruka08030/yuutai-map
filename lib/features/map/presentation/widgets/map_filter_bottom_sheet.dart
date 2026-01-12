@@ -95,26 +95,66 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             ),
             const SizedBox(height: 24),
             if (!widget.state.isGuest) ...[
-              SwitchListTile.adaptive(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  'すべての店舗を表示',
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text(
-                  'オフにすると保有優待の店舗のみ表示',
-                  style: TextStyle(
-                    color: AppTheme.secondaryTextColor(context),
-                    fontSize: 13,
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ToggleButtons(
+                    isSelected: [!_tempShowAll, _tempShowAll],
+                    onPressed: (index) {
+                      setState(() {
+                        _tempShowAll = index == 1;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    borderColor: Colors.transparent,
+                    selectedBorderColor: Colors.transparent,
+                    fillColor: Theme.of(context).primaryColor,
+                    selectedColor: Colors.white,
+                    color: Colors.grey.shade600,
+                    constraints: BoxConstraints(
+                      minHeight: 40,
+                      minWidth: (MediaQuery.of(context).size.width - 48 - 4) / 2,
+                    ),
+                    children: const [
+                      Text('優待あり'),
+                      Text('全店舗'),
+                    ],
                   ),
                 ),
-                value: _tempShowAll,
-                activeTrackColor: const Color(0xFF24A19C),
-                onChanged: (value) => setState(() => _tempShowAll = value),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
             ],
-            if (!_tempShowAll && !widget.state.isGuest) ...[
+            if (widget.state.isGuest) ...[
+              Text(
+                'フォルダで絞り込み',
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.dividerColor(context)),
+                ),
+                child: Text(
+                  'ログインするとフォルダで絞り込みができます',
+                  style: TextStyle(
+                    color: Colors.grey.shade800, // Ensure contrast on light background
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 24),
+            ] else if (!_tempShowAll) ...[
               Text(
                 'フォルダで絞り込み',
                 style: GoogleFonts.outfit(

@@ -1,4 +1,3 @@
-import 'package:flutter_stock/features/map/presentation/widgets/map_control_buttons.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -190,20 +189,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                 onCameraIdle: () => _clusterManager.updateMap(),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false, // Disable default button
-              ),
-              Positioned(
-                top: 60,
-                right: 16,
-                child: MapControlButtons(
-                  showAllStores: state.showAllStores,
-                  onTogglePressed: (index) {
-                    ref.read(mapControllerProvider.notifier).applyFilters(
-                          showAllStores: index == 1,
-                          selectedCategories: state.selectedCategories,
-                          folderId: state.folderId,
-                        );
-                  },
-                ),
               ),
               MapStatusBanner(
                 showAllStores: state.showAllStores,
