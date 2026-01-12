@@ -36,11 +36,6 @@ on code quality, consistency, and maintainability.
    設定画面にあるプライバシーポリシーのリンク先がダミー（#）になっています。
    - 関連ファイル: lib/features/settings/presentation/settings_page.dart
 
-4. 優待管理機能の確認:
-   ドキュメントに「TODO風のリスト管理」と記載があり、機能がまだ基本的、あるいは未完成である可能性が示唆さ
-   れています。
-   - 関連ディレクトリ: lib/features/benefits/
-
 【優先度: 低】 コード品質とメンテナンス
 
 5. Linterルールの見直し:

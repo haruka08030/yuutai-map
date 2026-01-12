@@ -58,7 +58,6 @@ data_importer/serviceAccountKey.json
 android/local.properties
 **/local.properties
 
-# Gemini
-GEMINI.md
-IMPROVEMENTS.md
-design_rules.md
+# Xcode config
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig

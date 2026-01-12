@@ -14,9 +14,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
-import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
-
 class UsersYuutaiPage extends ConsumerStatefulWidget {
   const UsersYuutaiPage({
     super.key,
@@ -49,7 +46,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     final settings = ref.watch(yuutaiListSettingsProvider);
     final isGuest = ref.watch(isGuestProvider);
     final settingsNotifier = ref.read(yuutaiListSettingsProvider.notifier);
-    final foldersAsync = ref.watch(foldersProvider);
 
     final asyncBenefits = !widget.showHistory
         ? ref.watch(activeUsersYuutaiProvider)
@@ -58,7 +54,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     return Scaffold(
       body: Column(
         children: [
-          _buildFilterBar(context, settings, settingsNotifier, foldersAsync),
+          _buildFilterBar(context, settings, settingsNotifier),
           Expanded(
             child: asyncBenefits.when(
               loading: () => ListView.builder(
@@ -232,7 +228,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     BuildContext context,
     YuutaiListSettings settings,
     YuutaiListSettingsNotifier notifier,
-    AsyncValue<List<Folder>> foldersAsync,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -245,19 +240,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            foldersAsync.when(
-              data: (folders) =>
-                  _buildFolderSelector(context, settings, notifier, folders),
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2)),
-              ),
-              error: (e, s) => const Icon(Icons.error),
-            ),
-            const SizedBox(width: 8),
             _SortChip(
               label: '期限順',
               selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
@@ -281,37 +263,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFolderSelector(
-    BuildContext context,
-    YuutaiListSettings settings,
-    YuutaiListSettingsNotifier notifier,
-    List<Folder> folders,
-  ) {
-    // Add an "All" option at the beginning
-    final dropdownItems = [
-      const DropdownMenuItem<String?>(
-        value: null,
-        child: Text('すべてのフォルダ'),
-      ),
-      ...folders.map((folder) {
-        return DropdownMenuItem<String?>(
-          value: folder.id,
-          child: Text(folder.name),
-        );
-      }),
-    ];
-
-    return DropdownButton<String?>(
-      value: settings.folderId,
-      items: dropdownItems,
-      onChanged: (value) {
-        notifier.setFolderId(value);
-      },
-      underline: const SizedBox.shrink(),
-      hint: const Text('フォルダ選択'),
     );
   }
 
