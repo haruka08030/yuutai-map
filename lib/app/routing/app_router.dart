@@ -81,6 +81,23 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
+      // Yuutai add and edit pages, outside the shell to hide the navigation bar
+      GoRoute(
+        path: '/yuutai/add',
+        builder: (context, state) => const UsersYuutaiEditPage(),
+      ),
+      GoRoute(
+        path: '/yuutai/edit',
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! UsersYuutai?) {
+            return const Scaffold(
+              body: Center(child: Text('Invalid benefit data')),
+            );
+          }
+          return UsersYuutaiEditPage(existing: extra);
+        },
+      ),
 
       StatefulShellRoute.indexedStack(
         builder:
@@ -104,22 +121,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           state.uri.queryParameters['showHistory'] == 'true',
                     ),
                 routes: [
-                  GoRoute(
-                    path: 'add',
-                    builder: (context, state) => const UsersYuutaiEditPage(),
-                  ),
-                  GoRoute(
-                    path: 'edit',
-                    builder: (context, state) {
-                      final extra = state.extra;
-                      if (extra is! UsersYuutai?) {
-                        return const Scaffold(
-                          body: Center(child: Text('Invalid benefit data')),
-                        );
-                      }
-                      return UsersYuutaiEditPage(existing: extra);
-                    },
-                  ),
                   GoRoute(
                     path: 'folders',
                     builder: (context, state) => const FolderManagementPage(),

@@ -269,20 +269,6 @@ void main() async {
                         },
                         routes: [
                           GoRoute(
-                            path: 'add',
-                            builder: (context, state) => const UsersYuutaiEditPage(),
-                          ),
-                          GoRoute(
-                            path: 'edit',
-                            builder: (context, state) {
-                              final extra = state.extra;
-                              if (extra is UsersYuutai) {
-                                return UsersYuutaiEditPage(existing: extra);
-                              }
-                              return const UsersYuutaiEditPage();
-                            },
-                          ),
-                          GoRoute(
                             path: 'search', 
                             builder: (context, state) => Scaffold(appBar: AppBar(title: const Text('Search Placeholder'))),
                           ),
@@ -320,6 +306,20 @@ void main() async {
               ),
               
               // Other global routes
+              GoRoute(
+                path: '/yuutai/add',
+                builder: (context, state) => const UsersYuutaiEditPage(),
+              ),
+              GoRoute(
+                path: '/yuutai/edit',
+                builder: (context, state) {
+                  final extra = state.extra;
+                  if (extra is UsersYuutai) {
+                    return UsersYuutaiEditPage(existing: extra);
+                  }
+                  return const UsersYuutaiEditPage();
+                },
+              ),
               GoRoute(path: '/login', builder: (context, state) => const Scaffold(body: Center(child: Text('Login')))),
               GoRoute(path: '/signup', builder: (context, state) => const Scaffold(body: Center(child: Text('Signup')))),
             ],
