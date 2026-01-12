@@ -17,6 +17,7 @@ import 'package:flutter_stock/features/map/presentation/store_detail_page.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/settings/presentation/notification_settings_page.dart';
 import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
+import 'package:flutter_stock/features/settings/presentation/email_edit_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart';
 import 'package:flutter_stock/features/onboarding/presentation/onboarding_page.dart';
@@ -207,6 +208,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'account',
                     builder: (context, state) => const AccountDetailPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'email/edit',
+                        builder: (context, state) => const EmailEditPage(),
+                      ),
+                    ],
                   ),
                 ],
               ),
