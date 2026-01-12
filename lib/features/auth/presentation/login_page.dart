@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -105,9 +106,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _signInAsGuest() async {
-    // Call the signInAsGuest method in AuthRepository
     ref.read(authRepositoryProvider).signInAsGuest();
-    // The AuthGate and GoRouter will handle navigation
+    if (mounted) {
+      context.go('/yuutai');
+    }
   }
 
   @override

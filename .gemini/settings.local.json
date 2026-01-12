@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub get:*)",
+      "Bash(flutter test:*)",
+      "Bash(cat:*)",
+      "Bash(flutter clean:*)",
+      "Bash(flutter run:*)",
+      "Read(//tmp/**)",
+      "Bash(git add:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(pkill:*)",
+      "Bash(git reset:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

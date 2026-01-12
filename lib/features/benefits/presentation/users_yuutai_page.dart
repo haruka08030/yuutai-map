@@ -54,7 +54,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     return Scaffold(
       body: Column(
         children: [
-          _buildSortBar(context, settings, settingsNotifier),
+          _buildFilterBar(context, settings, settingsNotifier),
           Expanded(
             child: asyncBenefits.when(
               loading: () => ListView.builder(
@@ -224,7 +224,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildSortBar(
+  Widget _buildFilterBar(
     BuildContext context,
     YuutaiListSettings settings,
     YuutaiListSettingsNotifier notifier,
