@@ -168,56 +168,69 @@ class AccountInfoPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       children: [
+
         // Profile Section
-        Center(
-          child: Column(
-            children: [
-              Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(
-                        context,
-                      ).extension<AppColors>()?.cardBackground ??
-                      AppColors.light.cardBackground,
-                  borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-                  border: Border.all(
-                    color: AppTheme.dividerColor(context),
-                    width: 2,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.person_rounded,
-                  size: 48,
-                  color: Color(0xFF24A19C),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                user.email?.split('@')[0] ?? 'ユーザー',
-                style: GoogleFonts.outfit(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user.email ?? '',
-                style: TextStyle(
-                  color: AppTheme.secondaryTextColor(context),
-                  fontSize: 15,
-                ),
-              ),
-            ],
+        Container(
+          margin: const EdgeInsets.only(bottom: 40),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).extension<AppColors>()?.cardBackground ??
+                AppColors.light.cardBackground,
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+            border: Border.all(color: AppTheme.dividerColor(context)),
           ),
-        ),
-        const SizedBox(height: 40),
-        _buildSectionHeader('アカウント設定'),
-        _SettingsTile(
-          icon: Icons.person_outline_rounded,
-          label: 'プロフィール編集',
-          onTap: () => context.push('/settings/account'),
+          child: InkWell(
+            onTap: () => context.push('/settings/account'),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF24A19C).withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person_rounded,
+                      size: 32,
+                      color: Color(0xFF24A19C),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.email?.split('@')[0] ?? 'ユーザー',
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user.email ?? '',
+                          style: TextStyle(
+                            color: AppTheme.secondaryTextColor(context),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppTheme.dividerColor(context),
+                    size: 24,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 24),
         _buildSectionHeader('アプリ設定'),
