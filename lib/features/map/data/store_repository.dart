@@ -37,16 +37,34 @@ class StoreRepository {
     }
 
     if (categories != null && categories.isNotEmpty) {
-      query = query.filter('category_tag', 'in', categories);
+      final inValue =
+          '(${categories.map((c) => '"${c.replaceAll('"', r'\"')}"').join(',')})';
+      query = query.filter('category_tag', 'in', inValue);
     }
 
     if (prefectures != null && prefectures.isNotEmpty) {
-      query = query.filter('prefecture', 'in', prefectures);
+      // PostgREST 'in' for text: use ("val1","val2") format
+      final inValue =
+          '(${prefectures.map((p) => '"${p.replaceAll('"', r'\"')}"').join(',')})';
+      query = query.filter('prefecture', 'in', inValue);
     }
 
     final res = await query;
+    final list = res as List<dynamic>? ?? [];
 
-    return res.map((map) => Store.fromJson(map)).toList();
+    // Skip rows missing required fields (lat/lng can be null in DB)
+    return list
+        .where(_hasRequiredStoreFields)
+        .map((row) => Store.fromJson(Map<String, dynamic>.from(row as Map)))
+        .toList();
+  }
+
+  static bool _hasRequiredStoreFields(dynamic row) {
+    if (row is! Map) return false;
+    return row['id'] != null &&
+        row['name'] != null &&
+        row['lat'] != null &&
+        row['lng'] != null;
   }
 
   Future<List<String>> getAvailableCategories() async {
