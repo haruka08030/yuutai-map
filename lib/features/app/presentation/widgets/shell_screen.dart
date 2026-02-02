@@ -286,7 +286,7 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
           prefixIconConstraints:
               const BoxConstraints(minWidth: 0, minHeight: 0),
           prefixIcon: Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               left: app_theme.AppSearchBarStyle.prefixIconPaddingLeft,
               right: app_theme.AppSearchBarStyle.prefixIconPaddingRight,
             ),
@@ -306,7 +306,7 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
                   onPressed: widget.onClear,
                 )
               : null,
-          contentPadding: const EdgeInsets.symmetric(
+          contentPadding: EdgeInsets.symmetric(
             vertical: app_theme.AppSearchBarStyle.contentPaddingVertical,
           ),
         ),
