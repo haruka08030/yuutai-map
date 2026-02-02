@@ -34,6 +34,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isGuest = authNotifier.isGuest;
       final location = state.uri.path;
 
+      if (location == '/yuutai/search') {
+        final q = state.uri.queryParameters['q'];
+        return q != null && q.isNotEmpty
+            ? '/yuutai?search=${Uri.encodeComponent(q)}'
+            : '/yuutai';
+      }
+
       // Check if onboarding needs to be shown (only on first launch)
       if (!onboardingCompleted && location != '/onboarding') {
         return '/onboarding';
@@ -159,16 +166,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                           );
                         },
                       );
-                    },
-                  ),
-                  // 検索は AppBar のインライン検索で /yuutai?search=... に集約。旧 /yuutai/search はリダイレクト。
-                  GoRoute(
-                    path: 'search',
-                    redirect: (context, state) {
-                      final q = state.uri.queryParameters['q'];
-                      return q != null && q.isNotEmpty
-                          ? '/yuutai?search=${Uri.encodeComponent(q)}'
-                          : '/yuutai';
                     },
                   ),
                 ],

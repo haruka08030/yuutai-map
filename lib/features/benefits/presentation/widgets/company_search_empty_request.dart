@@ -28,7 +28,7 @@ class CompanySearchEmptyRequest extends ConsumerWidget {
           onPressed: () => launchURL(_storeDataRequestUrl, context),
           icon: const Icon(Icons.send_rounded),
           label: const Text(
-            '企業の追加をリクエスト',
+            '企業の掲載リクエスト',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           style: ElevatedButton.styleFrom(

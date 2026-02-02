@@ -30,8 +30,8 @@ class SettingsPage extends ConsumerWidget {
       body: isGuest
           ? const AuthOptionsPage()
           : user != null
-          ? AccountInfoPage(user: user)
-          : const AppLoadingIndicator(),
+              ? AccountInfoPage(user: user)
+              : const AppLoadingIndicator(),
     );
   }
 }
@@ -48,8 +48,7 @@ class AuthOptionsPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color:
-                Theme.of(context).extension<AppColors>()?.cardBackground ??
+            color: Theme.of(context).extension<AppColors>()?.cardBackground ??
                 AppColors.light.cardBackground,
             borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             border: Border.all(color: AppTheme.dividerColor(context)),
@@ -172,8 +171,7 @@ class AccountInfoPage extends ConsumerWidget {
         Container(
           margin: const EdgeInsets.only(bottom: 40),
           decoration: BoxDecoration(
-            color:
-                Theme.of(context).extension<AppColors>()?.cardBackground ??
+            color: Theme.of(context).extension<AppColors>()?.cardBackground ??
                 AppColors.light.cardBackground,
             borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             border: Border.all(color: AppTheme.dividerColor(context)),
@@ -353,8 +351,7 @@ class _SettingsTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).extension<AppColors>()?.cardBackground ??
+        color: Theme.of(context).extension<AppColors>()?.cardBackground ??
             AppColors.light.cardBackground,
         borderRadius: BorderRadius.circular(AppTheme.borderRadius),
         border: Border.all(
