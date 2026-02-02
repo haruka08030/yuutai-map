@@ -31,13 +31,19 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 }
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
+    _searchController.text = widget.searchQuery;
+    _searchQuery = widget.searchQuery;
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -78,9 +84,12 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       .toList();
                 }
 
-                if (widget.searchQuery.isNotEmpty) {
+                // Apply search filter
+                final searchQuery =
+                    _searchQuery.isNotEmpty ? _searchQuery : widget.searchQuery;
+                if (searchQuery.isNotEmpty) {
                   items = items.where((benefit) {
-                    final query = widget.searchQuery.toLowerCase();
+                    final query = searchQuery.toLowerCase();
                     final title = benefit.companyName.toLowerCase();
                     final benefitText =
                         benefit.benefitDetail?.toLowerCase() ?? '';
@@ -127,10 +136,13 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     );
                   }
 
-                  if (widget.searchQuery.isNotEmpty) {
+                  final displayQuery = _searchQuery.isNotEmpty
+                      ? _searchQuery
+                      : widget.searchQuery;
+                  if (displayQuery.isNotEmpty) {
                     return EmptyStateView(
                       icon: Icons.search_off,
-                      title: '「${widget.searchQuery}」は見つかりませんでした',
+                      title: '「$displayQuery」は見つかりませんでした',
                       subtitle: '別のキーワードで試してみてください',
                     );
                   }
@@ -239,9 +251,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: TextField(
-              readOnly: true,
-              onTap: () {
-                // TODO: 検索機能を実装
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
               },
               decoration: InputDecoration(
                 hintText: '企業名または優待内容を検索...',
@@ -255,6 +269,21 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   size: 22,
                   color: Color(0xFF64748B),
                 ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.clear_rounded,
+                          size: 20,
+                          color: Color(0xFF64748B),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
