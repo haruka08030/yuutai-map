@@ -63,5 +63,4 @@ ios/Flutter/Debug.xcconfig
 ios/Flutter/Release.xcconfig
 
 # Firebase configuration
-ios/Runner/AppFrameworkInfo.plist
 ios/Runner/GoogleService-Info.plist
