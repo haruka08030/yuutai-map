@@ -5,6 +5,7 @@ import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
+import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,6 +26,8 @@ class MapController extends AsyncNotifier<MapState> {
           showAllStores: state.value!.showAllStores,
           selectedCategories: state.value!.selectedCategories,
           folderId: next,
+          selectedRegion: state.value!.selectedRegion,
+          selectedPrefecture: state.value!.selectedPrefecture,
         );
       }
     });
@@ -42,6 +45,8 @@ class MapController extends AsyncNotifier<MapState> {
       selectedCategories: const {},
       isGuest: isGuest,
       folderId: selectedFolderId,
+      selectedRegion: null,
+      selectedPrefecture: null,
     );
 
     // Fetch initial items and update state
@@ -49,6 +54,8 @@ class MapController extends AsyncNotifier<MapState> {
       showAllStores: initialState.showAllStores,
       selectedCategories: initialState.selectedCategories,
       folderId: initialState.folderId,
+      selectedRegion: initialState.selectedRegion,
+      selectedPrefecture: initialState.selectedPrefecture,
     );
     return initialState.copyWith(items: items);
   }
@@ -84,17 +91,39 @@ class MapController extends AsyncNotifier<MapState> {
     return storeRepo.getAvailableCategories();
   }
 
+  List<String>? _prefecturesFromLocation({
+    String? selectedRegion,
+    String? selectedPrefecture,
+  }) {
+    if (selectedPrefecture != null && selectedPrefecture.isNotEmpty) {
+      return [selectedPrefecture];
+    }
+    if (selectedRegion != null &&
+        selectedRegion.isNotEmpty &&
+        JapaneseRegions.regionToPrefectures.containsKey(selectedRegion)) {
+      return JapaneseRegions.regionToPrefectures[selectedRegion]!.toList();
+    }
+    return null;
+  }
+
   Future<List<Place>> _fetchItems({
     required bool showAllStores,
     required Set<String> selectedCategories,
     String? folderId,
+    String? selectedRegion,
+    String? selectedPrefecture,
   }) async {
     final storeRepo = ref.read(storeRepositoryProvider);
+    final prefectures = _prefecturesFromLocation(
+      selectedRegion: selectedRegion,
+      selectedPrefecture: selectedPrefecture,
+    );
     final List<Place> items = [];
 
     if (showAllStores) {
       final stores = await storeRepo.getStores(
         categories: selectedCategories.toList(),
+        prefectures: prefectures,
       );
       for (final store in stores) {
         items.add(
@@ -104,6 +133,7 @@ class MapController extends AsyncNotifier<MapState> {
             latLng: LatLng(store.latitude, store.longitude),
             category: store.category,
             address: store.address,
+            prefecture: store.prefecture,
             companyId: store.companyId,
           ),
         );
@@ -118,6 +148,7 @@ class MapController extends AsyncNotifier<MapState> {
           final stores = await storeRepo.getStores(
             companyId: benefit.companyId.toString(),
             categories: selectedCategories.toList(),
+            prefectures: prefectures,
           );
           for (final store in stores) {
             items.add(
@@ -127,6 +158,7 @@ class MapController extends AsyncNotifier<MapState> {
                 latLng: LatLng(store.latitude, store.longitude),
                 category: store.category,
                 address: store.address,
+                prefecture: store.prefecture,
                 companyId: store.companyId,
               ),
             );
@@ -141,6 +173,8 @@ class MapController extends AsyncNotifier<MapState> {
     required bool showAllStores,
     required Set<String> selectedCategories,
     String? folderId,
+    String? selectedRegion,
+    String? selectedPrefecture,
   }) async {
     final oldState = await future;
     // ignore: invalid_use_of_internal_member
@@ -153,6 +187,8 @@ class MapController extends AsyncNotifier<MapState> {
         showAllStores: showAllStores,
         selectedCategories: selectedCategories,
         folderId: folderId,
+        selectedRegion: selectedRegion,
+        selectedPrefecture: selectedPrefecture,
       );
       state = AsyncData(
         oldState.copyWith(
@@ -160,6 +196,8 @@ class MapController extends AsyncNotifier<MapState> {
           showAllStores: showAllStores,
           selectedCategories: selectedCategories,
           folderId: folderId,
+          selectedRegion: selectedRegion,
+          selectedPrefecture: selectedPrefecture,
         ),
       );
     } catch (e, st) {

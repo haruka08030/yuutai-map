@@ -12,10 +12,11 @@ class StoreRepository {
     String? companyId,
     List<String>? companyIds,
     List<String>? categories,
+    List<String>? prefectures,
   }) async {
-    var query = _client
-        .from('stores')
-        .select('id, name, lat, lng, category_tag, address, company_id');
+    var query = _client.from('stores').select(
+          'id, name, lat, lng, category_tag, address, prefecture, company_id',
+        );
 
     if (brandId != null) {
       query = query.eq('store_brand', brandId);
@@ -37,6 +38,10 @@ class StoreRepository {
 
     if (categories != null && categories.isNotEmpty) {
       query = query.filter('category_tag', 'in', categories);
+    }
+
+    if (prefectures != null && prefectures.isNotEmpty) {
+      query = query.filter('prefecture', 'in', prefectures);
     }
 
     final res = await query;

@@ -13,6 +13,12 @@ abstract class MapState with _$MapState {
     required bool showAllStores,
     required Set<String> selectedCategories,
     String? folderId,
+
+    /// 地方で絞り込み（例: 関東）
+    String? selectedRegion,
+
+    /// 都道府県で絞り込み（例: 東京都）。指定時は selectedRegion より優先
+    String? selectedPrefecture,
     @Default(false) bool isGuest,
   }) = _MapState;
 }

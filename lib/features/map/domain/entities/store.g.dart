@@ -13,6 +13,7 @@ _Store _$StoreFromJson(Map<String, dynamic> json) => _Store(
       longitude: (json['lng'] as num).toDouble(),
       category: json['category_tag'] as String?,
       address: json['address'] as String?,
+      prefecture: json['prefecture'] as String?,
       companyId: (json['company_id'] as num?)?.toInt(),
     );
 
@@ -23,5 +24,6 @@ Map<String, dynamic> _$StoreToJson(_Store instance) => <String, dynamic>{
       'lng': instance.longitude,
       'category_tag': instance.category,
       'address': instance.address,
+      'prefecture': instance.prefecture,
       'company_id': instance.companyId,
     };

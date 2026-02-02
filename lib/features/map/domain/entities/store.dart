@@ -12,6 +12,7 @@ abstract class Store with _$Store {
     @JsonKey(name: 'lng') required double longitude,
     @JsonKey(name: 'category_tag') String? category,
     String? address,
+    String? prefecture,
     @JsonKey(name: 'company_id') int? companyId,
   }) = _Store;
 

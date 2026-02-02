@@ -126,11 +126,15 @@ class _MapPageState extends ConsumerState<MapPage> {
         required bool showAllStores,
         required Set<String> selectedCategories,
         String? folderId,
+        String? selectedRegion,
+        String? selectedPrefecture,
       }) {
         ref.read(mapControllerProvider.notifier).applyFilters(
               showAllStores: showAllStores,
               selectedCategories: selectedCategories,
               folderId: folderId,
+              selectedRegion: selectedRegion,
+              selectedPrefecture: selectedPrefecture,
             );
       },
     );
@@ -209,6 +213,8 @@ class _MapPageState extends ConsumerState<MapPage> {
                         showAllStores: state.showAllStores,
                         selectedCategories: selectedCategories,
                         folderId: state.folderId,
+                        selectedRegion: state.selectedRegion,
+                        selectedPrefecture: state.selectedPrefecture,
                       );
                 },
                 onSearchChanged: (query) {
