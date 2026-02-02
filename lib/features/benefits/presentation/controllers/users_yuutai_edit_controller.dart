@@ -35,28 +35,27 @@ class UsersYuutaiEditState with _$UsersYuutaiEditState {
 
 final titleControllerProvider = Provider.autoDispose
     .family<TextEditingController, UsersYuutai?>((ref, arg) {
-      final controller = TextEditingController(text: arg?.companyName ?? '');
-      ref.onDispose(() => controller.dispose());
-      return controller;
-    });
+  final controller = TextEditingController(text: arg?.companyName ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
 final benefitContentControllerProvider = Provider.autoDispose
     .family<TextEditingController, UsersYuutai?>((ref, arg) {
-      final controller = TextEditingController(text: arg?.benefitDetail ?? '');
-      ref.onDispose(() => controller.dispose());
-      return controller;
-    });
+  final controller = TextEditingController(text: arg?.benefitDetail ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
 final notesControllerProvider = Provider.autoDispose
     .family<TextEditingController, UsersYuutai?>((ref, arg) {
-      final controller = TextEditingController(text: arg?.notes ?? '');
-      ref.onDispose(() => controller.dispose());
-      return controller;
-    });
+  final controller = TextEditingController(text: arg?.notes ?? '');
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
 
 class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   UsersYuutaiEditController(this.initialBenefit);
 
   final UsersYuutai? initialBenefit;
-
 
   @override
   UsersYuutaiEditState build() {
@@ -125,18 +124,14 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
     try {
       final repo = ref.read(usersYuutaiRepositoryProvider);
-      final title = ref
-          .read(titleControllerProvider(state.initialBenefit))
-          .text
-          .trim();
+      final title =
+          ref.read(titleControllerProvider(state.initialBenefit)).text.trim();
       final benefitContent = ref
           .read(benefitContentControllerProvider(state.initialBenefit))
           .text
           .trim();
-      final notes = ref
-          .read(notesControllerProvider(state.initialBenefit))
-          .text
-          .trim();
+      final notes =
+          ref.read(notesControllerProvider(state.initialBenefit)).text.trim();
 
       final List<int> notifyDays = [];
       state.selectedPredefinedDays.forEach((day, isSelected) {
@@ -181,8 +176,6 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       state = state.copyWith(isLoading: false);
     }
   }
-
-
 
   void setCompanyName(String name) {
     ref.read(titleControllerProvider(state.initialBenefit)).text = name;
@@ -244,14 +237,14 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   }
 
   Future<void> selectCompany(BuildContext context) async {
-    final company = await context.push<String>('/company/search');
+    final company = await context.push<String>('/yuutai/company/search');
     if (company != null) {
       setCompanyName(company);
     }
   }
 
   Future<void> selectFolder(BuildContext context) async {
-    final result = await context.push<String?>('/folders/select');
+    final result = await context.push<String?>('/yuutai/folders/select');
     setSelectedFolderId(result);
   }
 
@@ -366,5 +359,5 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
 final usersYuutaiEditControllerProvider = NotifierProvider.autoDispose
     .family<UsersYuutaiEditController, UsersYuutaiEditState, UsersYuutai?>(
-      UsersYuutaiEditController.new,
-    );
+  UsersYuutaiEditController.new,
+);
