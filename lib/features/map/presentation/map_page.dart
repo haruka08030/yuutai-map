@@ -30,7 +30,6 @@ class _MapPageState extends ConsumerState<MapPage> {
   final Completer<GoogleMapController> _mapController = Completer();
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
-  bool _bannerDismissed = false;
   late final MarkerGenerator _markerGenerator;
 
   static const Map<String, Color> _categoryColors = {
@@ -60,8 +59,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       _updateMarkers,
       markerBuilder: (cluster) async {
         final Color markerColor = cluster.isMultiple
-            ? Colors
-                  .orange // Default color for clusters
+            ? Colors.orange // Default color for clusters
             : _getCategoryColor(cluster.items.first.category);
 
         return Marker(
@@ -110,20 +108,17 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply:
-          ({
-            required bool showAllStores,
-            required Set<String> selectedCategories,
-            String? folderId,
-          }) {
-            ref
-                .read(mapControllerProvider.notifier)
-                .applyFilters(
-                  showAllStores: showAllStores,
-                  selectedCategories: selectedCategories,
-                  folderId: folderId,
-                );
-          },
+      onApply: ({
+        required bool showAllStores,
+        required Set<String> selectedCategories,
+        String? folderId,
+      }) {
+        ref.read(mapControllerProvider.notifier).applyFilters(
+              showAllStores: showAllStores,
+              selectedCategories: selectedCategories,
+              folderId: folderId,
+            );
+      },
     );
   }
 
@@ -149,20 +144,6 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<MapState?>(mapControllerProvider.select((s) => s.value), (
-      previous,
-      next,
-    ) {
-      if (previous != null && next != null) {
-        if (previous.showAllStores && !next.showAllStores) {
-          // The user just switched from "all stores" to "my yuutai only"
-          setState(() {
-            _bannerDismissed = false;
-          });
-        }
-      }
-    });
-
     final mapStateAsync = ref.watch(mapControllerProvider);
 
     return mapStateAsync.when(
@@ -193,25 +174,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false, // Disable default button
               ),
-              MapStatusBanner(
-                showAllStores: state.showAllStores,
-                isGuest: state.isGuest,
-                bannerDismissed: _bannerDismissed,
-                onShowAll: () {
-                  ref
-                      .read(mapControllerProvider.notifier)
-                      .applyFilters(
-                        showAllStores: true,
-                        selectedCategories: state.selectedCategories,
-                        folderId: state.folderId,
-                      );
-                },
-                onClose: () {
-                  setState(() {
-                    _bannerDismissed = true;
-                  });
-                },
-              ),
+              const MapStatusBanner(),
             ],
           ),
           floatingActionButton: MapActionButtons(
