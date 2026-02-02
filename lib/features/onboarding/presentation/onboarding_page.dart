@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -71,8 +70,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFF24A19C),
+      backgroundColor: colorScheme.primary,
       body: SafeArea(
         child: Stack(
           children: [
@@ -112,8 +112,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   child: ElevatedButton(
                     onPressed: _onContinue,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF24A19C),
+                      backgroundColor: colorScheme.surface,
+                      foregroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -158,7 +158,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(13.80),
           ),
-          child: Icon(content.icon, size: 40, color: const Color(0xFF24A19C)),
+          child: Icon(
+            content.icon,
+            size: 40,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
         const SizedBox(height: 32),
         // Title and Description
@@ -172,22 +176,22 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               Text(
                 content.title,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 12),
               Text(
                 content.description,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  height: 1.43,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.43,
+                    ),
               ),
             ],
           ),
@@ -209,21 +213,21 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             children: [
               Text(
                 content.title,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 16),
               Text(
                 content.description,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                    ),
               ),
             ],
           ),
@@ -246,14 +250,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               title: '優待券を追加',
               description: '会社名や期限を登録',
               icon: Icons.add_circle_outline,
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 16),
             _buildFeatureCard(
               title: 'フォルダで整理',
               description: 'カテゴリー別に分類',
               icon: Icons.folder_outlined,
-              color: Colors.orange,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ],
         ),
@@ -268,14 +272,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               title: '期限通知',
               description: '期限が近づいたら通知',
               icon: Icons.notifications_active_outlined,
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(height: 16),
             _buildFeatureCard(
               title: 'マップで確認',
               description: '優待が使える店舗をマップで表示',
               icon: Icons.map_outlined,
-              color: Colors.green,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ],
         ),
@@ -290,14 +294,15 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     required IconData icon,
     required Color color,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
+            color: colorScheme.shadow.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -309,7 +314,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withAlpha(10),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -321,18 +326,18 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF111827),
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF6B7280),
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -344,12 +349,15 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   Widget _buildPageIndicator(bool isActive) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 3),
       width: isActive ? 25 : 8,
       height: 8,
       decoration: ShapeDecoration(
-        color: const Color(0xFFCAF1EF),
+        color: isActive
+            ? colorScheme.primary
+            : colorScheme.onPrimary.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );

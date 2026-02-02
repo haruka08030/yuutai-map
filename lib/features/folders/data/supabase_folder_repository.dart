@@ -6,9 +6,9 @@ import 'package:flutter_stock/features/folders/domain/repositories/folder_reposi
 
 class FolderRepositorySupabase implements FolderRepository {
   FolderRepositorySupabase(this._supabase) {
+    _user = _supabase.auth.currentUser;
     _supabase.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      _user = session?.user;
+      _user = data.session?.user;
     });
   }
 
@@ -46,7 +46,7 @@ class FolderRepositorySupabase implements FolderRepository {
   }
 
   @override
-  Future<void> createFolder(String name) async {
+  Future<Folder> createFolder(String name) async {
     final user = _user;
     if (user == null) {
       throw Exception('User not logged in');
@@ -59,13 +59,16 @@ class FolderRepositorySupabase implements FolderRepository {
         .eq('user_id', user.id)
         .order('sort_order', ascending: false)
         .limit(1);
-    final maxOrder = result.isEmpty ? 0 : result.first['sort_order'] as int;
+    final raw = result.isEmpty ? null : result.first['sort_order'];
+    final maxOrder = raw == null ? 0 : (raw as num).toInt();
 
-    await _supabase.from(_tableName).insert({
+    final rows = await _supabase.from(_tableName).insert({
       'user_id': user.id,
       'name': name,
       'sort_order': maxOrder + 1,
-    });
+    }).select();
+    if (rows.isEmpty) throw Exception('Failed to create folder');
+    return Folder.fromJson(rows.first);
   }
 
   @override

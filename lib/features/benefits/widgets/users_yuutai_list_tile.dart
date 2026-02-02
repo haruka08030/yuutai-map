@@ -1,18 +1,15 @@
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
-
 import 'package:flutter_stock/core/utils/date_utils.dart';
 import 'package:flutter_stock/core/widgets/app_dialogs.dart';
-import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart'; // New import // New import
+import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart';
 
 class UsersYuutaiListTile extends ConsumerWidget {
   const UsersYuutaiListTile({super.key, required this.benefit, this.subtitle});
@@ -37,7 +34,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
           extentRatio: 0.25,
           children: [
             SlidableAction(
-              onPressed: (_) => context.push('/yuutai/edit', extra: benefit),
+              onPressed: (_) =>
+                  YuutaiEditSheet.show(context, existing: benefit),
               backgroundColor: appColors?.editActionBackground ?? Colors.blue,
               foregroundColor: Colors.white,
               icon: Icons.edit_outlined,
@@ -79,93 +77,144 @@ class UsersYuutaiListTile extends ConsumerWidget {
         ),
         child: Card(
           margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+            side: BorderSide(
+              color: AppTheme.dividerColor(context),
+              width: 1,
+            ),
+          ),
           child: InkWell(
-            onTap: () => context.push('/yuutai/edit', extra: benefit),
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Theme(
-                    data: ThemeData(
-                      unselectedWidgetColor: AppTheme.dividerColor(context),
-                    ),
-                    child: Checkbox(
-                      value: isUsed,
-                      onChanged: (v) async {
-                        if (benefit.id == null) return;
-                        await HapticFeedback.lightImpact();
-                        final newStatus = v ?? false
-                            ? BenefitStatus.used
-                            : BenefitStatus.active;
-                        await repo.updateStatus(benefit.id!, newStatus);
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+            onTap: () => YuutaiEditSheet.show(context, existing: benefit),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Left accent bar（ClipRRectでカードの角丸に合わせてクリップ）
+                    Container(
+                      width: 3,
+                      decoration: BoxDecoration(
+                        color: isUsed
+                            ? AppTheme.secondaryTextColor(context)
+                            : Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.6),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          benefit.companyName,
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: isUsed
-                                ? AppTheme.secondaryTextColor(context)
-                                : null,
-                            decoration: isUsed
-                                ? TextDecoration.lineThrough
-                                : null,
-                          ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+                        child: Row(
+                          children: [
+                            Theme(
+                              data: ThemeData(
+                                unselectedWidgetColor:
+                                    AppTheme.dividerColor(context),
+                              ),
+                              child: Checkbox(
+                                value: isUsed,
+                                onChanged: (v) async {
+                                  if (benefit.id == null) return;
+                                  await HapticFeedback.lightImpact();
+                                  final newStatus = v ?? false
+                                      ? BenefitStatus.used
+                                      : BenefitStatus.active;
+                                  await repo.updateStatus(
+                                      benefit.id!, newStatus);
+                                },
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    benefit.companyName,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: isUsed
+                                              ? AppTheme.secondaryTextColor(
+                                                  context,
+                                                )
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                          decoration: isUsed
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                        ),
+                                  ),
+                                  if (benefit.expiryDate != null) ...[
+                                    const SizedBox(height: 4),
+                                    ExpiryDateDisplay(
+                                      benefit: benefit,
+                                      isUsed: isUsed,
+                                      daysRemaining: daysRemaining,
+                                    ),
+                                  ],
+                                  if (subtitle != null) ...[
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            AppTheme.benefitChipBackgroundColor(
+                                          context,
+                                        ),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        subtitle!,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelMedium!
+                                            .copyWith(
+                                              fontSize: 12,
+                                              color:
+                                                  AppTheme.chipForegroundColor(
+                                                context,
+                                              ),
+                                              fontWeight: FontWeight.w400,
+                                              decoration: isUsed
+                                                  ? TextDecoration.lineThrough
+                                                  : null,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right_rounded,
+                              color: AppTheme.secondaryTextColor(context),
+                              size: 18,
+                            ),
+                          ],
                         ),
-                        if (benefit.expiryDate != null) ...[
-                          const SizedBox(height: 4),
-                          ExpiryDateDisplay(
-                            benefit: benefit,
-                            isUsed: isUsed,
-                            daysRemaining: daysRemaining,
-                          ),
-                        ],
-                        if (subtitle != null) ...[
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppTheme.benefitChipBackgroundColor(
-                                context,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              subtitle!,
-                              style: GoogleFonts.outfit(
-                                fontSize: 13,
-                                color: AppTheme.chipForegroundColor(context),
-                                fontWeight: FontWeight.w500,
-                                decoration: isUsed
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+                      ),
                     ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: AppTheme.dividerColor(context),
-                    size: 20,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -5,6 +5,9 @@ import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.d
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
+import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/save_success_card_overlay.dart';
 import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +24,7 @@ const Map<int, bool> _predefinedDayOptions = {
 };
 
 @freezed
-class UsersYuutaiEditState with _$UsersYuutaiEditState {
+abstract class UsersYuutaiEditState with _$UsersYuutaiEditState {
   const factory UsersYuutaiEditState({
     UsersYuutai? initialBenefit,
     DateTime? expireOn,
@@ -161,16 +164,18 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       await repo.upsert(entity, scheduleReminders: true);
       ref.invalidate(activeUsersYuutaiProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('保存しました')));
-        context.pop();
+        showSaveSuccessCardOverlay(context, onComplete: () {
+          if (context.mounted) context.pop();
+        });
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppException.from(e).message),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     } finally {
       state = state.copyWith(isLoading: false);
@@ -237,14 +242,46 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   }
 
   Future<void> selectCompany(BuildContext context) async {
-    final company = await context.push<String>('/yuutai/company/search');
+    // Push with Navigator to avoid go_router duplicate page key when opening
+    // from /yuutai/add (outside shell) to /yuutai/company/search (inside shell).
+    final company = await Navigator.of(context).push<String>(
+      PageRouteBuilder<String>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const CompanySearchPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+          final tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
     if (company != null) {
       setCompanyName(company);
     }
   }
 
   Future<void> selectFolder(BuildContext context) async {
-    final result = await context.push<String?>('/yuutai/folders/select');
+    final result = await showModalBottomSheet<String?>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(sheetContext).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: const FolderSelectionSheetContent(),
+      ),
+    );
     setSelectedFolderId(result);
   }
 

@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,44 +9,69 @@ part of 'yuutai_list_settings.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
 
 /// @nodoc
 mixin _$YuutaiListSettings {
-  YuutaiSortOrder get sortOrder => throw _privateConstructorUsedError;
-  bool get showHistory => throw _privateConstructorUsedError;
-  String? get folderId => throw _privateConstructorUsedError;
+  YuutaiSortOrder get sortOrder;
+  bool get showHistory;
+  YuutaiListFilter get listFilter;
+  String? get folderId;
 
   /// Create a copy of YuutaiListSettings
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $YuutaiListSettingsCopyWith<YuutaiListSettings> get copyWith =>
-      throw _privateConstructorUsedError;
+      _$YuutaiListSettingsCopyWithImpl<YuutaiListSettings>(
+          this as YuutaiListSettings, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is YuutaiListSettings &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder) &&
+            (identical(other.showHistory, showHistory) ||
+                other.showHistory == showHistory) &&
+            (identical(other.listFilter, listFilter) ||
+                other.listFilter == listFilter) &&
+            (identical(other.folderId, folderId) ||
+                other.folderId == folderId));
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, sortOrder, showHistory, listFilter, folderId);
+
+  @override
+  String toString() {
+    return 'YuutaiListSettings(sortOrder: $sortOrder, showHistory: $showHistory, listFilter: $listFilter, folderId: $folderId)';
+  }
 }
 
 /// @nodoc
-abstract class $YuutaiListSettingsCopyWith<$Res> {
+abstract mixin class $YuutaiListSettingsCopyWith<$Res> {
   factory $YuutaiListSettingsCopyWith(
-    YuutaiListSettings value,
-    $Res Function(YuutaiListSettings) then,
-  ) = _$YuutaiListSettingsCopyWithImpl<$Res, YuutaiListSettings>;
+          YuutaiListSettings value, $Res Function(YuutaiListSettings) _then) =
+      _$YuutaiListSettingsCopyWithImpl;
   @useResult
-  $Res call({YuutaiSortOrder sortOrder, bool showHistory, String? folderId});
+  $Res call(
+      {YuutaiSortOrder sortOrder,
+      bool showHistory,
+      YuutaiListFilter listFilter,
+      String? folderId});
 }
 
 /// @nodoc
-class _$YuutaiListSettingsCopyWithImpl<$Res, $Val extends YuutaiListSettings>
+class _$YuutaiListSettingsCopyWithImpl<$Res>
     implements $YuutaiListSettingsCopyWith<$Res> {
-  _$YuutaiListSettingsCopyWithImpl(this._value, this._then);
+  _$YuutaiListSettingsCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final YuutaiListSettings _self;
+  final $Res Function(YuutaiListSettings) _then;
 
   /// Create a copy of YuutaiListSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -55,85 +80,204 @@ class _$YuutaiListSettingsCopyWithImpl<$Res, $Val extends YuutaiListSettings>
   $Res call({
     Object? sortOrder = null,
     Object? showHistory = null,
+    Object? listFilter = null,
     Object? folderId = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            sortOrder: null == sortOrder
-                ? _value.sortOrder
-                : sortOrder // ignore: cast_nullable_to_non_nullable
-                      as YuutaiSortOrder,
-            showHistory: null == showHistory
-                ? _value.showHistory
-                : showHistory // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            folderId: freezed == folderId
-                ? _value.folderId
-                : folderId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_self.copyWith(
+      sortOrder: null == sortOrder
+          ? _self.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as YuutaiSortOrder,
+      showHistory: null == showHistory
+          ? _self.showHistory
+          : showHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      listFilter: null == listFilter
+          ? _self.listFilter
+          : listFilter // ignore: cast_nullable_to_non_nullable
+              as YuutaiListFilter,
+      folderId: freezed == folderId
+          ? _self.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [YuutaiListSettings].
+extension YuutaiListSettingsPatterns on YuutaiListSettings {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_YuutaiListSettings value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_YuutaiListSettings value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_YuutaiListSettings value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(YuutaiSortOrder sortOrder, bool showHistory,
+            YuutaiListFilter listFilter, String? folderId)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings() when $default != null:
+        return $default(_that.sortOrder, _that.showHistory, _that.listFilter,
+            _that.folderId);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(YuutaiSortOrder sortOrder, bool showHistory,
+            YuutaiListFilter listFilter, String? folderId)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings():
+        return $default(_that.sortOrder, _that.showHistory, _that.listFilter,
+            _that.folderId);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(YuutaiSortOrder sortOrder, bool showHistory,
+            YuutaiListFilter listFilter, String? folderId)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _YuutaiListSettings() when $default != null:
+        return $default(_that.sortOrder, _that.showHistory, _that.listFilter,
+            _that.folderId);
+      case _:
+        return null;
+    }
   }
 }
 
 /// @nodoc
-abstract class _$$YuutaiListSettingsImplCopyWith<$Res>
-    implements $YuutaiListSettingsCopyWith<$Res> {
-  factory _$$YuutaiListSettingsImplCopyWith(
-    _$YuutaiListSettingsImpl value,
-    $Res Function(_$YuutaiListSettingsImpl) then,
-  ) = __$$YuutaiListSettingsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({YuutaiSortOrder sortOrder, bool showHistory, String? folderId});
-}
 
-/// @nodoc
-class __$$YuutaiListSettingsImplCopyWithImpl<$Res>
-    extends _$YuutaiListSettingsCopyWithImpl<$Res, _$YuutaiListSettingsImpl>
-    implements _$$YuutaiListSettingsImplCopyWith<$Res> {
-  __$$YuutaiListSettingsImplCopyWithImpl(
-    _$YuutaiListSettingsImpl _value,
-    $Res Function(_$YuutaiListSettingsImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of YuutaiListSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? sortOrder = null,
-    Object? showHistory = null,
-    Object? folderId = freezed,
-  }) {
-    return _then(
-      _$YuutaiListSettingsImpl(
-        sortOrder: null == sortOrder
-            ? _value.sortOrder
-            : sortOrder // ignore: cast_nullable_to_non_nullable
-                  as YuutaiSortOrder,
-        showHistory: null == showHistory
-            ? _value.showHistory
-            : showHistory // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        folderId: freezed == folderId
-            ? _value.folderId
-            : folderId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$YuutaiListSettingsImpl implements _YuutaiListSettings {
-  const _$YuutaiListSettingsImpl({
-    this.sortOrder = YuutaiSortOrder.expiryDate,
-    this.showHistory = false,
-    this.folderId,
-  });
+class _YuutaiListSettings implements YuutaiListSettings {
+  const _YuutaiListSettings(
+      {this.sortOrder = YuutaiSortOrder.expiryDate,
+      this.showHistory = false,
+      this.listFilter = YuutaiListFilter.all,
+      this.folderId});
 
   @override
   @JsonKey()
@@ -142,60 +286,96 @@ class _$YuutaiListSettingsImpl implements _YuutaiListSettings {
   @JsonKey()
   final bool showHistory;
   @override
+  @JsonKey()
+  final YuutaiListFilter listFilter;
+  @override
   final String? folderId;
 
+  /// Create a copy of YuutaiListSettings
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'YuutaiListSettings(sortOrder: $sortOrder, showHistory: $showHistory, folderId: $folderId)';
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$YuutaiListSettingsCopyWith<_YuutaiListSettings> get copyWith =>
+      __$YuutaiListSettingsCopyWithImpl<_YuutaiListSettings>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$YuutaiListSettingsImpl &&
+            other is _YuutaiListSettings &&
             (identical(other.sortOrder, sortOrder) ||
                 other.sortOrder == sortOrder) &&
             (identical(other.showHistory, showHistory) ||
                 other.showHistory == showHistory) &&
+            (identical(other.listFilter, listFilter) ||
+                other.listFilter == listFilter) &&
             (identical(other.folderId, folderId) ||
                 other.folderId == folderId));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, sortOrder, showHistory, folderId);
+      Object.hash(runtimeType, sortOrder, showHistory, listFilter, folderId);
+
+  @override
+  String toString() {
+    return 'YuutaiListSettings(sortOrder: $sortOrder, showHistory: $showHistory, listFilter: $listFilter, folderId: $folderId)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$YuutaiListSettingsCopyWith<$Res>
+    implements $YuutaiListSettingsCopyWith<$Res> {
+  factory _$YuutaiListSettingsCopyWith(
+          _YuutaiListSettings value, $Res Function(_YuutaiListSettings) _then) =
+      __$YuutaiListSettingsCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {YuutaiSortOrder sortOrder,
+      bool showHistory,
+      YuutaiListFilter listFilter,
+      String? folderId});
+}
+
+/// @nodoc
+class __$YuutaiListSettingsCopyWithImpl<$Res>
+    implements _$YuutaiListSettingsCopyWith<$Res> {
+  __$YuutaiListSettingsCopyWithImpl(this._self, this._then);
+
+  final _YuutaiListSettings _self;
+  final $Res Function(_YuutaiListSettings) _then;
 
   /// Create a copy of YuutaiListSettings
   /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$YuutaiListSettingsImplCopyWith<_$YuutaiListSettingsImpl> get copyWith =>
-      __$$YuutaiListSettingsImplCopyWithImpl<_$YuutaiListSettingsImpl>(
-        this,
-        _$identity,
-      );
+  $Res call({
+    Object? sortOrder = null,
+    Object? showHistory = null,
+    Object? listFilter = null,
+    Object? folderId = freezed,
+  }) {
+    return _then(_YuutaiListSettings(
+      sortOrder: null == sortOrder
+          ? _self.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as YuutaiSortOrder,
+      showHistory: null == showHistory
+          ? _self.showHistory
+          : showHistory // ignore: cast_nullable_to_non_nullable
+              as bool,
+      listFilter: null == listFilter
+          ? _self.listFilter
+          : listFilter // ignore: cast_nullable_to_non_nullable
+              as YuutaiListFilter,
+      folderId: freezed == folderId
+          ? _self.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
 }
 
-abstract class _YuutaiListSettings implements YuutaiListSettings {
-  const factory _YuutaiListSettings({
-    final YuutaiSortOrder sortOrder,
-    final bool showHistory,
-    final String? folderId,
-  }) = _$YuutaiListSettingsImpl;
-
-  @override
-  YuutaiSortOrder get sortOrder;
-  @override
-  bool get showHistory;
-  @override
-  String? get folderId;
-
-  /// Create a copy of YuutaiListSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$YuutaiListSettingsImplCopyWith<_$YuutaiListSettingsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
+// dart format on

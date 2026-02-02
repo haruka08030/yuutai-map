@@ -47,7 +47,6 @@ class MarkerGenerator {
       throw Exception('Failed to convert image to byte data');
     }
 
-    // ignore: deprecated_member_use
-    return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+    return BitmapDescriptor.bytes(data.buffer.asUint8List());
   }
 }

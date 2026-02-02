@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 
-const String _inquiryUrl =
-    'https://forms.gle/VGyP1fZV8EPi56nc7'; // Define inquiry URL
+/// 企業情報の不備・追加依頼用のGoogleフォーム
+const String _storeDataRequestUrl = 'https://forms.gle/VGyP1fZV8EPi56nc7';
 
-class CompanySearchEmptyStateWithRequest extends ConsumerWidget {
-  const CompanySearchEmptyStateWithRequest({super.key, required this.query});
+class CompanySearchEmptyRequest extends ConsumerWidget {
+  const CompanySearchEmptyRequest({super.key, required this.query});
 
   final String query;
 
@@ -18,17 +18,17 @@ class CompanySearchEmptyStateWithRequest extends ConsumerWidget {
       children: [
         EmptyStateView(
           icon: Icons.business_outlined,
-          title: '企業が見つかりません',
-          subtitle: '入力した「$query」をそのまま使用できます',
-          actionLabel: '「$query」を使用する',
+          title: '一致する企業が見つかりません',
+          subtitle: '入力した「$query」はそのまま使用できます',
+          actionLabel: '「$query」を追加する',
           onActionPressed: () => Navigator.of(context).pop(query),
         ),
         const SizedBox(height: 20),
         ElevatedButton.icon(
-          onPressed: () => launchURL(_inquiryUrl, context),
+          onPressed: () => launchURL(_storeDataRequestUrl, context),
           icon: const Icon(Icons.send_rounded),
           label: const Text(
-            '見つからない企業をリクエスト',
+            '企業の掲載リクエスト',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           style: ElevatedButton.styleFrom(

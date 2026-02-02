@@ -7,9 +7,8 @@ import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart'; // New import
-import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart'; // New import
+import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -36,9 +35,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() => _isLoading = true);
       final scaffoldMessenger = ScaffoldMessenger.of(context);
       try {
-        await ref
-            .read(authRepositoryProvider)
-            .signInWithEmailPassword(
+        await ref.read(authRepositoryProvider).signInWithEmailPassword(
               email: _emailController.text.trim(),
               password: _passwordController.text.trim(),
             );
@@ -131,20 +128,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.account_balance_wallet_outlined,
                       size: 64,
-                      color: Color(0xFF24A19C),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'おかえりなさい',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF111827),
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                     ),
                     const SizedBox(height: 8),
                     Text(

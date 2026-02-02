@@ -5,14 +5,15 @@ import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_pr
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/core/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class UsersYuutaiPage extends ConsumerStatefulWidget {
   const UsersYuutaiPage({
@@ -31,19 +32,13 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 }
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-
   @override
   void initState() {
     super.initState();
-    _searchController.text = widget.searchQuery;
-    _searchQuery = widget.searchQuery;
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -85,8 +80,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 }
 
                 // Apply search filter
-                final searchQuery =
-                    _searchQuery.isNotEmpty ? _searchQuery : widget.searchQuery;
+                final searchQuery = widget.searchQuery;
                 if (searchQuery.isNotEmpty) {
                   items = items.where((benefit) {
                     final query = searchQuery.toLowerCase();
@@ -96,6 +90,9 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     return title.contains(query) || benefitText.contains(query);
                   }).toList();
                 }
+
+                items = _applyListFilter(items, settings.listFilter);
+                items = List<UsersYuutai>.from(items);
 
                 // Apply Sorting
                 switch (settings.sortOrder) {
@@ -136,9 +133,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     );
                   }
 
-                  final displayQuery = _searchQuery.isNotEmpty
-                      ? _searchQuery
-                      : widget.searchQuery;
+                  final displayQuery = widget.searchQuery;
                   if (displayQuery.isNotEmpty) {
                     return EmptyStateView(
                       icon: Icons.search_off,
@@ -156,7 +151,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 }
 
                 if (widget.showHistory) {
-                  return _buildSimpleList(items);
+                  return _buildSimpleList(items, settings.listFilter);
                 }
 
                 if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
@@ -179,6 +174,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       items.where((b) => !expiringSoon.contains(b)).toList();
 
                   return ListView(
+                    key: ValueKey(settings.listFilter),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     children: [
                       if (expiringSoon.isNotEmpty) ...[
@@ -186,7 +182,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                           context,
                           '期限間近',
                           Icons.timer_outlined,
-                          const Color(0xFFEF4444),
+                          Theme.of(context)
+                                  .extension<AppColors>()
+                                  ?.expiringSoon ??
+                              Theme.of(context).colorScheme.error,
                         ),
                         ...expiringSoon.map((b) => _buildTile(b)),
                         const SizedBox(height: 24),
@@ -207,6 +206,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
 
                 // Plain list for other sort orders
                 return ListView.builder(
+                  key: ValueKey(settings.listFilter),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,
                   itemBuilder: (context, index) => _buildTile(items[index]),
@@ -219,7 +219,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       floatingActionButton: isGuest
           ? null
           : FloatingActionButton(
-              onPressed: () => context.push('/yuutai/add'),
+              onPressed: () => YuutaiEditSheet.show(context),
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               elevation: 4,
@@ -243,61 +243,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search Box
-          Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFECF0F5),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: '企業名または優待内容を検索...',
-                hintStyle: GoogleFonts.outfit(
-                  color: const Color(0xFF64748B),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  size: 22,
-                  color: Color(0xFF64748B),
-                ),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.clear_rounded,
-                          size: 20,
-                          color: Color(0xFF64748B),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _searchQuery = '';
-                          });
-                        },
-                      )
-                    : null,
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              style: GoogleFonts.outfit(
-                color: const Color(0xFF1E293B),
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           // Filter Chips Row
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -305,33 +250,40 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               children: [
                 _FilterChip(
                   label: 'すべて',
-                  selected: true,
+                  selected: !widget.showHistory &&
+                      settings.listFilter == YuutaiListFilter.all,
                   onTap: () {
-                    // TODO: フィルター機能を実装
+                    notifier.setListFilter(YuutaiListFilter.all);
+                    if (widget.showHistory) {
+                      context.go('/yuutai');
+                    }
                   },
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '期限間近',
-                  selected: false,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  selected:
+                      settings.listFilter == YuutaiListFilter.expiringSoon,
+                  onTap: () =>
+                      notifier.setListFilter(YuutaiListFilter.expiringSoon),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '有効',
-                  selected: false,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  selected: settings.listFilter == YuutaiListFilter.active,
+                  onTap: () => notifier.setListFilter(YuutaiListFilter.active),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '使用済み',
-                  selected: false,
+                  selected: settings.listFilter == YuutaiListFilter.used,
                   onTap: () {
-                    // TODO: フィルター機能を実装
+                    if (widget.showHistory) {
+                      notifier.setListFilter(YuutaiListFilter.used);
+                    } else {
+                      notifier.setListFilter(YuutaiListFilter.used);
+                      context.go('/yuutai?showHistory=true');
+                    }
                   },
                 ),
               ],
@@ -355,25 +307,25 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 const SizedBox(width: 8),
                 Text(
                   '並び替え：',
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppTheme.secondaryTextColor(context),
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.secondaryTextColor(context),
+                      ),
                 ),
                 Text(
                   _getSortLabel(settings.sortOrder),
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down_rounded,
                   size: 20,
-                  color: Color(0xFF2DD4BF),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -381,6 +333,33 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
         ],
       ),
     );
+  }
+
+  List<UsersYuutai> _applyListFilter(
+    List<UsersYuutai> items,
+    YuutaiListFilter filter,
+  ) {
+    switch (filter) {
+      case YuutaiListFilter.all:
+        return items;
+      case YuutaiListFilter.expiringSoon:
+        final today = DateTime.now();
+        final todayDate = DateTime(today.year, today.month, today.day);
+        return items.where((b) {
+          if (b.expiryDate == null) return false;
+          final expiryDate = DateTime(
+            b.expiryDate!.year,
+            b.expiryDate!.month,
+            b.expiryDate!.day,
+          );
+          final diff = expiryDate.difference(todayDate).inDays;
+          return diff >= 0 && diff <= 30;
+        }).toList();
+      case YuutaiListFilter.active:
+        return items.where((b) => b.status == BenefitStatus.active).toList();
+      case YuutaiListFilter.used:
+        return items.where((b) => b.status == BenefitStatus.used).toList();
+    }
   }
 
   String _getSortLabel(YuutaiSortOrder sortOrder) {
@@ -415,11 +394,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 children: [
                   Text(
                     '並び替え',
-                    style: GoogleFonts.outfit(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                   ),
                 ],
               ),
@@ -473,11 +452,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
           const SizedBox(width: 8),
           Text(
             title,
-            style: GoogleFonts.outfit(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: color ?? Theme.of(context).colorScheme.primary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: color ?? Theme.of(context).colorScheme.primary,
+                ),
           ),
         ],
       ),
@@ -491,8 +470,12 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildSimpleList(List<UsersYuutai> items) {
+  Widget _buildSimpleList(
+    List<UsersYuutai> items,
+    YuutaiListFilter listFilter,
+  ) {
     return ListView.builder(
+      key: ValueKey(listFilter),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
       itemBuilder: (context, index) => _buildTile(items[index]),
@@ -513,37 +496,38 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2DD4BF) : Colors.white,
+          color: selected ? colorScheme.primary : colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: selected
               ? [
-                  const BoxShadow(
-                    color: Color(0x332DD3BE),
+                  BoxShadow(
+                    color: colorScheme.primary.withValues(alpha: 0.25),
                     blurRadius: 6,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                     spreadRadius: -1,
                   ),
                 ]
               : [
-                  const BoxShadow(
-                    color: Color(0x19000000),
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.08),
                     blurRadius: 3,
-                    offset: Offset(0, 1),
+                    offset: const Offset(0, 1),
                   ),
                 ],
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-            color: selected ? Colors.white : const Color(0xFF1E293B),
-          ),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontSize: 14,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
+              ),
         ),
       ),
     );
@@ -572,19 +556,19 @@ class _SortOption extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: selected
-                      ? const Color(0xFF2DD4BF)
-                      : const Color(0xFF1E293B),
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: selected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                    ),
               ),
             ),
             if (selected)
-              const Icon(
+              Icon(
                 Icons.check_rounded,
-                color: Color(0xFF2DD4BF),
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
           ],

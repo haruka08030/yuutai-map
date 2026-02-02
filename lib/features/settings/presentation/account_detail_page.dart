@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 
@@ -73,24 +72,26 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                               _emailController.text.isNotEmpty
                                   ? _emailController.text
                                   : '未設定',
-                              style: GoogleFonts.outfit(
-                                color: _emailController.text.isNotEmpty
-                                    ? const Color(0xFF1B1C1F)
-                                    : AppTheme.secondaryTextColor(context),
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    color: _emailController.text.isNotEmpty
+                                        ? const Color(0xFF1B1C1F)
+                                        : AppTheme.secondaryTextColor(context),
+                                    fontSize: 16,
+                                  ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right,
-                            color: Color(0xFF9CA3AF),
+                            color: AppTheme.placeholderColor(context),
                           ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 48),
-
                   Center(
                     child: TextButton(
                       onPressed: _showDeleteConfirmation,
@@ -131,8 +132,8 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF24A19C),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
@@ -153,11 +154,11 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         label,
-        style: GoogleFonts.outfit(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF1B1C1F),
-        ),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
       ),
     );
   }
@@ -173,18 +174,20 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
-        fillColor: readOnly ? const Color(0xFFF9FAFB) : Colors.white,
+        fillColor: readOnly
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : Theme.of(context).colorScheme.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
       ),
-      style: GoogleFonts.outfit(
-        color: readOnly
-            ? AppTheme.secondaryTextColor(context)
-            : const Color(0xFF1B1C1F),
-        fontSize: 16,
-      ),
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: readOnly
+                ? AppTheme.secondaryTextColor(context)
+                : const Color(0xFF1B1C1F),
+            fontSize: 16,
+          ),
     );
   }
 
@@ -204,7 +207,8 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error),
             child: const Text('削除する'),
           ),
         ],

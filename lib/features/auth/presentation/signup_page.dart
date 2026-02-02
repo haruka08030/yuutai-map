@@ -7,7 +7,6 @@ import 'package:flutter_stock/features/auth/presentation/widgets/password_streng
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
@@ -37,9 +36,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        await ref
-            .read(authRepositoryProvider)
-            .signUpWithEmailPassword(
+        await ref.read(authRepositoryProvider).signUpWithEmailPassword(
               username: _nameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text.trim(),
@@ -134,20 +131,21 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.person_add_outlined,
                       size: 64,
-                      color: Color(0xFF24A19C),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       '新規登録',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF111827),
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                     ),
                     const SizedBox(height: 8),
                     Text(

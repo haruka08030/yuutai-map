@@ -19,6 +19,10 @@ class YuutaiListSettingsNotifier extends Notifier<YuutaiListSettings> {
     state = state.copyWith(folderId: folderId);
   }
 
+  void setListFilter(YuutaiListFilter listFilter) {
+    state = state.copyWith(listFilter: listFilter);
+  }
+
   void reset() {
     state = const YuutaiListSettings();
   }
@@ -26,5 +30,5 @@ class YuutaiListSettingsNotifier extends Notifier<YuutaiListSettings> {
 
 final yuutaiListSettingsProvider =
     NotifierProvider<YuutaiListSettingsNotifier, YuutaiListSettings>(() {
-      return YuutaiListSettingsNotifier();
-    });
+  return YuutaiListSettingsNotifier();
+});

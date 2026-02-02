@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
@@ -73,21 +72,21 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
               children: [
                 Text(
                   '新しいメールアドレス',
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1B1C1F),
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'name@example.com',
                     filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 16,
                     ),
@@ -101,18 +100,18 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                     }
                     return null;
                   },
-                  style: GoogleFonts.outfit(
-                    color: const Color(0xFF1B1C1F),
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 16,
+                      ),
                 ),
                 const SizedBox(height: 24),
                 LoadingElevatedButton(
                   onPressed: _updateEmail,
                   isLoading: _isLoading,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF24A19C),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(

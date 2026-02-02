@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 
-const Color _kMapAccent = Color(0xFF2DD4BF);
-const Color _kTextPrimary = Color(0xFF1E293B);
-const Color _kTextSecondary = Color(0xFF64748B);
 const Color _kOpenGreen = Color(0xFF009865);
 const Color _kOpenGreenBg = Color(0xFFEBFCF4);
-const Color _kUseNowOrange = Color(0xFFFB923C);
 const Color _kExpiryRed = Color(0xFFEF4444);
 const Color _kExpiryRedBg = Color(0x19EF4343);
 const Color _kBenefitBg = Color(0x7FF1F4F8);
@@ -131,11 +127,16 @@ class MapStoreDetailSheet extends ConsumerWidget {
                                 Flexible(
                                   child: Text(
                                     place.name,
-                                    style: GoogleFonts.outfit(
-                                      color: _kTextPrimary,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -153,11 +154,14 @@ class MapStoreDetailSheet extends ConsumerWidget {
                                     ),
                                     child: Text(
                                       'OPEN',
-                                      style: GoogleFonts.outfit(
-                                        color: _kOpenGreen,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall!
+                                          .copyWith(
+                                            color: _kOpenGreen,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -167,11 +171,15 @@ class MapStoreDetailSheet extends ConsumerWidget {
                               const SizedBox(height: 2),
                               Text(
                                 place.address!,
-                                style: GoogleFonts.outfit(
-                                  color: _kTextSecondary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      color:
+                                          AppTheme.secondaryTextColor(context),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -184,20 +192,26 @@ class MapStoreDetailSheet extends ConsumerWidget {
                         children: [
                           Text(
                             distanceStr,
-                            style: GoogleFonts.outfit(
-                              color: _kMapAccent,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '徒歩$walkMin分',
-                            style: GoogleFonts.outfit(
-                              color: _kTextSecondary,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall!
+                                .copyWith(
+                                  color: AppTheme.secondaryTextColor(context),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
                           ),
                         ],
                       ),
@@ -228,21 +242,26 @@ class MapStoreDetailSheet extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.card_giftcard_rounded,
                                   size: 20,
-                                  color: _kMapAccent,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     benefit.benefitDetail ??
                                         benefit.companyName,
-                                    style: GoogleFonts.outfit(
-                                      color: _kTextPrimary,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -260,11 +279,14 @@ class MapStoreDetailSheet extends ConsumerWidget {
                                     ),
                                     child: Text(
                                       _expiryLabel(benefit),
-                                      style: GoogleFonts.outfit(
-                                        color: _kExpiryRed,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall!
+                                          .copyWith(
+                                            color: _kExpiryRed,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -275,11 +297,15 @@ class MapStoreDetailSheet extends ConsumerWidget {
                               const SizedBox(height: 12),
                               Text(
                                 benefit.benefitDetail!,
-                                style: GoogleFonts.outfit(
-                                  color: _kTextSecondary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color:
+                                          AppTheme.secondaryTextColor(context),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -297,7 +323,7 @@ class MapStoreDetailSheet extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: Material(
-                          color: _kUseNowOrange,
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(16),
                           child: InkWell(
                             onTap: () {
@@ -311,19 +337,25 @@ class MapStoreDetailSheet extends ConsumerWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.confirmation_number_outlined,
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '使う',
-                                    style: GoogleFonts.outfit(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -345,12 +377,12 @@ class MapStoreDetailSheet extends ConsumerWidget {
                             );
                           },
                           borderRadius: BorderRadius.circular(16),
-                          child: const SizedBox(
+                          child: SizedBox(
                             width: 56,
                             height: 56,
                             child: Icon(
                               Icons.share_rounded,
-                              color: _kTextPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                               size: 24,
                             ),
                           ),

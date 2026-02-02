@@ -65,3 +65,4 @@ ios/Flutter/Release.xcconfig
 ios/Runner/GoogleService-Info.plist
 
 output_data/
+docs/

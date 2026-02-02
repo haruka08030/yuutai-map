@@ -8,11 +8,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
   UsersYuutaiRepositorySupabase(this._ref, this._supabase) {
+    _user = _supabase.auth.currentUser;
     _supabase.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      if (session != null) {
-        _user = session.user;
-      }
+      _user = data.session?.user;
     });
   }
 

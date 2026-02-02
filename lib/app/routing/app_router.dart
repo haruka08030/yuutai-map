@@ -19,7 +19,6 @@ import 'package:flutter_stock/features/settings/presentation/notification_settin
 import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
 import 'package:flutter_stock/features/settings/presentation/email_edit_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
-import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart';
 import 'package:flutter_stock/features/onboarding/presentation/onboarding_page.dart';
 import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
 
@@ -32,8 +31,15 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
-      final isGuest = authNotifier.isGuest; // New
+      final isGuest = authNotifier.isGuest;
       final location = state.uri.path;
+
+      if (location == '/yuutai/search') {
+        final q = state.uri.queryParameters['q'];
+        return q != null && q.isNotEmpty
+            ? '/yuutai?search=${Uri.encodeComponent(q)}'
+            : '/yuutai';
+      }
 
       // Check if onboarding needs to be shown (only on first launch)
       if (!onboardingCompleted && location != '/onboarding') {
@@ -141,7 +147,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'company/search',
                     pageBuilder: (context, state) {
                       return CustomTransitionPage(
-                        key: state.pageKey,
+                        key: const ValueKey<String>('yuutai-company-search'),
                         child: const CompanySearchPage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
@@ -161,12 +167,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                       );
                     },
-                  ),
-                  GoRoute(
-                    path: 'search',
-                    builder: (context, state) => YuutaiSearchPage(
-                      initialQuery: state.uri.queryParameters['q'],
-                    ),
                   ),
                 ],
               ),

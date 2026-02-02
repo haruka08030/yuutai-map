@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/yuutai_folder_count_provider.dart';
 import 'package:flutter_stock/features/folders/domain/entities/folder.dart';
+import 'package:flutter_stock/features/folders/presentation/widgets/create_folder_dialog.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
 class FoldersSection extends ConsumerWidget {
   const FoldersSection({
@@ -39,15 +40,15 @@ class FoldersSection extends ConsumerWidget {
                   Text(
                     'フォルダ',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   ClipOval(
                     child: Material(
                       color: Theme.of(context).colorScheme.primary.withValues(
-                        alpha: 0.1,
-                      ), // Background color for the circle
+                            alpha: 0.1,
+                          ), // Background color for the circle
                       child: IconButton(
                         icon: const Icon(Icons.add, size: 20),
                         onPressed: isGuest
@@ -87,7 +88,7 @@ class FoldersSection extends ConsumerWidget {
   }
 
   void _showCreateFolderDialog(BuildContext context) {
-    showDialog(context: context, builder: (ctx) => const _CreateFolderDialog());
+    CreateFolderDialog.show(context);
   }
 
   void _showFolderOptions(BuildContext context, WidgetRef ref, Folder folder) {
@@ -161,75 +162,6 @@ class FoldersSection extends ConsumerWidget {
   }
 }
 
-class _CreateFolderDialog extends ConsumerStatefulWidget {
-  const _CreateFolderDialog();
-
-  @override
-  ConsumerState<_CreateFolderDialog> createState() =>
-      _CreateFolderDialogState();
-}
-
-class _CreateFolderDialogState extends ConsumerState<_CreateFolderDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('新しいフォルダ'),
-      content: TextField(
-        controller: _controller,
-        decoration: const InputDecoration(
-          labelText: 'フォルダ名',
-          hintText: '例: 食事、旅行',
-        ),
-        autofocus: true,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('キャンセル'),
-        ),
-        FilledButton(
-          onPressed: () async {
-            if (_controller.text.trim().isNotEmpty) {
-              final navigator = Navigator.of(context);
-              final messenger = ScaffoldMessenger.of(context);
-              try {
-                await ref
-                    .read(folderRepositoryProvider)
-                    .createFolder(_controller.text.trim());
-
-                if (mounted) {
-                  navigator.pop();
-                }
-              } catch (e) {
-                if (mounted) {
-                  messenger.showSnackBar(
-                    SnackBar(content: Text('作成に失敗しました: $e')),
-                  );
-                }
-              }
-            }
-          },
-          child: const Text('作成'),
-        ),
-      ],
-    );
-  }
-}
-
 class _RenameFolderDialog extends ConsumerStatefulWidget {
   const _RenameFolderDialog({required this.folder});
   final Folder folder;
@@ -283,9 +215,7 @@ class _RenameFolderDialogState extends ConsumerState<_RenameFolderDialog> {
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
               try {
-                await ref
-                    .read(folderRepositoryProvider)
-                    .updateFolder(
+                await ref.read(folderRepositoryProvider).updateFolder(
                       folderId,
                       _controller.text.trim(),
                       widget.folder.sortOrder,
