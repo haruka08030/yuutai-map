@@ -8,19 +8,33 @@ const Color _kBorderLight = Color(0x7FE2E7EF);
 const Color _kTextPrimary = Color(0xFF1E293B);
 const Color _kShadowLight = Color(0x0C000000);
 
-class MapHeader extends StatelessWidget {
+class MapHeader extends StatefulWidget {
   const MapHeader({
     super.key,
     required this.state,
     required this.onFilterPressed,
     required this.onCategoryChanged,
+    this.onSearchChanged,
   });
 
   final MapState state;
   final VoidCallback onFilterPressed;
   final void Function(Set<String> selectedCategories) onCategoryChanged;
+  final void Function(String query)? onSearchChanged;
 
+  @override
+  State<MapHeader> createState() => _MapHeaderState();
+}
+
+class _MapHeaderState extends State<MapHeader> {
+  final TextEditingController _searchController = TextEditingController();
   static const String _allLabel = 'すべて';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +76,9 @@ class MapHeader extends StatelessWidget {
                         ],
                       ),
                       child: TextField(
-                        readOnly: true,
-                        onTap: () {
-                          // TODO: open search
+                        controller: _searchController,
+                        onChanged: (value) {
+                          widget.onSearchChanged?.call(value);
                         },
                         decoration: InputDecoration(
                           hintText: '店舗・優待を検索',
@@ -78,6 +92,21 @@ class MapHeader extends StatelessWidget {
                             size: 20,
                             color: _kTextPrimary,
                           ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.clear_rounded,
+                                    size: 20,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _searchController.clear();
+                                      widget.onSearchChanged?.call('');
+                                    });
+                                  },
+                                )
+                              : null,
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -99,7 +128,7 @@ class MapHeader extends StatelessWidget {
                     elevation: 0,
                     shadowColor: _kShadowLight,
                     child: InkWell(
-                      onTap: onFilterPressed,
+                      onTap: widget.onFilterPressed,
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         width: 48,
@@ -141,16 +170,17 @@ class MapHeader extends StatelessWidget {
                   children: [
                     _CategoryChip(
                       label: _allLabel,
-                      selected: state.selectedCategories.isEmpty,
-                      onTap: () => onCategoryChanged({}),
+                      selected: widget.state.selectedCategories.isEmpty,
+                      onTap: () => widget.onCategoryChanged({}),
                     ),
-                    ...state.availableCategories.map(
+                    ...widget.state.availableCategories.map(
                       (category) => Padding(
                         padding: const EdgeInsets.only(left: 7),
                         child: _CategoryChip(
                           label: category,
-                          selected: state.selectedCategories.contains(category),
-                          onTap: () => onCategoryChanged({category}),
+                          selected: widget.state.selectedCategories
+                              .contains(category),
+                          onTap: () => widget.onCategoryChanged({category}),
                         ),
                       ),
                     ),

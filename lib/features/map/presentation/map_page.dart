@@ -33,6 +33,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
   late final MarkerGenerator _markerGenerator;
+  String _searchQuery = '';
 
   static const Map<String, Color> _categoryColors = {
     '飲食': Color(0xFFEF4444), // Red-500
@@ -134,6 +135,22 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
+  void _updateClusterManagerItems(MapState state) {
+    List<Place> filteredPlaces = state.items;
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filteredPlaces = filteredPlaces.where((place) {
+        final query = _searchQuery.toLowerCase();
+        final name = place.name.toLowerCase();
+        final address = (place.address ?? '').toLowerCase();
+        return name.contains(query) || address.contains(query);
+      }).toList();
+    }
+
+    _clusterManager.setItems(filteredPlaces);
+  }
+
   Future<void> _goToCurrentLocation(Position currentPosition) async {
     final GoogleMapController controller = await _mapController.future;
     try {
@@ -195,6 +212,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                         selectedCategories: selectedCategories,
                         folderId: state.folderId,
                       );
+                },
+                onSearchChanged: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                  _updateClusterManagerItems(state);
                 },
               ),
               const MapStatusBanner(),
