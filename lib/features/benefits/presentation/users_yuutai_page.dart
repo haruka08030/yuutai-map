@@ -138,9 +138,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   return EmptyStateView(
                     imagePath: 'assets/images/empty_state.png',
                     title: '優待を登録しよう！',
-                    subtitle: isGuest
-                        ? 'ログインすると優待を登録して管理できます'
-                        : '右下の「＋」ボタンから追加できます',
+                    subtitle:
+                        isGuest ? 'ログインすると優待を登録して管理できます' : '右下の「＋」ボタンから追加できます',
                   );
                 }
 
@@ -152,22 +151,20 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   final expiringSoon = items.where((b) {
                     if (b.expiryDate == null) return false;
                     final today = DateTime.now();
-                    final diff =
-                        DateTime(
-                              b.expiryDate!.year,
-                              b.expiryDate!.month,
-                              b.expiryDate!.day,
-                            )
-                            .difference(
-                              DateTime(today.year, today.month, today.day),
-                            )
-                            .inDays;
+                    final diff = DateTime(
+                      b.expiryDate!.year,
+                      b.expiryDate!.month,
+                      b.expiryDate!.day,
+                    )
+                        .difference(
+                          DateTime(today.year, today.month, today.day),
+                        )
+                        .inDays;
                     return diff >= 0 && diff <= 30;
                   }).toList();
 
-                  final others = items
-                      .where((b) => !expiringSoon.contains(b))
-                      .toList();
+                  final others =
+                      items.where((b) => !expiringSoon.contains(b)).toList();
 
                   return ListView(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -214,6 +211,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               elevation: 4,
+              shape: const CircleBorder(),
               child: const Icon(Icons.add, size: 28),
             ),
     );
@@ -226,8 +224,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).appBarTheme.backgroundColor ??
+        color: Theme.of(context).appBarTheme.backgroundColor ??
             Theme.of(context).colorScheme.surface, // Match AppBar background
       ),
       child: SingleChildScrollView(

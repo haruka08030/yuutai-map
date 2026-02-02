@@ -57,6 +57,7 @@ class FolderManagementPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddFolderDialog(context, ref),
+        shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
     );
@@ -120,9 +121,7 @@ class FolderManagementPage extends ConsumerWidget {
             TextButton(
               onPressed: () {
                 if (controller.text.isNotEmpty) {
-                  ref
-                      .read(folderRepositoryProvider)
-                      .updateFolder(
+                  ref.read(folderRepositoryProvider).updateFolder(
                         folder.id!,
                         controller.text,
                         folder.sortOrder,
