@@ -16,6 +16,7 @@ import 'package:flutter_stock/features/map/presentation/widgets/map_filter_botto
 import 'package:flutter_stock/features/map/presentation/widgets/map_guest_register_dialog.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_header.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_status_banner.dart';
+import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_empty_state.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
@@ -136,7 +137,41 @@ class _MapPageState extends ConsumerState<MapPage> {
               selectedRegion: selectedRegion,
               selectedPrefecture: selectedPrefecture,
             );
+        _animateToLocation(
+          selectedPrefecture: selectedPrefecture,
+          selectedRegion: selectedRegion,
+        );
       },
+    );
+  }
+
+  Future<void> _animateToLocation({
+    String? selectedPrefecture,
+    String? selectedRegion,
+  }) async {
+    List<double>? center;
+    double zoom = 10;
+    if (selectedPrefecture != null &&
+        selectedPrefecture.isNotEmpty &&
+        JapaneseRegions.prefectureCenters.containsKey(selectedPrefecture)) {
+      center = JapaneseRegions.prefectureCenters[selectedPrefecture];
+      zoom = 9;
+    } else if (selectedRegion != null &&
+        selectedRegion.isNotEmpty &&
+        JapaneseRegions.regionCenters.containsKey(selectedRegion)) {
+      center = JapaneseRegions.regionCenters[selectedRegion];
+      zoom = 8;
+    }
+    if (center == null || center.length < 2) return;
+
+    final controller = await _mapController.future;
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(center[0], center[1]),
+          zoom: zoom,
+        ),
+      ),
     );
   }
 
@@ -168,11 +203,14 @@ class _MapPageState extends ConsumerState<MapPage> {
       data: (state) {
         List<Place> filteredPlaces = state.items;
         if (_searchQuery.isNotEmpty) {
+          final query = _searchQuery.trim().toLowerCase();
           filteredPlaces = state.items.where((place) {
-            final query = _searchQuery.toLowerCase();
             final name = place.name.toLowerCase();
             final address = (place.address ?? '').toLowerCase();
-            return name.contains(query) || address.contains(query);
+            final prefecture = (place.prefecture ?? '').toLowerCase();
+            return name.contains(query) ||
+                address.contains(query) ||
+                prefecture.contains(query);
           }).toList();
         }
         _clusterManager.setItems(filteredPlaces);
@@ -221,6 +259,15 @@ class _MapPageState extends ConsumerState<MapPage> {
                   setState(() {
                     _searchQuery = query;
                   });
+                },
+                onClearLocationFilter: () {
+                  ref.read(mapControllerProvider.notifier).applyFilters(
+                        showAllStores: state.showAllStores,
+                        selectedCategories: state.selectedCategories,
+                        folderId: state.folderId,
+                        selectedRegion: null,
+                        selectedPrefecture: null,
+                      );
                 },
               ),
               const MapStatusBanner(),
