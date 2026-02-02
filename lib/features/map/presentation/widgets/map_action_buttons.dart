@@ -1,42 +1,81 @@
 import 'package:flutter/material.dart';
 
+const Color _kMapFabAccent = Color(0xFF2DD4BF);
+const Color _kMapFabBorder = Color(0x7FE2E7EF);
+const Color _kMapFabShadow = Color(0x19000000);
+
 class MapActionButtons extends StatelessWidget {
   final VoidCallback onLocationPressed;
-  final VoidCallback onFilterPressed;
 
   const MapActionButtons({
     super.key,
     required this.onLocationPressed,
-    required this.onFilterPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'location_fab',
-            onPressed: onLocationPressed,
-            tooltip: 'My Location',
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF24A19C),
-            elevation: 4,
-            child: const Icon(Icons.my_location, size: 20),
+      padding: const EdgeInsets.only(right: 24, bottom: 24),
+      child: _MapActionButton(
+        onPressed: onLocationPressed,
+        tooltip: '現在地',
+        icon: Icons.my_location_rounded,
+        iconSize: 28,
+      ),
+    );
+  }
+}
+
+class _MapActionButton extends StatelessWidget {
+  const _MapActionButton({
+    required this.onPressed,
+    required this.tooltip,
+    required this.icon,
+    this.iconSize = 24,
+  });
+
+  final VoidCallback onPressed;
+  final String tooltip;
+  final IconData icon;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      elevation: 0,
+      shadowColor: _kMapFabShadow,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _kMapFabBorder),
+            boxShadow: const [
+              BoxShadow(
+                color: _kMapFabShadow,
+                blurRadius: 15,
+                offset: Offset(0, 10),
+                spreadRadius: -3,
+              ),
+              BoxShadow(
+                color: _kMapFabShadow,
+                blurRadius: 6,
+                offset: Offset(0, 4),
+                spreadRadius: -4,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          FloatingActionButton.small(
-            heroTag: 'filter_fab',
-            onPressed: onFilterPressed,
-            tooltip: 'Filter',
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF24A19C),
-            elevation: 4,
-            child: const Icon(Icons.filter_list_rounded, size: 20),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: _kMapFabAccent,
           ),
-        ],
+        ),
       ),
     );
   }

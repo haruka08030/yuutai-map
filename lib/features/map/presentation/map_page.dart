@@ -14,7 +14,9 @@ import 'package:flutter_stock/features/map/presentation/utils/marker_generator.d
 import 'package:flutter_stock/features/map/presentation/widgets/map_action_buttons.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_filter_bottom_sheet.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_guest_register_dialog.dart';
+import 'package:flutter_stock/features/map/presentation/widgets/map_header.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_status_banner.dart';
+import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
@@ -87,7 +89,17 @@ class _MapPageState extends ConsumerState<MapPage> {
           onRegisterPressed: () => context.go('/'),
         );
       } else {
-        context.push('/store/detail', extra: place);
+        final state = ref.read(mapControllerProvider).value;
+        if (state != null) {
+          await showMapStoreDetailSheet(
+            context: context,
+            place: place,
+            currentLat: state.currentPosition.latitude,
+            currentLng: state.currentPosition.longitude,
+          );
+        } else {
+          context.push('/store/detail', extra: place);
+        }
       }
     } else {
       final controller = await _mapController.future;
@@ -174,13 +186,23 @@ class _MapPageState extends ConsumerState<MapPage> {
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false, // Disable default button
               ),
+              MapHeader(
+                state: state,
+                onFilterPressed: () => _showFilterSheet(state),
+                onCategoryChanged: (selectedCategories) {
+                  ref.read(mapControllerProvider.notifier).applyFilters(
+                        showAllStores: state.showAllStores,
+                        selectedCategories: selectedCategories,
+                        folderId: state.folderId,
+                      );
+                },
+              ),
               const MapStatusBanner(),
             ],
           ),
           floatingActionButton: MapActionButtons(
             onLocationPressed: () =>
                 _goToCurrentLocation(state.currentPosition),
-            onFilterPressed: () => _showFilterSheet(state),
           ),
         );
       },
