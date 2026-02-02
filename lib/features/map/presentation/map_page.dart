@@ -14,7 +14,9 @@ import 'package:flutter_stock/features/map/presentation/utils/marker_generator.d
 import 'package:flutter_stock/features/map/presentation/widgets/map_action_buttons.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_filter_bottom_sheet.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_guest_register_dialog.dart';
+import 'package:flutter_stock/features/map/presentation/widgets/map_header.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_status_banner.dart';
+import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
@@ -30,8 +32,8 @@ class _MapPageState extends ConsumerState<MapPage> {
   final Completer<GoogleMapController> _mapController = Completer();
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
-  bool _bannerDismissed = false;
   late final MarkerGenerator _markerGenerator;
+  String _searchQuery = '';
 
   static const Map<String, Color> _categoryColors = {
     '飲食': Color(0xFFEF4444), // Red-500
@@ -60,8 +62,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       _updateMarkers,
       markerBuilder: (cluster) async {
         final Color markerColor = cluster.isMultiple
-            ? Colors
-                  .orange // Default color for clusters
+            ? Colors.orange // Default color for clusters
             : _getCategoryColor(cluster.items.first.category);
 
         return Marker(
@@ -89,7 +90,17 @@ class _MapPageState extends ConsumerState<MapPage> {
           onRegisterPressed: () => context.go('/'),
         );
       } else {
-        context.push('/store/detail', extra: place);
+        final state = ref.read(mapControllerProvider).value;
+        if (state != null) {
+          await showMapStoreDetailSheet(
+            context: context,
+            place: place,
+            currentLat: state.currentPosition.latitude,
+            currentLng: state.currentPosition.longitude,
+          );
+        } else {
+          context.push('/store/detail', extra: place);
+        }
       }
     } else {
       final controller = await _mapController.future;
@@ -110,21 +121,34 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply:
-          ({
-            required bool showAllStores,
-            required Set<String> selectedCategories,
-            String? folderId,
-          }) {
-            ref
-                .read(mapControllerProvider.notifier)
-                .applyFilters(
-                  showAllStores: showAllStores,
-                  selectedCategories: selectedCategories,
-                  folderId: folderId,
-                );
-          },
+      onApply: ({
+        required bool showAllStores,
+        required Set<String> selectedCategories,
+        String? folderId,
+      }) {
+        ref.read(mapControllerProvider.notifier).applyFilters(
+              showAllStores: showAllStores,
+              selectedCategories: selectedCategories,
+              folderId: folderId,
+            );
+      },
     );
+  }
+
+  void _updateClusterManagerItems(MapState state) {
+    List<Place> filteredPlaces = state.items;
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filteredPlaces = filteredPlaces.where((place) {
+        final query = _searchQuery.toLowerCase();
+        final name = place.name.toLowerCase();
+        final address = (place.address ?? '').toLowerCase();
+        return name.contains(query) || address.contains(query);
+      }).toList();
+    }
+
+    _clusterManager.setItems(filteredPlaces);
   }
 
   Future<void> _goToCurrentLocation(Position currentPosition) async {
@@ -149,20 +173,6 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<MapState?>(mapControllerProvider.select((s) => s.value), (
-      previous,
-      next,
-    ) {
-      if (previous != null && next != null) {
-        if (previous.showAllStores && !next.showAllStores) {
-          // The user just switched from "all stores" to "my yuutai only"
-          setState(() {
-            _bannerDismissed = false;
-          });
-        }
-      }
-    });
-
     final mapStateAsync = ref.watch(mapControllerProvider);
 
     return mapStateAsync.when(
@@ -193,31 +203,29 @@ class _MapPageState extends ConsumerState<MapPage> {
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false, // Disable default button
               ),
-              MapStatusBanner(
-                showAllStores: state.showAllStores,
-                isGuest: state.isGuest,
-                bannerDismissed: _bannerDismissed,
-                onShowAll: () {
-                  ref
-                      .read(mapControllerProvider.notifier)
-                      .applyFilters(
-                        showAllStores: true,
-                        selectedCategories: state.selectedCategories,
+              MapHeader(
+                state: state,
+                onFilterPressed: () => _showFilterSheet(state),
+                onCategoryChanged: (selectedCategories) {
+                  ref.read(mapControllerProvider.notifier).applyFilters(
+                        showAllStores: state.showAllStores,
+                        selectedCategories: selectedCategories,
                         folderId: state.folderId,
                       );
                 },
-                onClose: () {
+                onSearchChanged: (query) {
                   setState(() {
-                    _bannerDismissed = true;
+                    _searchQuery = query;
                   });
+                  _updateClusterManagerItems(state);
                 },
               ),
+              const MapStatusBanner(),
             ],
           ),
           floatingActionButton: MapActionButtons(
             onLocationPressed: () =>
                 _goToCurrentLocation(state.currentPosition),
-            onFilterPressed: () => _showFilterSheet(state),
           ),
         );
       },

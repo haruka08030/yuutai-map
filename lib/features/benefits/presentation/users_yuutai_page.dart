@@ -31,13 +31,19 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 }
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
+    _searchController.text = widget.searchQuery;
+    _searchQuery = widget.searchQuery;
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -54,7 +60,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     return Scaffold(
       body: Column(
         children: [
-          _buildFilterBar(context, settings, settingsNotifier),
+          _buildSearchAndFilterSection(context, settings, settingsNotifier),
           Expanded(
             child: asyncBenefits.when(
               loading: () => ListView.builder(
@@ -78,9 +84,12 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       .toList();
                 }
 
-                if (widget.searchQuery.isNotEmpty) {
+                // Apply search filter
+                final searchQuery =
+                    _searchQuery.isNotEmpty ? _searchQuery : widget.searchQuery;
+                if (searchQuery.isNotEmpty) {
                   items = items.where((benefit) {
-                    final query = widget.searchQuery.toLowerCase();
+                    final query = searchQuery.toLowerCase();
                     final title = benefit.companyName.toLowerCase();
                     final benefitText =
                         benefit.benefitDetail?.toLowerCase() ?? '';
@@ -127,10 +136,13 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     );
                   }
 
-                  if (widget.searchQuery.isNotEmpty) {
+                  final displayQuery = _searchQuery.isNotEmpty
+                      ? _searchQuery
+                      : widget.searchQuery;
+                  if (displayQuery.isNotEmpty) {
                     return EmptyStateView(
                       icon: Icons.search_off,
-                      title: '「${widget.searchQuery}」は見つかりませんでした',
+                      title: '「$displayQuery」は見つかりませんでした',
                       subtitle: '別のキーワードで試してみてください',
                     );
                   }
@@ -138,9 +150,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   return EmptyStateView(
                     imagePath: 'assets/images/empty_state.png',
                     title: '優待を登録しよう！',
-                    subtitle: isGuest
-                        ? 'ログインすると優待を登録して管理できます'
-                        : '右下の「＋」ボタンから追加できます',
+                    subtitle:
+                        isGuest ? 'ログインすると優待を登録して管理できます' : '右下の「＋」ボタンから追加できます',
                   );
                 }
 
@@ -152,22 +163,20 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   final expiringSoon = items.where((b) {
                     if (b.expiryDate == null) return false;
                     final today = DateTime.now();
-                    final diff =
-                        DateTime(
-                              b.expiryDate!.year,
-                              b.expiryDate!.month,
-                              b.expiryDate!.day,
-                            )
-                            .difference(
-                              DateTime(today.year, today.month, today.day),
-                            )
-                            .inDays;
+                    final diff = DateTime(
+                      b.expiryDate!.year,
+                      b.expiryDate!.month,
+                      b.expiryDate!.day,
+                    )
+                        .difference(
+                          DateTime(today.year, today.month, today.day),
+                        )
+                        .inDays;
                     return diff >= 0 && diff <= 30;
                   }).toList();
 
-                  final others = items
-                      .where((b) => !expiringSoon.contains(b))
-                      .toList();
+                  final others =
+                      items.where((b) => !expiringSoon.contains(b)).toList();
 
                   return ListView(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -214,46 +223,231 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               elevation: 4,
+              shape: const CircleBorder(),
               child: const Icon(Icons.add, size: 28),
             ),
     );
   }
 
-  Widget _buildFilterBar(
+  Widget _buildSearchAndFilterSection(
     BuildContext context,
     YuutaiListSettings settings,
     YuutaiListSettingsNotifier notifier,
   ) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).appBarTheme.backgroundColor ??
-            Theme.of(context).colorScheme.surface, // Match AppBar background
+        color: Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).colorScheme.surface,
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Search Box
+          Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: const Color(0xFFECF0F5),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: '企業名または優待内容を検索...',
+                hintStyle: GoogleFonts.outfit(
+                  color: const Color(0xFF64748B),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  size: 22,
+                  color: Color(0xFF64748B),
+                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.clear_rounded,
+                          size: 20,
+                          color: Color(0xFF64748B),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF1E293B),
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Filter Chips Row
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _FilterChip(
+                  label: 'すべて',
+                  selected: true,
+                  onTap: () {
+                    // TODO: フィルター機能を実装
+                  },
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: '期限間近',
+                  selected: false,
+                  onTap: () {
+                    // TODO: フィルター機能を実装
+                  },
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: '有効',
+                  selected: false,
+                  onTap: () {
+                    // TODO: フィルター機能を実装
+                  },
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: '使用済み',
+                  selected: false,
+                  onTap: () {
+                    // TODO: フィルター機能を実装
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Sort Section
+          InkWell(
+            onTap: () {
+              _showSortOptions(context, settings, notifier);
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(
+                  Icons.sort_rounded,
+                  size: 18,
+                  color: AppTheme.secondaryTextColor(context),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '並び替え：',
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: AppTheme.secondaryTextColor(context),
+                  ),
+                ),
+                Text(
+                  _getSortLabel(settings.sortOrder),
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 20,
+                  color: Color(0xFF2DD4BF),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getSortLabel(YuutaiSortOrder sortOrder) {
+    switch (sortOrder) {
+      case YuutaiSortOrder.expiryDate:
+        return '期限日';
+      case YuutaiSortOrder.companyName:
+        return '企業名';
+      case YuutaiSortOrder.createdAt:
+        return '登録日';
+    }
+  }
+
+  void _showSortOptions(
+    BuildContext context,
+    YuutaiListSettings settings,
+    YuutaiListSettingsNotifier notifier,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _SortChip(
-              label: '期限順',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Text(
+                    '並び替え',
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            _SortOption(
+              label: '期限日',
               selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
-              onSelected: (_) =>
-                  notifier.setSortOrder(YuutaiSortOrder.expiryDate),
+              onTap: () {
+                notifier.setSortOrder(YuutaiSortOrder.expiryDate);
+                Navigator.pop(context);
+              },
             ),
-            const SizedBox(width: 8),
-            _SortChip(
-              label: '企業名順',
+            _SortOption(
+              label: '企業名',
               selected: settings.sortOrder == YuutaiSortOrder.companyName,
-              onSelected: (_) =>
-                  notifier.setSortOrder(YuutaiSortOrder.companyName),
+              onTap: () {
+                notifier.setSortOrder(YuutaiSortOrder.companyName);
+                Navigator.pop(context);
+              },
             ),
-            const SizedBox(width: 8),
-            _SortChip(
-              label: '新着順',
+            _SortOption(
+              label: '登録日',
               selected: settings.sortOrder == YuutaiSortOrder.createdAt,
-              onSelected: (_) =>
-                  notifier.setSortOrder(YuutaiSortOrder.createdAt),
+              onTap: () {
+                notifier.setSortOrder(YuutaiSortOrder.createdAt);
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
@@ -306,44 +500,94 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   }
 }
 
-class _SortChip extends StatelessWidget {
-  const _SortChip({
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
     required this.label,
     required this.selected,
-    required this.onSelected,
+    required this.onTap,
   });
 
   final String label;
   final bool selected;
-  final ValueChanged<bool> onSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(
-        label,
-        style: GoogleFonts.outfit(
-          fontSize: 13,
-          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-          color: selected ? Colors.white : AppTheme.secondaryTextColor(context),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF2DD4BF) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: selected
+              ? [
+                  const BoxShadow(
+                    color: Color(0x332DD3BE),
+                    blurRadius: 6,
+                    offset: Offset(0, 4),
+                    spreadRadius: -1,
+                  ),
+                ]
+              : [
+                  const BoxShadow(
+                    color: Color(0x19000000),
+                    blurRadius: 3,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.outfit(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+            color: selected ? Colors.white : const Color(0xFF1E293B),
+          ),
         ),
       ),
-      selected: selected,
-      onSelected: onSelected,
-      selectedColor: Theme.of(context).colorScheme.primary,
-      backgroundColor: Colors.transparent,
-      showCheckmark: false,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      visualDensity: VisualDensity.compact,
-      elevation: 0,
-      pressElevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: selected
-              ? Theme.of(context).colorScheme.primary
-              : AppTheme.dividerColor(context),
-          width: 1,
+    );
+  }
+}
+
+class _SortOption extends StatelessWidget {
+  const _SortOption({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: selected
+                      ? const Color(0xFF2DD4BF)
+                      : const Color(0xFF1E293B),
+                ),
+              ),
+            ),
+            if (selected)
+              const Icon(
+                Icons.check_rounded,
+                color: Color(0xFF2DD4BF),
+                size: 24,
+              ),
+          ],
         ),
       ),
     );
