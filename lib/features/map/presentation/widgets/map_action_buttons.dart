@@ -55,20 +55,6 @@ class _MapActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: _kMapFabBorder),
-            boxShadow: const [
-              BoxShadow(
-                color: _kMapFabShadow,
-                blurRadius: 15,
-                offset: Offset(0, 10),
-                spreadRadius: -3,
-              ),
-              BoxShadow(
-                color: _kMapFabShadow,
-                blurRadius: 6,
-                offset: Offset(0, 4),
-                spreadRadius: -4,
-              ),
-            ],
           ),
           child: Icon(
             icon,
