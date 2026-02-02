@@ -17,6 +17,7 @@ import 'package:flutter_stock/features/map/presentation/widgets/map_guest_regist
 import 'package:flutter_stock/features/map/presentation/widgets/map_header.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_status_banner.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
+import 'package:flutter_stock/features/map/presentation/widgets/map_store_empty_state.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
@@ -135,22 +136,6 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
-  void _updateClusterManagerItems(MapState state) {
-    List<Place> filteredPlaces = state.items;
-
-    // Apply search filter
-    if (_searchQuery.isNotEmpty) {
-      filteredPlaces = filteredPlaces.where((place) {
-        final query = _searchQuery.toLowerCase();
-        final name = place.name.toLowerCase();
-        final address = (place.address ?? '').toLowerCase();
-        return name.contains(query) || address.contains(query);
-      }).toList();
-    }
-
-    _clusterManager.setItems(filteredPlaces);
-  }
-
   Future<void> _goToCurrentLocation(Position currentPosition) async {
     final GoogleMapController controller = await _mapController.future;
     try {
@@ -177,7 +162,20 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     return mapStateAsync.when(
       data: (state) {
-        _clusterManager.setItems(state.items);
+        List<Place> filteredPlaces = state.items;
+        if (_searchQuery.isNotEmpty) {
+          filteredPlaces = state.items.where((place) {
+            final query = _searchQuery.toLowerCase();
+            final name = place.name.toLowerCase();
+            final address = (place.address ?? '').toLowerCase();
+            return name.contains(query) || address.contains(query);
+          }).toList();
+        }
+        _clusterManager.setItems(filteredPlaces);
+
+        final showSearchEmptyOverlay =
+            _searchQuery.isNotEmpty && filteredPlaces.isEmpty;
+
         return Scaffold(
           body: Stack(
             children: [
@@ -217,10 +215,18 @@ class _MapPageState extends ConsumerState<MapPage> {
                   setState(() {
                     _searchQuery = query;
                   });
-                  _updateClusterManagerItems(state);
                 },
               ),
               const MapStatusBanner(),
+              if (showSearchEmptyOverlay)
+                Positioned.fill(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.surface,
+                    child: SafeArea(
+                      child: MapStoreEmptyState(query: _searchQuery),
+                    ),
+                  ),
+                ),
             ],
           ),
           floatingActionButton: MapActionButtons(

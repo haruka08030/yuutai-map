@@ -4,7 +4,7 @@ import 'package:flutter_stock/features/app/presentation/widgets/bordered_search_
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
-import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_empty_state_with_request.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_empty_request.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/company_search_results_list.dart';
 
 class CompanySearchPage extends ConsumerStatefulWidget {
@@ -48,7 +48,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
       body: companyList.when(
         data: (companies) {
           if (companies.isEmpty && _query.isNotEmpty) {
-            return CompanySearchEmptyStateWithRequest(query: _query);
+            return CompanySearchEmptyRequest(query: _query);
           }
           if (companies.isEmpty && _query.isEmpty) {
             return const EmptyStateView(
