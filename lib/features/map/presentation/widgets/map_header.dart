@@ -83,40 +83,10 @@ class _MapHeaderState extends State<MapHeader> {
                           setState(() {});
                           widget.onSearchChanged?.call(value);
                         },
-                        decoration: InputDecoration(
+                        decoration: app_theme.AppSearchBarStyle.inputDecoration(
                           hintText: '店舗を検索',
-                          hintStyle: GoogleFonts.outfit(
-                            color: app_theme.AppSearchBarStyle.hintColor,
-                            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-                            fontWeight:
-                                app_theme.AppSearchBarStyle.hintFontWeight,
-                          ),
-                          prefixIconConstraints: const BoxConstraints(
-                            minWidth: 0,
-                            minHeight: 0,
-                          ),
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.only(
-                              left: app_theme
-                                  .AppSearchBarStyle.prefixIconPaddingLeft,
-                              right: app_theme
-                                  .AppSearchBarStyle.prefixIconPaddingRight,
-                            ),
-                            child: Icon(
-                              Icons.search_rounded,
-                              size: app_theme.AppSearchBarStyle.prefixIconSize,
-                              color: _kTextPrimary,
-                            ),
-                          ),
                           suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(
-                                    Icons.clear_rounded,
-                                    size: app_theme
-                                        .AppSearchBarStyle.suffixIconSize,
-                                    color:
-                                        app_theme.AppSearchBarStyle.hintColor,
-                                  ),
+                              ? app_theme.AppSearchBarStyle.clearIcon(
                                   onPressed: () {
                                     setState(() {
                                       _searchController.clear();
@@ -125,10 +95,13 @@ class _MapHeaderState extends State<MapHeader> {
                                   },
                                 )
                               : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: app_theme
-                                .AppSearchBarStyle.contentPaddingVertical,
+                          prefixIconColor: _kTextPrimary,
+                        ).copyWith(
+                          hintStyle: GoogleFonts.outfit(
+                            color: app_theme.AppSearchBarStyle.hintColor,
+                            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
+                            fontWeight:
+                                app_theme.AppSearchBarStyle.hintFontWeight,
                           ),
                         ),
                         style: GoogleFonts.outfit(

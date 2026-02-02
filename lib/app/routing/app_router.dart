@@ -19,7 +19,6 @@ import 'package:flutter_stock/features/settings/presentation/notification_settin
 import 'package:flutter_stock/features/settings/presentation/account_detail_page.dart';
 import 'package:flutter_stock/features/settings/presentation/email_edit_page.dart';
 import 'package:flutter_stock/features/settings/presentation/settings_page.dart';
-import 'package:flutter_stock/features/benefits/presentation/yuutai_search_page.dart';
 import 'package:flutter_stock/features/onboarding/presentation/onboarding_page.dart';
 import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
 
@@ -162,11 +161,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                       );
                     },
                   ),
+                  // 検索は AppBar のインライン検索で /yuutai?search=... に集約。旧 /yuutai/search はリダイレクト。
                   GoRoute(
                     path: 'search',
-                    builder: (context, state) => YuutaiSearchPage(
-                      initialQuery: state.uri.queryParameters['q'],
-                    ),
+                    redirect: (context, state) {
+                      final q = state.uri.queryParameters['q'];
+                      return q != null && q.isNotEmpty
+                          ? '/yuutai?search=${Uri.encodeComponent(q)}'
+                          : '/yuutai';
+                    },
                   ),
                 ],
               ),

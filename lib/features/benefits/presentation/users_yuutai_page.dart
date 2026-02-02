@@ -31,19 +31,13 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 }
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
-
   @override
   void initState() {
     super.initState();
-    _searchController.text = widget.searchQuery;
-    _searchQuery = widget.searchQuery;
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -85,8 +79,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 }
 
                 // Apply search filter
-                final searchQuery =
-                    _searchQuery.isNotEmpty ? _searchQuery : widget.searchQuery;
+                final searchQuery = widget.searchQuery;
                 if (searchQuery.isNotEmpty) {
                   items = items.where((benefit) {
                     final query = searchQuery.toLowerCase();
@@ -136,9 +129,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     );
                   }
 
-                  final displayQuery = _searchQuery.isNotEmpty
-                      ? _searchQuery
-                      : widget.searchQuery;
+                  final displayQuery = widget.searchQuery;
                   if (displayQuery.isNotEmpty) {
                     return EmptyStateView(
                       icon: Icons.search_off,
@@ -243,57 +234,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search Box
-          Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFECF0F5),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: '企業名で検索...',
-                hintStyle: GoogleFonts.outfit(
-                  color: const Color(0xFF64748B),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(
-                          Icons.clear_rounded,
-                          size: 20,
-                          color: Color(0xFF64748B),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _searchQuery = '';
-                          });
-                        },
-                      )
-                    : null,
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
-              style: GoogleFonts.outfit(
-                color: const Color(0xFF1E293B),
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Filter Chips Row
+          // Filter Chips Row（フィルター機能は未実装のためタップは no-op）
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -301,33 +242,25 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 _FilterChip(
                   label: 'すべて',
                   selected: true,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  onTap: () {},
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '期限間近',
                   selected: false,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  onTap: () {},
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '有効',
                   selected: false,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  onTap: () {},
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '使用済み',
                   selected: false,
-                  onTap: () {
-                    // TODO: フィルター機能を実装
-                  },
+                  onTap: () {},
                 ),
               ],
             ),

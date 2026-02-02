@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
+import 'package:flutter_stock/features/app/presentation/widgets/app_bar_search_field.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:go_router/go_router.dart';
@@ -17,8 +17,6 @@ class ShellScreen extends ConsumerStatefulWidget {
 }
 
 class _ShellScreenState extends ConsumerState<ShellScreen> {
-  // Keeping track of history and search query for initial tab might be handled by each branch's root page
-  // or by passing initial state via extra if needed. For now, removing from here.
   final TextEditingController _yuutaiSearchController = TextEditingController();
   Timer? _yuutaiSearchDebounce;
 
@@ -119,9 +117,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                 ),
                 title: Padding(
                   padding: const EdgeInsets.only(right: 16),
-                  child: _AppBarSearchField(
+                  child: AppBarSearchField(
                     controller: _yuutaiSearchController,
-                    hintText: '企業名または証券コードで検索',
+                    hintText: '企業名・証券コードで検索',
                     onChanged: (value) {
                       _yuutaiSearchDebounce?.cancel();
                       _yuutaiSearchDebounce = Timer(
@@ -211,106 +209,5 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
         ),
       );
     }
-  }
-}
-
-class _AppBarSearchField extends StatefulWidget {
-  const _AppBarSearchField({
-    required this.controller,
-    required this.hintText,
-    required this.onChanged,
-    required this.onClear,
-    required this.onSubmitted,
-  });
-
-  final TextEditingController controller;
-  final String hintText;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onClear;
-  final ValueChanged<String> onSubmitted;
-
-  @override
-  State<_AppBarSearchField> createState() => _AppBarSearchFieldState();
-}
-
-class _AppBarSearchFieldState extends State<_AppBarSearchField> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(_onControllerChanged);
-  }
-
-  @override
-  void didUpdateWidget(covariant _AppBarSearchField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_onControllerChanged);
-      widget.controller.addListener(_onControllerChanged);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(_onControllerChanged);
-    super.dispose();
-  }
-
-  void _onControllerChanged() => setState(() {});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: app_theme.AppSearchBarStyle.height,
-      decoration: BoxDecoration(
-        color: const Color(0xFFECF0F5),
-        borderRadius: app_theme.AppSearchBarStyle.borderRadiusValue,
-      ),
-      alignment: Alignment.center,
-      child: TextField(
-        controller: widget.controller,
-        textInputAction: TextInputAction.search,
-        onChanged: widget.onChanged,
-        onSubmitted: widget.onSubmitted,
-        style: const TextStyle(
-          fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-          fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
-        ),
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          hintStyle: const TextStyle(
-            color: app_theme.AppSearchBarStyle.hintColor,
-            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-            fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
-          ),
-          border: InputBorder.none,
-          prefixIconConstraints:
-              const BoxConstraints(minWidth: 0, minHeight: 0),
-          prefixIcon: const Padding(
-            padding: EdgeInsets.only(
-              left: app_theme.AppSearchBarStyle.prefixIconPaddingLeft,
-              right: app_theme.AppSearchBarStyle.prefixIconPaddingRight,
-            ),
-            child: Icon(
-              Icons.search_rounded,
-              size: app_theme.AppSearchBarStyle.prefixIconSize,
-              color: app_theme.AppSearchBarStyle.hintColor,
-            ),
-          ),
-          suffixIcon: widget.controller.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.clear_rounded,
-                    size: app_theme.AppSearchBarStyle.suffixIconSize,
-                    color: app_theme.AppSearchBarStyle.hintColor,
-                  ),
-                  onPressed: widget.onClear,
-                )
-              : null,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: app_theme.AppSearchBarStyle.contentPaddingVertical,
-          ),
-        ),
-      ),
-    );
   }
 }

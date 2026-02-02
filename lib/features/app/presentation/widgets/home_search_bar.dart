@@ -82,47 +82,21 @@ class _CompanySearchBarState extends State<CompanySearchBar> {
           fontSize: app_theme.AppSearchBarStyle.hintFontSize,
           fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
         ),
-        decoration: InputDecoration(
+        decoration: app_theme.AppSearchBarStyle.inputDecoration(
           hintText: widget.hintText,
-          hintStyle: const TextStyle(
-            color: app_theme.AppSearchBarStyle.hintColor,
-            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-            fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
-          ),
-          prefixIconConstraints:
-              const BoxConstraints(minWidth: 0, minHeight: 0),
-          prefixIcon: const Padding(
-            padding: EdgeInsets.only(
-              left: app_theme.AppSearchBarStyle.prefixIconPaddingLeft,
-              right: app_theme.AppSearchBarStyle.prefixIconPaddingRight,
-            ),
-            child: Icon(
-              Icons.search_rounded,
-              size: app_theme.AppSearchBarStyle.prefixIconSize,
-              color: app_theme.AppSearchBarStyle.hintColor,
-            ),
-          ),
           suffixIcon: _textController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.clear_rounded,
-                    size: app_theme.AppSearchBarStyle.suffixIconSize,
-                    color: app_theme.AppSearchBarStyle.hintColor,
-                  ),
+              ? app_theme.AppSearchBarStyle.clearIcon(
                   onPressed: () {
                     _textController.clear();
-                    if (widget.onChanged != null) {
-                      widget.onChanged!('');
-                    }
+                    widget.onChanged?.call('');
                   },
                 )
               : null,
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: app_theme.AppSearchBarStyle.contentPaddingVertical,
-          ),
+          border: baseBorder,
           filled: true,
           fillColor: Theme.of(context).colorScheme.surface,
+        ).copyWith(
+          isDense: true,
           enabledBorder: baseBorder,
           disabledBorder: baseBorder,
           focusedBorder: baseBorder,

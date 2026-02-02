@@ -9,8 +9,8 @@ import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-const String _privacyPolicyUrl =
-    'https://your-privacy-policy-url.com'; // TODO: Update with actual URL
+/// 本番公開前に実際のプライバシーポリシーURLに差し替える（IMPROVEMENTS.md 参照）
+const String _privacyPolicyUrl = 'https://your-privacy-policy-url.com';
 const String _inquiryUrl = 'https://forms.gle/VGyP1fZV8EPi56nc7';
 
 final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
