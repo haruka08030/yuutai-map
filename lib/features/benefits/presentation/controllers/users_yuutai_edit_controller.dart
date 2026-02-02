@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/core/ocr/ocr_service.dart';
+
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
@@ -56,7 +56,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   UsersYuutaiEditController(this.initialBenefit);
 
   final UsersYuutai? initialBenefit;
-  final _ocrService = OcrService();
+
 
   @override
   UsersYuutaiEditState build() {
@@ -182,16 +182,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     }
   }
 
-  Future<void> handleOcr() async {
-    final result = await _ocrService.pickAndRecognizeText();
-    if (result == null) return;
 
-    ref.read(benefitContentControllerProvider(state.initialBenefit)).text =
-        result.text;
-    if (result.expiryDate != null) {
-      state = state.copyWith(expireOn: result.expiryDate);
-    }
-  }
 
   void setCompanyName(String name) {
     ref.read(titleControllerProvider(state.initialBenefit)).text = name;

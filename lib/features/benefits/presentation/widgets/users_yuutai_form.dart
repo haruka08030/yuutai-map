@@ -47,14 +47,10 @@ class UsersYuutaiForm extends ConsumerWidget {
           // Benefit Content
           TextFormField(
             controller: benefitContentCtl,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: '優待内容',
               hintText: '例: 3000円分の割引券',
               isDense: true,
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.camera_alt),
-                onPressed: notifier.handleOcr,
-              ),
             ),
           ),
           const SizedBox(height: 12),

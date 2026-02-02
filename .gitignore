@@ -3,7 +3,6 @@
 *.log
 *.pyc
 *.swp
-.DS_Store
 .atom/
 .build/
 .buildlog/
@@ -64,3 +63,5 @@ ios/Flutter/Release.xcconfig
 
 # Firebase configuration
 ios/Runner/GoogleService-Info.plist
+
+output_data/
