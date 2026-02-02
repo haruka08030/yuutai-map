@@ -97,12 +97,13 @@ class NotificationService {
       );
 
       // Create a unique ID for each notification to avoid collisions
-      final notificationId = (b.id! * 1000) + day;
+      // Ensure notification ID stays within 32-bit int range
+      final notificationId = ((b.id! * 1000) + day) % 2147483647;
 
       await _plugin.zonedSchedule(
         id: notificationId,
         title: '優待の期限が近づいています',
-        body: '「${b.companyName}」の期限が${day == 0 ? "本日" : "$day日後"}です。',
+        body: '「${b.companyName}」の期限が${day == 0 ? "本日" : "あと$day日"}です。',
         scheduledDate: scheduledDate,
         notificationDetails: notificationDetails,
         payload:
