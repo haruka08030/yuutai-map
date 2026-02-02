@@ -16,7 +16,6 @@ Future<void> main() async {
   tz.initializeTimeZones();
   await dotenv.load(fileName: ".env");
   await initializeDateFormatting('ja_JP');
-  // await NotificationService.instance.initialize(); // Will be initialized via Provider
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -27,8 +26,6 @@ Future<void> main() async {
   final container = ProviderContainer(
     overrides: [sharedPreferencesProvider.overrideWithValue(sharedPreferences)],
   );
-
-  await container.read(notificationServiceProvider).initialize();
 
   runApp(UncontrolledProviderScope(container: container, child: const MyApp()));
 }

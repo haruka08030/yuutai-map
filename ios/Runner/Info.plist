@@ -58,7 +58,7 @@
 			<dict>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>io.supabase.flutterstock</string>
+					<string>io.supabase.flutter_stock</string>
 				</array>
 			</dict>
 			<dict>

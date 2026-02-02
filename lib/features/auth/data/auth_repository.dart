@@ -39,7 +39,7 @@ class AuthRepository extends ChangeNotifier {
       email: email,
       password: password,
       data: {'username': username},
-      emailRedirectTo: 'io.supabase.flutterstock://login-callback/',
+      emailRedirectTo: 'io.supabase.flutter_stock://login-callback/',
     );
   }
 
@@ -57,8 +57,6 @@ class AuthRepository extends ChangeNotifier {
   Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: 'io.supabase.flutterstock://login-callback/',
-      queryParams: {'access_type': 'offline'},
     );
   }
 
@@ -84,7 +82,7 @@ class AuthRepository extends ChangeNotifier {
   Future<void> resetPasswordForEmail({required String email}) async {
     await _client.auth.resetPasswordForEmail(
       email,
-      redirectTo: 'io.supabase.flutterstock://login-callback/',
+      redirectTo: 'io.supabase.flutter_stock://login-callback/',
     );
   }
 
