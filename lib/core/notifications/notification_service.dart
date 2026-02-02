@@ -27,14 +27,14 @@ class NotificationService {
       android: android,
       iOS: iOS,
     );
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings: settings);
   }
 
   Future<void> cancelAllFor(String id) async {
     final pending = await _plugin.pendingNotificationRequests();
     for (final p in pending) {
       if (p.payload == id) {
-        await _plugin.cancel(p.id);
+        await _plugin.cancel(id: p.id);
       }
     }
   }
@@ -44,7 +44,7 @@ class NotificationService {
   }
 
   Future<void> cancelNotification(int id) async {
-    await _plugin.cancel(id);
+    await _plugin.cancel(id: id);
   }
 
   Future<void> reschedulePresetReminders(UsersYuutai b) async {
@@ -100,11 +100,11 @@ class NotificationService {
       final notificationId = (b.id! * 1000) + day;
 
       await _plugin.zonedSchedule(
-        notificationId,
-        '優待の期限が近づいています',
-        '「${b.companyName}」の期限が${day == 0 ? "本日" : "$day日後"}です。',
-        scheduledDate,
-        notificationDetails,
+        id: notificationId,
+        title: '優待の期限が近づいています',
+        body: '「${b.companyName}」の期限が${day == 0 ? "本日" : "$day日後"}です。',
+        scheduledDate: scheduledDate,
+        notificationDetails: notificationDetails,
         payload:
             idStr, // Use the same payload to group notifications by benefit
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
