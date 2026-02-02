@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 
-class CompanySearchBar extends StatefulWidget {
-  const CompanySearchBar({
+/// 枠付きの検索テキストフィールド。企業検索・優待検索などで共通利用。
+class BorderedSearchBar extends StatefulWidget {
+  const BorderedSearchBar({
     super.key,
     this.controller,
     this.onChanged,
@@ -19,10 +20,10 @@ class CompanySearchBar extends StatefulWidget {
   final bool autofocus;
 
   @override
-  State<CompanySearchBar> createState() => _CompanySearchBarState();
+  State<BorderedSearchBar> createState() => _BorderedSearchBarState();
 }
 
-class _CompanySearchBarState extends State<CompanySearchBar> {
+class _BorderedSearchBarState extends State<BorderedSearchBar> {
   late TextEditingController _textController;
 
   @override
@@ -33,7 +34,7 @@ class _CompanySearchBarState extends State<CompanySearchBar> {
   }
 
   @override
-  void didUpdateWidget(covariant CompanySearchBar oldWidget) {
+  void didUpdateWidget(covariant BorderedSearchBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
       oldWidget.controller?.removeListener(_onTextChanged);
@@ -44,10 +45,8 @@ class _CompanySearchBarState extends State<CompanySearchBar> {
   }
 
   void _onTextChanged() {
-    setState(() {}); // Rebuild to update suffixIcon visibility
-    if (widget.onChanged != null) {
-      widget.onChanged!(_textController.text);
-    }
+    setState(() {});
+    widget.onChanged?.call(_textController.text);
   }
 
   @override

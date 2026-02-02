@@ -6,8 +6,8 @@ import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:shared_preferences/shared_preferences.dart'; // New import
-import 'package:flutter_stock/app/theme/theme_provider.dart'; // New import
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/routing/app_router.dart';
 
 Future<void> main() async {

@@ -8,8 +8,8 @@ import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart'; // New import
-import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart'; // New import
+import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

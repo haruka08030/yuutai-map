@@ -12,7 +12,7 @@ import 'package:flutter_stock/app/theme/app_theme.dart';
 
 import 'package:flutter_stock/core/utils/date_utils.dart';
 import 'package:flutter_stock/core/widgets/app_dialogs.dart';
-import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart'; // New import // New import
+import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart';
 
 class UsersYuutaiListTile extends ConsumerWidget {
   const UsersYuutaiListTile({super.key, required this.benefit, this.subtitle});

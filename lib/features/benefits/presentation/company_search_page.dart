@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/features/app/presentation/widgets/home_search_bar.dart';
+import 'package:flutter_stock/features/app/presentation/widgets/bordered_search_bar.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
@@ -39,7 +39,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
     final companyList = ref.watch(companyListProvider(_query));
     return Scaffold(
       appBar: AppBar(
-        title: CompanySearchBar(
+        title: BorderedSearchBar(
           controller: _searchController,
           autofocus: true,
           hintText: '企業名で検索',

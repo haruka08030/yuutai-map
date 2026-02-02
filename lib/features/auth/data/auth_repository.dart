@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/foundation.dart'; // New import for ChangeNotifier
+import 'package:flutter/foundation.dart';
 
 class AuthRepository extends ChangeNotifier {
   AuthRepository(this._client) {

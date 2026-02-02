@@ -31,7 +31,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
-      final isGuest = authNotifier.isGuest; // New
+      final isGuest = authNotifier.isGuest;
       final location = state.uri.path;
 
       // Check if onboarding needs to be shown (only on first launch)
