@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -55,10 +56,11 @@ class _MapHeaderState extends State<MapHeader> {
                 children: [
                   Expanded(
                     child: Container(
-                      height: 48,
+                      height: app_theme.AppSearchBarStyle.height,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius:
+                            app_theme.AppSearchBarStyle.borderRadiusValue,
                         border: Border.all(color: _kBorderLight),
                         boxShadow: const [
                           BoxShadow(
@@ -82,18 +84,38 @@ class _MapHeaderState extends State<MapHeader> {
                           widget.onSearchChanged?.call(value);
                         },
                         decoration: InputDecoration(
-                          hintText: '店舗・優待を検索',
+                          hintText: '店舗を検索',
                           hintStyle: GoogleFonts.outfit(
-                            color: const Color(0xFF64748B),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                            color: app_theme.AppSearchBarStyle.hintColor,
+                            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
+                            fontWeight:
+                                app_theme.AppSearchBarStyle.hintFontWeight,
+                          ),
+                          prefixIconConstraints: const BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 0,
+                          ),
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.only(
+                              left: app_theme
+                                  .AppSearchBarStyle.prefixIconPaddingLeft,
+                              right: app_theme
+                                  .AppSearchBarStyle.prefixIconPaddingRight,
+                            ),
+                            child: Icon(
+                              Icons.search_rounded,
+                              size: app_theme.AppSearchBarStyle.prefixIconSize,
+                              color: _kTextPrimary,
+                            ),
                           ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(
                                     Icons.clear_rounded,
-                                    size: 20,
-                                    color: Color(0xFF64748B),
+                                    size: app_theme
+                                        .AppSearchBarStyle.suffixIconSize,
+                                    color:
+                                        app_theme.AppSearchBarStyle.hintColor,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -105,14 +127,15 @@ class _MapHeaderState extends State<MapHeader> {
                               : null,
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
+                            vertical: app_theme
+                                .AppSearchBarStyle.contentPaddingVertical,
                           ),
                         ),
                         style: GoogleFonts.outfit(
                           color: _kTextPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontSize: app_theme.AppSearchBarStyle.hintFontSize,
+                          fontWeight:
+                              app_theme.AppSearchBarStyle.hintFontWeight,
                         ),
                       ),
                     ),

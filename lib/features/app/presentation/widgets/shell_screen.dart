@@ -271,13 +271,13 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
         textInputAction: TextInputAction.search,
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: app_theme.AppSearchBarStyle.hintFontSize,
           fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
         ),
         decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: app_theme.AppSearchBarStyle.hintColor,
             fontSize: app_theme.AppSearchBarStyle.hintFontSize,
             fontWeight: app_theme.AppSearchBarStyle.hintFontWeight,
@@ -285,7 +285,7 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
           border: InputBorder.none,
           prefixIconConstraints:
               const BoxConstraints(minWidth: 0, minHeight: 0),
-          prefixIcon: Padding(
+          prefixIcon: const Padding(
             padding: EdgeInsets.only(
               left: app_theme.AppSearchBarStyle.prefixIconPaddingLeft,
               right: app_theme.AppSearchBarStyle.prefixIconPaddingRight,
@@ -298,7 +298,7 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
           ),
           suffixIcon: widget.controller.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.clear_rounded,
                     size: app_theme.AppSearchBarStyle.suffixIconSize,
                     color: app_theme.AppSearchBarStyle.hintColor,
@@ -306,7 +306,7 @@ class _AppBarSearchFieldState extends State<_AppBarSearchField> {
                   onPressed: widget.onClear,
                 )
               : null,
-          contentPadding: EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             vertical: app_theme.AppSearchBarStyle.contentPaddingVertical,
           ),
         ),
