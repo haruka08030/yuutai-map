@@ -117,9 +117,34 @@ class UsersYuutaiListTile extends ConsumerWidget {
                         child: Row(
                           children: [
                             Theme(
-                              data: ThemeData(
+                              data: Theme.of(context).copyWith(
                                 unselectedWidgetColor:
                                     AppTheme.dividerColor(context),
+                                checkboxTheme: CheckboxThemeData(
+                                  side: BorderSide(
+                                    width: 1.5,
+                                    color: AppTheme.dividerColor(context),
+                                  ),
+                                  fillColor: WidgetStateProperty.resolveWith(
+                                    (states) {
+                                      if (states
+                                          .contains(WidgetState.selected)) {
+                                        return Theme.of(context)
+                                            .colorScheme
+                                            .primary;
+                                      }
+                                      return Colors.transparent;
+                                    },
+                                  ),
+                                  checkColor: WidgetStateProperty.all(
+                                    Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
                               ),
                               child: Checkbox(
                                 value: isUsed,
@@ -153,7 +178,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                         .bodyMedium!
                                         .copyWith(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w400,
                                           color: isUsed
                                               ? AppTheme.secondaryTextColor(
                                                   context,
@@ -175,6 +200,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                           .textTheme
                                           .bodySmall
                                           ?.copyWith(
+                                            fontWeight: FontWeight.w400,
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onSurfaceVariant,
