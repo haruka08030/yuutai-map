@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,62 +9,90 @@ part of 'users_yuutai_edit_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
 
 /// @nodoc
 mixin _$UsersYuutaiEditState {
-  UsersYuutai? get initialBenefit => throw _privateConstructorUsedError;
-  DateTime? get expireOn => throw _privateConstructorUsedError;
-  String? get selectedFolderId => throw _privateConstructorUsedError;
-  Map<int, bool> get selectedPredefinedDays =>
-      throw _privateConstructorUsedError;
-  bool get customDayEnabled => throw _privateConstructorUsedError;
-  String get customDayValue => throw _privateConstructorUsedError;
-  bool get isLoading => throw _privateConstructorUsedError;
+  UsersYuutai? get initialBenefit;
+  DateTime? get expireOn;
+  String? get selectedFolderId;
+  Map<int, bool> get selectedPredefinedDays;
+  bool get customDayEnabled;
+  String get customDayValue;
+  bool get isLoading;
 
   /// Create a copy of UsersYuutaiEditState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $UsersYuutaiEditStateCopyWith<UsersYuutaiEditState> get copyWith =>
-      throw _privateConstructorUsedError;
+      _$UsersYuutaiEditStateCopyWithImpl<UsersYuutaiEditState>(
+          this as UsersYuutaiEditState, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is UsersYuutaiEditState &&
+            (identical(other.initialBenefit, initialBenefit) ||
+                other.initialBenefit == initialBenefit) &&
+            (identical(other.expireOn, expireOn) ||
+                other.expireOn == expireOn) &&
+            (identical(other.selectedFolderId, selectedFolderId) ||
+                other.selectedFolderId == selectedFolderId) &&
+            const DeepCollectionEquality()
+                .equals(other.selectedPredefinedDays, selectedPredefinedDays) &&
+            (identical(other.customDayEnabled, customDayEnabled) ||
+                other.customDayEnabled == customDayEnabled) &&
+            (identical(other.customDayValue, customDayValue) ||
+                other.customDayValue == customDayValue) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      initialBenefit,
+      expireOn,
+      selectedFolderId,
+      const DeepCollectionEquality().hash(selectedPredefinedDays),
+      customDayEnabled,
+      customDayValue,
+      isLoading);
+
+  @override
+  String toString() {
+    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
+  }
 }
 
 /// @nodoc
-abstract class $UsersYuutaiEditStateCopyWith<$Res> {
-  factory $UsersYuutaiEditStateCopyWith(
-    UsersYuutaiEditState value,
-    $Res Function(UsersYuutaiEditState) then,
-  ) = _$UsersYuutaiEditStateCopyWithImpl<$Res, UsersYuutaiEditState>;
+abstract mixin class $UsersYuutaiEditStateCopyWith<$Res> {
+  factory $UsersYuutaiEditStateCopyWith(UsersYuutaiEditState value,
+          $Res Function(UsersYuutaiEditState) _then) =
+      _$UsersYuutaiEditStateCopyWithImpl;
   @useResult
-  $Res call({
-    UsersYuutai? initialBenefit,
-    DateTime? expireOn,
-    String? selectedFolderId,
-    Map<int, bool> selectedPredefinedDays,
-    bool customDayEnabled,
-    String customDayValue,
-    bool isLoading,
-  });
+  $Res call(
+      {UsersYuutai? initialBenefit,
+      DateTime? expireOn,
+      String? selectedFolderId,
+      Map<int, bool> selectedPredefinedDays,
+      bool customDayEnabled,
+      String customDayValue,
+      bool isLoading});
 
   $UsersYuutaiCopyWith<$Res>? get initialBenefit;
 }
 
 /// @nodoc
-class _$UsersYuutaiEditStateCopyWithImpl<
-  $Res,
-  $Val extends UsersYuutaiEditState
->
+class _$UsersYuutaiEditStateCopyWithImpl<$Res>
     implements $UsersYuutaiEditStateCopyWith<$Res> {
-  _$UsersYuutaiEditStateCopyWithImpl(this._value, this._then);
+  _$UsersYuutaiEditStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UsersYuutaiEditState _self;
+  final $Res Function(UsersYuutaiEditState) _then;
 
   /// Create a copy of UsersYuutaiEditState
   /// with the given fields replaced by the non-null parameter values.
@@ -79,39 +107,36 @@ class _$UsersYuutaiEditStateCopyWithImpl<
     Object? customDayValue = null,
     Object? isLoading = null,
   }) {
-    return _then(
-      _value.copyWith(
-            initialBenefit: freezed == initialBenefit
-                ? _value.initialBenefit
-                : initialBenefit // ignore: cast_nullable_to_non_nullable
-                      as UsersYuutai?,
-            expireOn: freezed == expireOn
-                ? _value.expireOn
-                : expireOn // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            selectedFolderId: freezed == selectedFolderId
-                ? _value.selectedFolderId
-                : selectedFolderId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            selectedPredefinedDays: null == selectedPredefinedDays
-                ? _value.selectedPredefinedDays
-                : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable
-                      as Map<int, bool>,
-            customDayEnabled: null == customDayEnabled
-                ? _value.customDayEnabled
-                : customDayEnabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            customDayValue: null == customDayValue
-                ? _value.customDayValue
-                : customDayValue // ignore: cast_nullable_to_non_nullable
-                      as String,
-            isLoading: null == isLoading
-                ? _value.isLoading
-                : isLoading // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_self.copyWith(
+      initialBenefit: freezed == initialBenefit
+          ? _self.initialBenefit
+          : initialBenefit // ignore: cast_nullable_to_non_nullable
+              as UsersYuutai?,
+      expireOn: freezed == expireOn
+          ? _self.expireOn
+          : expireOn // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      selectedFolderId: freezed == selectedFolderId
+          ? _self.selectedFolderId
+          : selectedFolderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedPredefinedDays: null == selectedPredefinedDays
+          ? _self.selectedPredefinedDays
+          : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable
+              as Map<int, bool>,
+      customDayEnabled: null == customDayEnabled
+          ? _self.customDayEnabled
+          : customDayEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customDayValue: null == customDayValue
+          ? _self.customDayValue
+          : customDayValue // ignore: cast_nullable_to_non_nullable
+              as String,
+      isLoading: null == isLoading
+          ? _self.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 
   /// Create a copy of UsersYuutaiEditState
@@ -119,108 +144,230 @@ class _$UsersYuutaiEditStateCopyWithImpl<
   @override
   @pragma('vm:prefer-inline')
   $UsersYuutaiCopyWith<$Res>? get initialBenefit {
-    if (_value.initialBenefit == null) {
+    if (_self.initialBenefit == null) {
       return null;
     }
 
-    return $UsersYuutaiCopyWith<$Res>(_value.initialBenefit!, (value) {
-      return _then(_value.copyWith(initialBenefit: value) as $Val);
+    return $UsersYuutaiCopyWith<$Res>(_self.initialBenefit!, (value) {
+      return _then(_self.copyWith(initialBenefit: value));
     });
   }
 }
 
-/// @nodoc
-abstract class _$$UsersYuutaiEditStateImplCopyWith<$Res>
-    implements $UsersYuutaiEditStateCopyWith<$Res> {
-  factory _$$UsersYuutaiEditStateImplCopyWith(
-    _$UsersYuutaiEditStateImpl value,
-    $Res Function(_$UsersYuutaiEditStateImpl) then,
-  ) = __$$UsersYuutaiEditStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    UsersYuutai? initialBenefit,
-    DateTime? expireOn,
-    String? selectedFolderId,
-    Map<int, bool> selectedPredefinedDays,
-    bool customDayEnabled,
-    String customDayValue,
-    bool isLoading,
-  });
+/// Adds pattern-matching-related methods to [UsersYuutaiEditState].
+extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
 
-  @override
-  $UsersYuutaiCopyWith<$Res>? get initialBenefit;
-}
-
-/// @nodoc
-class __$$UsersYuutaiEditStateImplCopyWithImpl<$Res>
-    extends _$UsersYuutaiEditStateCopyWithImpl<$Res, _$UsersYuutaiEditStateImpl>
-    implements _$$UsersYuutaiEditStateImplCopyWith<$Res> {
-  __$$UsersYuutaiEditStateImplCopyWithImpl(
-    _$UsersYuutaiEditStateImpl _value,
-    $Res Function(_$UsersYuutaiEditStateImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of UsersYuutaiEditState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? initialBenefit = freezed,
-    Object? expireOn = freezed,
-    Object? selectedFolderId = freezed,
-    Object? selectedPredefinedDays = null,
-    Object? customDayEnabled = null,
-    Object? customDayValue = null,
-    Object? isLoading = null,
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_UsersYuutaiEditState value)? $default, {
+    required TResult orElse(),
   }) {
-    return _then(
-      _$UsersYuutaiEditStateImpl(
-        initialBenefit: freezed == initialBenefit
-            ? _value.initialBenefit
-            : initialBenefit // ignore: cast_nullable_to_non_nullable
-                  as UsersYuutai?,
-        expireOn: freezed == expireOn
-            ? _value.expireOn
-            : expireOn // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        selectedFolderId: freezed == selectedFolderId
-            ? _value.selectedFolderId
-            : selectedFolderId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        selectedPredefinedDays: null == selectedPredefinedDays
-            ? _value._selectedPredefinedDays
-            : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable
-                  as Map<int, bool>,
-        customDayEnabled: null == customDayEnabled
-            ? _value.customDayEnabled
-            : customDayEnabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        customDayValue: null == customDayValue
-            ? _value.customDayValue
-            : customDayValue // ignore: cast_nullable_to_non_nullable
-                  as String,
-        isLoading: null == isLoading
-            ? _value.isLoading
-            : isLoading // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_UsersYuutaiEditState value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_UsersYuutaiEditState value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            UsersYuutai? initialBenefit,
+            DateTime? expireOn,
+            String? selectedFolderId,
+            Map<int, bool> selectedPredefinedDays,
+            bool customDayEnabled,
+            String customDayValue,
+            bool isLoading)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState() when $default != null:
+        return $default(
+            _that.initialBenefit,
+            _that.expireOn,
+            _that.selectedFolderId,
+            _that.selectedPredefinedDays,
+            _that.customDayEnabled,
+            _that.customDayValue,
+            _that.isLoading);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            UsersYuutai? initialBenefit,
+            DateTime? expireOn,
+            String? selectedFolderId,
+            Map<int, bool> selectedPredefinedDays,
+            bool customDayEnabled,
+            String customDayValue,
+            bool isLoading)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState():
+        return $default(
+            _that.initialBenefit,
+            _that.expireOn,
+            _that.selectedFolderId,
+            _that.selectedPredefinedDays,
+            _that.customDayEnabled,
+            _that.customDayValue,
+            _that.isLoading);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            UsersYuutai? initialBenefit,
+            DateTime? expireOn,
+            String? selectedFolderId,
+            Map<int, bool> selectedPredefinedDays,
+            bool customDayEnabled,
+            String customDayValue,
+            bool isLoading)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _UsersYuutaiEditState() when $default != null:
+        return $default(
+            _that.initialBenefit,
+            _that.expireOn,
+            _that.selectedFolderId,
+            _that.selectedPredefinedDays,
+            _that.customDayEnabled,
+            _that.customDayValue,
+            _that.isLoading);
+      case _:
+        return null;
+    }
   }
 }
 
 /// @nodoc
 
-class _$UsersYuutaiEditStateImpl implements _UsersYuutaiEditState {
-  const _$UsersYuutaiEditStateImpl({
-    this.initialBenefit,
-    this.expireOn,
-    this.selectedFolderId,
-    final Map<int, bool> selectedPredefinedDays = _predefinedDayOptions,
-    this.customDayEnabled = false,
-    this.customDayValue = '',
-    this.isLoading = false,
-  }) : _selectedPredefinedDays = selectedPredefinedDays;
+class _UsersYuutaiEditState implements UsersYuutaiEditState {
+  const _UsersYuutaiEditState(
+      {this.initialBenefit,
+      this.expireOn,
+      this.selectedFolderId,
+      final Map<int, bool> selectedPredefinedDays = _predefinedDayOptions,
+      this.customDayEnabled = false,
+      this.customDayValue = '',
+      this.isLoading = false})
+      : _selectedPredefinedDays = selectedPredefinedDays;
 
   @override
   final UsersYuutai? initialBenefit;
@@ -248,16 +395,20 @@ class _$UsersYuutaiEditStateImpl implements _UsersYuutaiEditState {
   @JsonKey()
   final bool isLoading;
 
+  /// Create a copy of UsersYuutaiEditState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
-  }
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$UsersYuutaiEditStateCopyWith<_UsersYuutaiEditState> get copyWith =>
+      __$UsersYuutaiEditStateCopyWithImpl<_UsersYuutaiEditState>(
+          this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UsersYuutaiEditStateImpl &&
+            other is _UsersYuutaiEditState &&
             (identical(other.initialBenefit, initialBenefit) ||
                 other.initialBenefit == initialBenefit) &&
             (identical(other.expireOn, expireOn) ||
@@ -265,9 +416,7 @@ class _$UsersYuutaiEditStateImpl implements _UsersYuutaiEditState {
             (identical(other.selectedFolderId, selectedFolderId) ||
                 other.selectedFolderId == selectedFolderId) &&
             const DeepCollectionEquality().equals(
-              other._selectedPredefinedDays,
-              _selectedPredefinedDays,
-            ) &&
+                other._selectedPredefinedDays, _selectedPredefinedDays) &&
             (identical(other.customDayEnabled, customDayEnabled) ||
                 other.customDayEnabled == customDayEnabled) &&
             (identical(other.customDayValue, customDayValue) ||
@@ -278,59 +427,108 @@ class _$UsersYuutaiEditStateImpl implements _UsersYuutaiEditState {
 
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    initialBenefit,
-    expireOn,
-    selectedFolderId,
-    const DeepCollectionEquality().hash(_selectedPredefinedDays),
-    customDayEnabled,
-    customDayValue,
-    isLoading,
-  );
+      runtimeType,
+      initialBenefit,
+      expireOn,
+      selectedFolderId,
+      const DeepCollectionEquality().hash(_selectedPredefinedDays),
+      customDayEnabled,
+      customDayValue,
+      isLoading);
+
+  @override
+  String toString() {
+    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$UsersYuutaiEditStateCopyWith<$Res>
+    implements $UsersYuutaiEditStateCopyWith<$Res> {
+  factory _$UsersYuutaiEditStateCopyWith(_UsersYuutaiEditState value,
+          $Res Function(_UsersYuutaiEditState) _then) =
+      __$UsersYuutaiEditStateCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {UsersYuutai? initialBenefit,
+      DateTime? expireOn,
+      String? selectedFolderId,
+      Map<int, bool> selectedPredefinedDays,
+      bool customDayEnabled,
+      String customDayValue,
+      bool isLoading});
+
+  @override
+  $UsersYuutaiCopyWith<$Res>? get initialBenefit;
+}
+
+/// @nodoc
+class __$UsersYuutaiEditStateCopyWithImpl<$Res>
+    implements _$UsersYuutaiEditStateCopyWith<$Res> {
+  __$UsersYuutaiEditStateCopyWithImpl(this._self, this._then);
+
+  final _UsersYuutaiEditState _self;
+  final $Res Function(_UsersYuutaiEditState) _then;
 
   /// Create a copy of UsersYuutaiEditState
   /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$UsersYuutaiEditStateImplCopyWith<_$UsersYuutaiEditStateImpl>
-  get copyWith =>
-      __$$UsersYuutaiEditStateImplCopyWithImpl<_$UsersYuutaiEditStateImpl>(
-        this,
-        _$identity,
-      );
-}
-
-abstract class _UsersYuutaiEditState implements UsersYuutaiEditState {
-  const factory _UsersYuutaiEditState({
-    final UsersYuutai? initialBenefit,
-    final DateTime? expireOn,
-    final String? selectedFolderId,
-    final Map<int, bool> selectedPredefinedDays,
-    final bool customDayEnabled,
-    final String customDayValue,
-    final bool isLoading,
-  }) = _$UsersYuutaiEditStateImpl;
-
-  @override
-  UsersYuutai? get initialBenefit;
-  @override
-  DateTime? get expireOn;
-  @override
-  String? get selectedFolderId;
-  @override
-  Map<int, bool> get selectedPredefinedDays;
-  @override
-  bool get customDayEnabled;
-  @override
-  String get customDayValue;
-  @override
-  bool get isLoading;
+  $Res call({
+    Object? initialBenefit = freezed,
+    Object? expireOn = freezed,
+    Object? selectedFolderId = freezed,
+    Object? selectedPredefinedDays = null,
+    Object? customDayEnabled = null,
+    Object? customDayValue = null,
+    Object? isLoading = null,
+  }) {
+    return _then(_UsersYuutaiEditState(
+      initialBenefit: freezed == initialBenefit
+          ? _self.initialBenefit
+          : initialBenefit // ignore: cast_nullable_to_non_nullable
+              as UsersYuutai?,
+      expireOn: freezed == expireOn
+          ? _self.expireOn
+          : expireOn // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      selectedFolderId: freezed == selectedFolderId
+          ? _self.selectedFolderId
+          : selectedFolderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedPredefinedDays: null == selectedPredefinedDays
+          ? _self._selectedPredefinedDays
+          : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable
+              as Map<int, bool>,
+      customDayEnabled: null == customDayEnabled
+          ? _self.customDayEnabled
+          : customDayEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      customDayValue: null == customDayValue
+          ? _self.customDayValue
+          : customDayValue // ignore: cast_nullable_to_non_nullable
+              as String,
+      isLoading: null == isLoading
+          ? _self.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
 
   /// Create a copy of UsersYuutaiEditState
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UsersYuutaiEditStateImplCopyWith<_$UsersYuutaiEditStateImpl>
-  get copyWith => throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  $UsersYuutaiCopyWith<$Res>? get initialBenefit {
+    if (_self.initialBenefit == null) {
+      return null;
+    }
+
+    return $UsersYuutaiCopyWith<$Res>(_self.initialBenefit!, (value) {
+      return _then(_self.copyWith(initialBenefit: value));
+    });
+  }
 }
+
+// dart format on

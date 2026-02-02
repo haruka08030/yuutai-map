@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -172,22 +171,22 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               Text(
                 content.title,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 12),
               Text(
                 content.description,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  height: 1.43,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.43,
+                    ),
               ),
             ],
           ),
@@ -209,21 +208,21 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             children: [
               Text(
                 content.title,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               const SizedBox(height: 16),
               Text(
                 content.description,
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                    ),
               ),
             ],
           ),
@@ -321,11 +320,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF111827),
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF111827),
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(

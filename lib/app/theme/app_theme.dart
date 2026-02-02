@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -239,28 +241,56 @@ class AppColors extends ThemeExtension<AppColors> {
 class AppTheme {
   static const double borderRadius = 16.0;
 
+  /// セカンダリカラー（編集・情報などサブアクション用）。Light: Blue 600
+  static const Color _lightSecondary = Color(0xFF2563EB);
+
+  /// ターシャリカラー（チップ・アクセント用）。Light: Indigo 500
+  static const Color _lightTertiary = Color(0xFF6366F1);
+
+  /// セカンダリカラー（Dark）
+  static const Color _darkSecondary = Color(0xFF60A5FA);
+
+  /// ターシャリカラー（Dark）
+  static const Color _darkTertiary = Color(0xFF818CF8);
+
   static ThemeData get light {
     final base = ThemeData.light(useMaterial3: true);
     return base.copyWith(
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF24A19C), // Greenish-blue
         primary: const Color(0xFF24A19C),
+        secondary: _lightSecondary,
+        tertiary: _lightTertiary,
         surface: const Color(0xFFFFFFFF),
         error: const Color(0xFFEF4444),
       ),
       scaffoldBackgroundColor: const Color(0xFFF9FAFB), // Gray 50
-      textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
+      // iOS: システムフォント（San Francisco）でネイティブな印象に
+      textTheme: Platform.isIOS
+          ? base.textTheme
+          : GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
         backgroundColor: const Color(0xFFF9FAFB),
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFF111827)),
-        titleTextStyle: GoogleFonts.outfit(
-          color: const Color(0xFF111827),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: Platform.isIOS
+            ? base.appBarTheme.titleTextStyle?.copyWith(
+                  color: const Color(0xFF111827),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ) ??
+                const TextStyle(
+                  color: Color(0xFF111827),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                )
+            : GoogleFonts.outfit(
+                color: const Color(0xFF111827),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
       ),
       cardTheme: const CardThemeData(
         elevation: 0,
@@ -312,22 +342,37 @@ class AppTheme {
         seedColor: const Color(0xFF24A19C), // Greenish-blue
         brightness: Brightness.dark,
         primary: const Color(0xFF24A19C),
+        secondary: _darkSecondary,
+        tertiary: _darkTertiary,
         surface: const Color(0xFF111827), // Gray 900
         error: const Color(0xFFF87171),
       ),
       scaffoldBackgroundColor: const Color(0xFF030712), // Gray 950
-      textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
+      textTheme: Platform.isIOS
+          ? base.textTheme
+          : GoogleFonts.outfitTextTheme(base.textTheme),
       appBarTheme: AppBarTheme(
         backgroundColor: base.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Color(0xFFF9FAFB)),
-        titleTextStyle: GoogleFonts.outfit(
-          color: const Color(0xFFF9FAFB),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: Platform.isIOS
+            ? base.appBarTheme.titleTextStyle?.copyWith(
+                  color: const Color(0xFFF9FAFB),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ) ??
+                const TextStyle(
+                  color: Color(0xFFF9FAFB),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                )
+            : GoogleFonts.outfit(
+                color: const Color(0xFFF9FAFB),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
       ),
       cardTheme: const CardThemeData(
         elevation: 0,
@@ -376,6 +421,10 @@ class AppTheme {
   static Color secondaryTextColor(BuildContext context) =>
       Theme.of(context).extension<AppColors>()?.secondaryText ??
       AppColors.light.secondaryText;
+  static Color secondaryColor(BuildContext context) =>
+      Theme.of(context).colorScheme.secondary;
+  static Color tertiaryColor(BuildContext context) =>
+      Theme.of(context).colorScheme.tertiary;
   static Color benefitChipBackgroundColor(BuildContext context) =>
       Theme.of(context).extension<AppColors>()?.benefitChipBackground ??
       AppColors.light.benefitChipBackground;

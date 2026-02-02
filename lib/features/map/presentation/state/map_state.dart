@@ -5,7 +5,7 @@ import 'package:flutter_stock/features/map/presentation/state/place.dart';
 part 'map_state.freezed.dart';
 
 @freezed
-class MapState with _$MapState {
+abstract class MapState with _$MapState {
   const factory MapState({
     required List<Place> items,
     required Position currentPosition,

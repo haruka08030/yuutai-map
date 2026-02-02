@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -86,10 +85,10 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             const SizedBox(height: 24),
             Text(
               'フィルター',
-              style: GoogleFonts.outfit(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 24),
             if (!widget.state.isGuest) ...[
@@ -126,10 +125,10 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             if (widget.state.isGuest) ...[
               Text(
                 'フォルダで絞り込み',
-                style: GoogleFonts.outfit(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               const SizedBox(height: 12),
               Container(
@@ -154,10 +153,10 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             ] else if (!_tempShowAll) ...[
               Text(
                 'フォルダで絞り込み',
-                style: GoogleFonts.outfit(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
               const SizedBox(height: 12),
               foldersAsync.when(
@@ -196,10 +195,10 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             ],
             Text(
               'カテゴリ',
-              style: GoogleFonts.outfit(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 12),
             Container(

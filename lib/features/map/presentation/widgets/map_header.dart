@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Design-accent teal from the map screen mock.
 const Color _kMapAccent = Color(0xFF2DD4BF);
@@ -97,19 +96,24 @@ class _MapHeaderState extends State<MapHeader> {
                               : null,
                           prefixIconColor: _kTextPrimary,
                         ).copyWith(
-                          hintStyle: GoogleFonts.outfit(
-                            color: app_theme.AppSearchBarStyle.hintColor,
-                            fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-                            fontWeight:
-                                app_theme.AppSearchBarStyle.hintFontWeight,
-                          ),
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color: app_theme.AppSearchBarStyle.hintColor,
+                                fontSize:
+                                    app_theme.AppSearchBarStyle.hintFontSize,
+                                fontWeight:
+                                    app_theme.AppSearchBarStyle.hintFontWeight,
+                              ),
                         ),
-                        style: GoogleFonts.outfit(
-                          color: _kTextPrimary,
-                          fontSize: app_theme.AppSearchBarStyle.hintFontSize,
-                          fontWeight:
-                              app_theme.AppSearchBarStyle.hintFontWeight,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: _kTextPrimary,
+                              fontSize:
+                                  app_theme.AppSearchBarStyle.hintFontSize,
+                              fontWeight:
+                                  app_theme.AppSearchBarStyle.hintFontWeight,
+                            ),
                       ),
                     ),
                   ),
@@ -245,11 +249,11 @@ class _CategoryChip extends StatelessWidget {
             child: Center(
               child: Text(
                 label,
-                style: GoogleFonts.outfit(
-                  fontSize: 14,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                  color: selected ? Colors.white : _kTextPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 14,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                      color: selected ? Colors.white : _kTextPrimary,
+                    ),
               ),
             ),
           ),

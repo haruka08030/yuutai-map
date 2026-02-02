@@ -9,10 +9,10 @@ import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/core/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class UsersYuutaiPage extends ConsumerStatefulWidget {
   const UsersYuutaiPage({
@@ -89,6 +89,9 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     return title.contains(query) || benefitText.contains(query);
                   }).toList();
                 }
+
+                // Apply list filter (すべて / 期限間近 / 有効 / 使用済み)
+                items = _applyListFilter(items, settings.listFilter);
 
                 // Apply Sorting
                 switch (settings.sortOrder) {
@@ -234,33 +237,42 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Filter Chips Row（フィルター機能は未実装のためタップは no-op）
+          // Filter Chips Row
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 _FilterChip(
                   label: 'すべて',
-                  selected: true,
-                  onTap: () {},
+                  selected: settings.listFilter == YuutaiListFilter.all,
+                  onTap: () => notifier.setListFilter(YuutaiListFilter.all),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '期限間近',
-                  selected: false,
-                  onTap: () {},
+                  selected:
+                      settings.listFilter == YuutaiListFilter.expiringSoon,
+                  onTap: () =>
+                      notifier.setListFilter(YuutaiListFilter.expiringSoon),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '有効',
-                  selected: false,
-                  onTap: () {},
+                  selected: settings.listFilter == YuutaiListFilter.active,
+                  onTap: () => notifier.setListFilter(YuutaiListFilter.active),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: '使用済み',
-                  selected: false,
-                  onTap: () {},
+                  selected: settings.listFilter == YuutaiListFilter.used,
+                  onTap: () {
+                    if (widget.showHistory) {
+                      notifier.setListFilter(YuutaiListFilter.used);
+                    } else {
+                      notifier.setListFilter(YuutaiListFilter.used);
+                      context.go('/yuutai?showHistory=true');
+                    }
+                  },
                 ),
               ],
             ),
@@ -283,19 +295,19 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 const SizedBox(width: 8),
                 Text(
                   '並び替え：',
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppTheme.secondaryTextColor(context),
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.secondaryTextColor(context),
+                      ),
                 ),
                 Text(
                   _getSortLabel(settings.sortOrder),
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
                 const SizedBox(width: 4),
                 const Icon(
@@ -309,6 +321,33 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
         ],
       ),
     );
+  }
+
+  List<UsersYuutai> _applyListFilter(
+    List<UsersYuutai> items,
+    YuutaiListFilter filter,
+  ) {
+    switch (filter) {
+      case YuutaiListFilter.all:
+        return items;
+      case YuutaiListFilter.expiringSoon:
+        final today = DateTime.now();
+        final todayDate = DateTime(today.year, today.month, today.day);
+        return items.where((b) {
+          if (b.expiryDate == null) return false;
+          final expiryDate = DateTime(
+            b.expiryDate!.year,
+            b.expiryDate!.month,
+            b.expiryDate!.day,
+          );
+          final diff = expiryDate.difference(todayDate).inDays;
+          return diff >= 0 && diff <= 30;
+        }).toList();
+      case YuutaiListFilter.active:
+        return items.where((b) => b.status == BenefitStatus.active).toList();
+      case YuutaiListFilter.used:
+        return items.where((b) => b.status == BenefitStatus.used).toList();
+    }
   }
 
   String _getSortLabel(YuutaiSortOrder sortOrder) {
@@ -343,11 +382,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 children: [
                   Text(
                     '並び替え',
-                    style: GoogleFonts.outfit(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E293B),
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1E293B),
+                        ),
                   ),
                 ],
               ),
@@ -401,11 +440,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
           const SizedBox(width: 8),
           Text(
             title,
-            style: GoogleFonts.outfit(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: color ?? Theme.of(context).colorScheme.primary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: color ?? Theme.of(context).colorScheme.primary,
+                ),
           ),
         ],
       ),
@@ -467,11 +506,11 @@ class _FilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-            color: selected ? Colors.white : const Color(0xFF1E293B),
-          ),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontSize: 14,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                color: selected ? Colors.white : const Color(0xFF1E293B),
+              ),
         ),
       ),
     );
@@ -500,13 +539,13 @@ class _SortOption extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: selected
-                      ? const Color(0xFF2DD4BF)
-                      : const Color(0xFF1E293B),
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: selected
+                          ? const Color(0xFF2DD4BF)
+                          : const Color(0xFF1E293B),
+                    ),
               ),
             ),
             if (selected)

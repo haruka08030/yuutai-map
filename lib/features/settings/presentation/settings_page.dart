@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -71,10 +70,10 @@ class AuthOptionsPage extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'ゲストユーザー',
-                style: GoogleFonts.outfit(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -118,7 +117,7 @@ class AuthOptionsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 32),
-        _buildSectionHeader('その他'),
+        _buildSectionHeader(context, 'その他'),
         _SettingsTile(
           icon: Icons.privacy_tip_outlined,
           label: 'プライバシーポリシー',
@@ -202,11 +201,14 @@ class AccountInfoPage extends ConsumerWidget {
                       children: [
                         Text(
                           user.email?.split('@')[0] ?? 'ユーザー',
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -230,7 +232,7 @@ class AccountInfoPage extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 24),
-        _buildSectionHeader('アプリ設定'),
+        _buildSectionHeader(context, 'アプリ設定'),
         _SettingsTile(
           icon: isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
           label: 'ダークモード',
@@ -316,17 +318,17 @@ class AccountInfoPage extends ConsumerWidget {
   }
 }
 
-Widget _buildSectionHeader(String title) {
+Widget _buildSectionHeader(BuildContext context, String title) {
   return Padding(
     padding: const EdgeInsets.only(left: 4, bottom: 12),
     child: Text(
       title,
-      style: GoogleFonts.outfit(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: const Color(0xFF24A19C),
-        letterSpacing: 0.5,
-      ),
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF24A19C),
+            letterSpacing: 0.5,
+          ),
     ),
   );
 }
@@ -383,12 +385,12 @@ class _SettingsTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: GoogleFonts.outfit(
-                    color:
-                        labelColor ?? Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: labelColor ??
+                            Theme.of(context).colorScheme.onSurface,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
               if (trailing != null)

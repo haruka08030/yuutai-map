@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
@@ -73,11 +72,11 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
               children: [
                 Text(
                   '新しいメールアドレス',
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1B1C1F),
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1B1C1F),
+                      ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -101,10 +100,10 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                     }
                     return null;
                   },
-                  style: GoogleFonts.outfit(
-                    color: const Color(0xFF1B1C1F),
-                    fontSize: 16,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: const Color(0xFF1B1C1F),
+                        fontSize: 16,
+                      ),
                 ),
                 const SizedBox(height: 24),
                 LoadingElevatedButton(

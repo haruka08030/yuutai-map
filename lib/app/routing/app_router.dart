@@ -147,7 +147,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'company/search',
                     pageBuilder: (context, state) {
                       return CustomTransitionPage(
-                        key: state.pageKey,
+                        key: const ValueKey<String>('yuutai-company-search'),
                         child: const CompanySearchPage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {

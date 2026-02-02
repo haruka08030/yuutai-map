@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_bar_search_field.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
+import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
+import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class ShellScreen extends ConsumerStatefulWidget {
@@ -155,6 +157,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                   ref
                       .read(selectedFolderIdProvider.notifier)
                       .setSelectedFolderId(null);
+                  ref
+                      .read(yuutaiListSettingsProvider.notifier)
+                      .setListFilter(YuutaiListFilter.all);
                   context.go('/yuutai');
                   Navigator.pop(context);
                 },
@@ -162,6 +167,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                   ref
                       .read(selectedFolderIdProvider.notifier)
                       .setSelectedFolderId(null);
+                  ref
+                      .read(yuutaiListSettingsProvider.notifier)
+                      .setListFilter(YuutaiListFilter.used);
                   context.go('/yuutai?showHistory=true');
                   Navigator.pop(context);
                 },

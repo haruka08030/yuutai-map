@@ -6,8 +6,7 @@ part of 'users_yuutai.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$UsersYuutaiImpl _$$UsersYuutaiImplFromJson(Map<String, dynamic> json) =>
-    _$UsersYuutaiImpl(
+_UsersYuutai _$UsersYuutaiFromJson(Map<String, dynamic> json) => _UsersYuutai(
       id: (json['id'] as num?)?.toInt(),
       companyName: json['company_name'] as String? ?? '',
       companyId: (json['company_id'] as num?)?.toInt(),
@@ -15,8 +14,7 @@ _$UsersYuutaiImpl _$$UsersYuutaiImplFromJson(Map<String, dynamic> json) =>
       expiryDate: json['expiry_date'] == null
           ? null
           : DateTime.parse(json['expiry_date'] as String),
-      status:
-          $enumDecodeNullable(_$BenefitStatusEnumMap, json['status']) ??
+      status: $enumDecodeNullable(_$BenefitStatusEnumMap, json['status']) ??
           BenefitStatus.active,
       alertEnabled: json['alert_enabled'] as bool? ?? false,
       notes: json['notes'] as String?,
@@ -26,7 +24,7 @@ _$UsersYuutaiImpl _$$UsersYuutaiImplFromJson(Map<String, dynamic> json) =>
       folderId: json['folder_id'] as String?,
     );
 
-Map<String, dynamic> _$$UsersYuutaiImplToJson(_$UsersYuutaiImpl instance) =>
+Map<String, dynamic> _$UsersYuutaiToJson(_UsersYuutai instance) =>
     <String, dynamic>{
       'id': instance.id,
       'company_name': instance.companyName,
