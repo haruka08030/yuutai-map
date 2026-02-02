@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
@@ -90,6 +92,9 @@ class _GuestDrawerBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w400,
+        );
     return ListView(
       padding: const EdgeInsets.symmetric(
         horizontal: _kDrawerHorizontalPadding,
@@ -98,12 +103,12 @@ class _GuestDrawerBody extends StatelessWidget {
       children: [
         ListTile(
           leading: const Icon(Icons.person_add_outlined),
-          title: const Text('新規登録'),
+          title: Text('新規登録', style: style),
           onTap: onSignUp,
         ),
         ListTile(
           leading: const Icon(Icons.login),
-          title: const Text('ログイン'),
+          title: Text('ログイン', style: style),
           onTap: onLogin,
         ),
       ],
@@ -147,7 +152,7 @@ class _MainDrawerBody extends ConsumerWidget {
       ),
       children: [
         _DrawerListTile(
-          icon: Icons.folder_outlined,
+          icon: Icons.view_list_outlined,
           iconColor: theme.colorScheme.primary,
           label: 'すべて',
           count: activeCount,
@@ -168,8 +173,9 @@ class _MainDrawerBody extends ConsumerWidget {
                     count: yuutaiCounts[folder.id] ?? 0,
                     selected: selectedFolderId == folder.id,
                     onTap: () => onFolderSelected(folder.id),
-                    onLongPress: folder.id != null
-                        ? () => _showFolderOptions(context, ref, folder)
+                    onLongPressWithContext: folder.id != null
+                        ? (tileContext) =>
+                            _showFolderContextMenu(tileContext, ref, folder)
                         : null,
                   ),
                 ),
@@ -190,70 +196,137 @@ class _MainDrawerBody extends ConsumerWidget {
     );
   }
 
-  void _showFolderOptions(BuildContext context, WidgetRef ref, Folder folder) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('名前を変更'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showRenameFolderDialog(context, ref, folder);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: const Text('削除', style: TextStyle(color: Colors.red)),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('フォルダを削除'),
-                    content: Text(
-                      '「${folder.name}」を削除しますか？\n中の優待は未分類になります。',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('キャンセル'),
-                      ),
-                      FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('削除'),
-                      ),
-                    ],
+  void _showFolderContextMenu(
+    BuildContext tileContext,
+    WidgetRef ref,
+    Folder folder,
+  ) {
+    final box = tileContext.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return;
+    final offset = box.localToGlobal(Offset.zero);
+    final size = box.size;
+    final overlay = Overlay.of(tileContext);
+    final screenSize = MediaQuery.sizeOf(tileContext);
+
+    const menuWidth = 220.0;
+    const itemHeight = 52.0;
+    const padding = 16.0;
+    const radius = 20.0;
+
+    double left = offset.dx;
+    double top = offset.dy + size.height + 8;
+    if (left + menuWidth > screenSize.width - 20) {
+      left = screenSize.width - menuWidth - 20;
+    }
+    if (left < 20) left = 20;
+    if (top + (itemHeight * 2) + padding * 2 > screenSize.height - 20) {
+      top = offset.dy - (itemHeight * 2) - padding * 2 - 8;
+    }
+    if (top < 20) top = 20;
+
+    final colorScheme = Theme.of(tileContext).colorScheme;
+    late final OverlayEntry overlayEntry;
+    overlayEntry = OverlayEntry(
+      builder: (ctx) => Stack(
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => overlayEntry.remove(),
+            child: const SizedBox.expand(),
+          ),
+          Positioned(
+            left: left,
+            top: top,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(radius),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Material(
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.85,
                   ),
-                );
-                if (confirmed == true && context.mounted) {
-                  final folderId = folder.id;
-                  if (folderId != null) {
-                    try {
-                      await ref
-                          .read(folderRepositoryProvider)
-                          .deleteFolder(folderId);
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('削除に失敗しました: $e')),
-                        );
-                      }
-                    }
-                  }
-                }
-              },
+                  borderRadius: BorderRadius.circular(radius),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 12,
+                    ),
+                    child: SizedBox(
+                      width: menuWidth,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _ContextMenuItem(
+                            icon: Icons.edit_outlined,
+                            label: 'フォルダ名の変更',
+                            onTap: () {
+                              overlayEntry.remove();
+                              _showRenameFolderDialog(tileContext, ref, folder);
+                            },
+                          ),
+                          _ContextMenuItem(
+                            icon: Icons.delete_outline,
+                            label: '削除',
+                            destructive: true,
+                            onTap: () async {
+                              overlayEntry.remove();
+                              final confirmed = await showDialog<bool>(
+                                context: tileContext,
+                                builder: (dialogCtx) => AlertDialog(
+                                  title: const Text('フォルダを削除'),
+                                  content: Text(
+                                    '「${folder.name}」を削除しますか？\n中の優待は未分類になります。',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(dialogCtx, false),
+                                      child: const Text('キャンセル'),
+                                    ),
+                                    FilledButton(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.pop(dialogCtx, true),
+                                      child: const Text('削除'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirmed == true && tileContext.mounted) {
+                                final folderId = folder.id;
+                                if (folderId != null) {
+                                  try {
+                                    await ref
+                                        .read(folderRepositoryProvider)
+                                        .deleteFolder(folderId);
+                                  } catch (e) {
+                                    if (tileContext.mounted) {
+                                      ScaffoldMessenger.of(tileContext)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text('削除に失敗しました: $e')),
+                                      );
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+    overlay.insert(overlayEntry);
   }
 
   void _showRenameFolderDialog(
@@ -261,6 +334,51 @@ class _MainDrawerBody extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => _RenameFolderDialog(folder: folder),
+    );
+  }
+}
+
+/// 長押しポップアップ内の1行（アイコン + ラベル）
+class _ContextMenuItem extends StatelessWidget {
+  const _ContextMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = destructive ? Colors.red : theme.colorScheme.onSurface;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(icon, size: 22, color: color),
+              const SizedBox(width: 14),
+              Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -273,7 +391,7 @@ class _DrawerListTile extends StatelessWidget {
     required this.onTap,
     this.iconColor,
     this.count,
-    this.onLongPress,
+    this.onLongPressWithContext,
   });
 
   final IconData icon;
@@ -282,7 +400,7 @@ class _DrawerListTile extends StatelessWidget {
   final VoidCallback onTap;
   final Color? iconColor;
   final int? count;
-  final VoidCallback? onLongPress;
+  final void Function(BuildContext tileContext)? onLongPressWithContext;
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +408,7 @@ class _DrawerListTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final effectiveIconColor = iconColor ?? colorScheme.onSurface;
 
-    return Padding(
+    final Widget content = Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Material(
         color: selected
@@ -299,7 +417,9 @@ class _DrawerListTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(_kDrawerItemRadius),
         child: InkWell(
           onTap: onTap,
-          onLongPress: onLongPress,
+          onLongPress: onLongPressWithContext != null
+              ? () => onLongPressWithContext!(context)
+              : null,
           borderRadius: BorderRadius.circular(_kDrawerItemRadius),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -337,6 +457,7 @@ class _DrawerListTile extends StatelessWidget {
         ),
       ),
     );
+    return content;
   }
 }
 
@@ -373,24 +494,26 @@ class _DrawerFooter extends StatelessWidget {
         top: false,
         child: Row(
           children: [
-            FilledButton.icon(
+            TextButton.icon(
               onPressed: onAddFolderTap,
-              icon: const Icon(Icons.create_new_folder_outlined, size: 20),
-              label: const Text('フォルダを追加'),
-              style: FilledButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(_kDrawerItemRadius),
+              icon: Icon(
+                Icons.create_new_folder_outlined,
+                size: 20,
+                color: colorScheme.primary,
+              ),
+              label: Text(
+                'フォルダを追加',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.primary,
                 ),
               ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.settings_outlined),
-              onPressed: onSettingsTap,
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: colorScheme.primary,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
             ),
           ],
         ),

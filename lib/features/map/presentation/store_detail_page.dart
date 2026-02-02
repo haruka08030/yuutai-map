@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
@@ -58,8 +59,8 @@ class StoreDetailPage extends ConsumerWidget {
                   Text(
                     place.name,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   if (place.address != null) ...[
                     const SizedBox(height: 8),
@@ -100,8 +101,8 @@ class StoreDetailPage extends ConsumerWidget {
                   Text(
                     '利用可能な優待',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 12),
                   benefitsAsync.when(
@@ -109,6 +110,17 @@ class StoreDetailPage extends ConsumerWidget {
                       final matchingBenefits = benefits
                           .where((b) => b.companyId == place.companyId)
                           .toList();
+                      final companyIds = matchingBenefits
+                          .map((b) => b.companyId)
+                          .whereType<int>()
+                          .toSet()
+                          .toList();
+                      final stockCodesAsync = ref.watch(
+                        companyStockCodesProvider(companyIds),
+                      );
+                      final stockCodeMap =
+                          stockCodesAsync.whenOrNull(data: (m) => m) ??
+                              <int, String>{};
 
                       if (matchingBenefits.isEmpty) {
                         return Center(
@@ -141,8 +153,14 @@ class StoreDetailPage extends ConsumerWidget {
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 8),
                         itemBuilder: (context, index) {
+                          final b = matchingBenefits[index];
+                          final code = b.companyId != null
+                              ? stockCodeMap[b.companyId]
+                              : null;
                           return UsersYuutaiListTile(
-                            benefit: matchingBenefits[index],
+                            benefit: b,
+                            stockCode:
+                                (code != null && code.isNotEmpty) ? code : null,
                           );
                         },
                       );

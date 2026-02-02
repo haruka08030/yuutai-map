@@ -217,33 +217,17 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 ),
                 const SizedBox(height: 12),
                 foldersAsync.when(
-                  data: (folders) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.dividerColor(context)),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String?>(
-                        value: _tempFolderId,
-                        isExpanded: true,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('すべてのフォルダ'),
-                          ),
-                          ...folders.map(
-                            (f) => DropdownMenuItem(
-                              value: f.id,
-                              child: Text(f.name),
-                            ),
-                          ),
-                        ],
-                        onChanged: (value) =>
-                            setState(() => _tempFolderId = value),
+                  data: (folders) => _ModernPopupMenuButton<String?>(
+                    value: _tempFolderId,
+                    hint: 'すべてのフォルダ',
+                    items: [
+                      const _PopupMenuItem(value: null, label: 'すべてのフォルダ'),
+                      ...folders.map(
+                        (f) => _PopupMenuItem(value: f.id, label: f.name),
                       ),
-                    ),
+                    ],
+                    onSelected: (value) =>
+                        setState(() => _tempFolderId = value),
                   ),
                   loading: () => const LinearProgressIndicator(),
                   error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
@@ -262,78 +246,44 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppTheme.dividerColor(context)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String?>(
-                          value: _tempSelectedRegion,
-                          isExpanded: true,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('すべての地方'),
-                            ),
-                            ...JapaneseRegions.regionNames.map(
-                              (region) => DropdownMenuItem(
-                                value: region,
-                                child: Text(region),
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _tempSelectedRegion = value;
-                              if (value != null &&
-                                  (_tempSelectedPrefecture == null ||
-                                      !JapaneseRegions.regionToPrefectures
-                                          .containsKey(value) ||
-                                      !JapaneseRegions
-                                          .regionToPrefectures[value]!
-                                          .contains(_tempSelectedPrefecture))) {
-                                _tempSelectedPrefecture = null;
-                              }
-                            });
-                          },
+                    child: _ModernPopupMenuButton<String?>(
+                      value: _tempSelectedRegion,
+                      hint: 'すべての地方',
+                      items: [
+                        const _PopupMenuItem(value: null, label: 'すべての地方'),
+                        ...JapaneseRegions.regionNames.map(
+                          (region) =>
+                              _PopupMenuItem(value: region, label: region),
                         ),
-                      ),
+                      ],
+                      onSelected: (value) {
+                        setState(() {
+                          _tempSelectedRegion = value;
+                          if (value != null &&
+                              (_tempSelectedPrefecture == null ||
+                                  !JapaneseRegions.regionToPrefectures
+                                      .containsKey(value) ||
+                                  !JapaneseRegions.regionToPrefectures[value]!
+                                      .contains(_tempSelectedPrefecture))) {
+                            _tempSelectedPrefecture = null;
+                          }
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppTheme.dividerColor(context)),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String?>(
-                          value: _tempSelectedPrefecture,
-                          isExpanded: true,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text('すべての都道府県'),
-                            ),
-                            ..._prefectureOptions.map(
-                              (pref) => DropdownMenuItem(
-                                value: pref,
-                                child: Text(pref),
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) =>
-                              setState(() => _tempSelectedPrefecture = value),
+                    child: _ModernPopupMenuButton<String?>(
+                      value: _tempSelectedPrefecture,
+                      hint: 'すべての都道府県',
+                      items: [
+                        const _PopupMenuItem(value: null, label: 'すべての都道府県'),
+                        ..._prefectureOptions.map(
+                          (pref) => _PopupMenuItem(value: pref, label: pref),
                         ),
-                      ),
+                      ],
+                      onSelected: (value) =>
+                          setState(() => _tempSelectedPrefecture = value),
                     ),
                   ),
                 ],
@@ -347,33 +297,18 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                     ),
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.dividerColor(context)),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String?>(
-                    value: _tempSelectedCategory,
-                    isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('すべてのカテゴリ'),
-                      ),
-                      ...widget.state.availableCategories.map(
-                        (category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
-                        ),
-                      ),
-                    ],
-                    onChanged: (value) =>
-                        setState(() => _tempSelectedCategory = value),
+              _ModernPopupMenuButton<String?>(
+                value: _tempSelectedCategory,
+                hint: 'すべてのカテゴリ',
+                items: [
+                  const _PopupMenuItem(value: null, label: 'すべてのカテゴリ'),
+                  ...widget.state.availableCategories.map(
+                    (category) =>
+                        _PopupMenuItem(value: category, label: category),
                   ),
-                ),
+                ],
+                onSelected: (value) =>
+                    setState(() => _tempSelectedCategory = value),
               ),
               const SizedBox(height: 40),
               SizedBox(
@@ -407,5 +342,142 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         ),
       ),
     );
+  }
+}
+
+/// モダンなポップアップメニューのアイテム
+class _PopupMenuItem<T> {
+  const _PopupMenuItem({
+    required this.value,
+    required this.label,
+  });
+
+  final T value;
+  final String label;
+}
+
+/// モダンで丸みのあるポップアップメニューボタン
+class _ModernPopupMenuButton<T> extends StatelessWidget {
+  const _ModernPopupMenuButton({
+    required this.value,
+    required this.hint,
+    required this.items,
+    required this.onSelected,
+  });
+
+  final T value;
+  final String hint;
+  final List<_PopupMenuItem<T>> items;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedItem = items.firstWhere(
+      (item) => item.value == value,
+      orElse: () => items.first,
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _showPopupMenu(context),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppTheme.dividerColor(context).withValues(alpha: 0.3),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  selectedItem.label,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight:
+                            value == null ? FontWeight.w400 : FontWeight.w500,
+                        color: value == null
+                            ? AppTheme.secondaryTextColor(context)
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Icons.arrow_drop_down_rounded,
+                color: AppTheme.secondaryTextColor(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPopupMenu(BuildContext context) async {
+    // Get button position and size
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay),
+        button.localToGlobal(
+          button.size.bottomRight(Offset.zero),
+          ancestor: overlay,
+        ),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    final T? result = await showMenu<T>(
+      context: context,
+      position: position,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      constraints: BoxConstraints(
+        minWidth: button.size.width,
+        maxWidth: button.size.width,
+        maxHeight: MediaQuery.of(context).size.height * 0.5,
+      ),
+      items: items.map((item) {
+        final isSelected = item.value == value;
+        return PopupMenuItem<T>(
+          value: item.value,
+          height: 48,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  item.label,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_rounded,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+
+    if (result != null) {
+      onSelected(result);
+    }
   }
 }

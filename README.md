@@ -40,11 +40,14 @@ cd yuutai-map
 
 ### 2. 環境変数の設定
 
-`local.properties.example` を参考に `android/local.properties` を作成し、各種APIキーを設定してください。
+`local.properties.example` を参考に `android/local.properties`
+を作成し、各種APIキーを設定してください。
 
 - **Google Maps API Key**:
-  [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK を有効化して取得
-- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/) でプロジェクト作成後に取得
+  [Google Cloud Console](https://console.cloud.google.com/) で Maps SDK
+  を有効化して取得
+- **Supabase URL/Keys**: [Supabase Dashboard](https://app.supabase.com/)
+  でプロジェクト作成後に取得
 
 ### 3. 依存関係のインストールとコード生成
 
@@ -61,8 +64,9 @@ make build_runner
 
 ### 4. Supabase データベースセットアップ
 
-Supabase ダッシュボードの SQL Editor で `supabase/migrations/` 内のファイルを順番に実行してください。
-詳細は `supabase/migrations/README.md` を参照してください。
+Supabase ダッシュボードの SQL Editor で `supabase/migrations/`
+内のファイルを順番に実行してください。 詳細は `supabase/migrations/README.md`
+を参照してください。
 
 もしくは、Supabase CLI を使用している場合：
 
@@ -77,14 +81,10 @@ supabase db push
 flutter run
 ```
 
-## 詳細仕様
-
-機能仕様、DBスキーマ、コーディング規約などの詳細なドキュメントは `GEMINI.md` を参照してください。
-
 ## アーキテクチャ
 
-`Feature-First` アプローチを採用しています。
-各機能（feature）は `data`, `domain`, `presentation` のレイヤーに関するコードを内包します。
+`Feature-First` アプローチを採用しています。 各機能（feature）は `data`,
+`domain`, `presentation` のレイヤーに関するコードを内包します。
 
 ```
 lib/
@@ -112,21 +112,12 @@ lib/
 └── main.dart
 ```
 
-## テスト
-
-```bash
-# すべてのテストを実行
-flutter test
-
-# カバレッジ付き
-flutter test --coverage
-```
-
 ## トラブルシューティング
 
 ### "Generated.xcconfig must exist" or "Pod install failed"
 
-iOSビルド時に上記のエラーが発生した場合、`ios/` ディレクトリの `Podfile.lock` や `Pods/` が古くなっている可能性があります。
+iOSビルド時に上記のエラーが発生した場合、`ios/` ディレクトリの `Podfile.lock` や
+`Pods/` が古くなっている可能性があります。
 クリーンインストールを試してください。
 
 ```bash
@@ -135,7 +126,8 @@ make pod_clean
 
 ### "Conflicting outputs" ビルドエラー
 
-`build_runner` の実行時にエラーが発生する場合、生成ファイルが競合している可能性があります。
+`build_runner`
+の実行時にエラーが発生する場合、生成ファイルが競合している可能性があります。
 一度クリーンしてから再実行してください。
 
 ```bash

@@ -193,18 +193,31 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                   ),
                                   if (stockCode != null &&
                                       stockCode!.isNotEmpty) ...[
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      '証券コード: $stockCode',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w400,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHighest,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        '証券コード: $stockCode',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelMedium
+                                            ?.copyWith(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
                                     ),
                                   ],
                                   if (benefit.expiryDate != null) ...[
