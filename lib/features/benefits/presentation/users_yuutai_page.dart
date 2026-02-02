@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
@@ -47,6 +48,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     final settings = ref.watch(yuutaiListSettingsProvider);
     final isGuest = ref.watch(isGuestProvider);
     final settingsNotifier = ref.read(yuutaiListSettingsProvider.notifier);
+    final companyIds = ref.watch(benefitCompanyIdsProvider(widget.showHistory));
+    final stockCodesAsync = ref.watch(companyStockCodesProvider(companyIds));
+    final stockCodeMap =
+        stockCodesAsync.whenOrNull(data: (map) => map) ?? <int, String>{};
 
     final asyncBenefits = !widget.showHistory
         ? ref.watch(activeUsersYuutaiProvider)
@@ -79,7 +84,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       .toList();
                 }
 
-                // Apply search filter
+                // Apply search filter（企業名・優待内容・証券番号）
                 final searchQuery = widget.searchQuery;
                 if (searchQuery.isNotEmpty) {
                   items = items.where((benefit) {
@@ -87,7 +92,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     final title = benefit.companyName.toLowerCase();
                     final benefitText =
                         benefit.benefitDetail?.toLowerCase() ?? '';
-                    return title.contains(query) || benefitText.contains(query);
+                    final stockCode =
+                        (stockCodeMap[benefit.companyId] ?? '').toLowerCase();
+                    return title.contains(query) ||
+                        benefitText.contains(query) ||
+                        stockCode.contains(query);
                   }).toList();
                 }
 
@@ -151,7 +160,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 }
 
                 if (widget.showHistory) {
-                  return _buildSimpleList(items, settings.listFilter);
+                  return _buildSimpleList(
+                    items,
+                    settings.listFilter,
+                    stockCodeMap,
+                  );
                 }
 
                 if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
@@ -187,7 +200,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                                   ?.expiringSoon ??
                               Theme.of(context).colorScheme.error,
                         ),
-                        ...expiringSoon.map((b) => _buildTile(b)),
+                        ...expiringSoon.map(
+                            (b) => _buildTile(b, stockCodeMap[b.companyId])),
                         const SizedBox(height: 24),
                       ],
                       if (others.isNotEmpty) ...[
@@ -198,7 +212,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                             Icons.list_alt_rounded,
                             null,
                           ),
-                        ...others.map((b) => _buildTile(b)),
+                        ...others.map(
+                            (b) => _buildTile(b, stockCodeMap[b.companyId])),
                       ],
                     ],
                   );
@@ -209,7 +224,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   key: ValueKey(settings.listFilter),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,
-                  itemBuilder: (context, index) => _buildTile(items[index]),
+                  itemBuilder: (context, index) => _buildTile(
+                    items[index],
+                    stockCodeMap[items[index].companyId],
+                  ),
                 );
               },
             ),
@@ -463,9 +481,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildTile(UsersYuutai b) {
+  Widget _buildTile(UsersYuutai b, [String? stockCode]) {
     return UsersYuutaiListTile(
       benefit: b,
+      stockCode: stockCode?.isNotEmpty == true ? stockCode : null,
       subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
     );
   }
@@ -473,12 +492,16 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   Widget _buildSimpleList(
     List<UsersYuutai> items,
     YuutaiListFilter listFilter,
+    Map<int, String> stockCodeMap,
   ) {
     return ListView.builder(
       key: ValueKey(listFilter),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
-      itemBuilder: (context, index) => _buildTile(items[index]),
+      itemBuilder: (context, index) => _buildTile(
+        items[index],
+        stockCodeMap[items[index].companyId],
+      ),
     );
   }
 }

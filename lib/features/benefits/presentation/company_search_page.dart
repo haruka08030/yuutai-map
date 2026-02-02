@@ -42,7 +42,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
         title: BorderedSearchBar(
           controller: _searchController,
           autofocus: true,
-          hintText: '企業名で検索',
+          hintText: '企業名・証券コードで検索',
         ),
       ),
       body: companyList.when(
@@ -54,7 +54,7 @@ class _CompanySearchPageState extends ConsumerState<CompanySearchPage> {
             return const EmptyStateView(
               icon: Icons.search,
               title: '企業を検索',
-              subtitle: '会社名を入力してください',
+              subtitle: '企業名または証券コードを入力してください',
             );
           }
           return CompanySearchResultsList(companies: companies);

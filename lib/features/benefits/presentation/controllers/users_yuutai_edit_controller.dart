@@ -5,6 +5,7 @@ import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.d
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/company_search_item.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/save_success_card_overlay.dart';
@@ -29,6 +30,7 @@ abstract class UsersYuutaiEditState with _$UsersYuutaiEditState {
     UsersYuutai? initialBenefit,
     DateTime? expireOn,
     String? selectedFolderId,
+    int? selectedCompanyId,
     @Default(_predefinedDayOptions) Map<int, bool> selectedPredefinedDays,
     @Default(false) bool customDayEnabled,
     @Default('') String customDayValue,
@@ -94,6 +96,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       initialBenefit: initialBenefit,
       expireOn: initialBenefit?.expiryDate?.toLocal(),
       selectedFolderId: initialBenefit?.folderId,
+      selectedCompanyId: initialBenefit?.companyId,
       selectedPredefinedDays: selectedDays,
       customDayEnabled: customEnabled,
       customDayValue: customValue,
@@ -151,6 +154,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
       final entity = UsersYuutai(
         id: state.initialBenefit?.id,
+        companyId: state.selectedCompanyId ?? state.initialBenefit?.companyId,
         companyName: title,
         benefitDetail: benefitContent.isEmpty ? null : benefitContent,
         notes: notes.isEmpty ? null : notes,
@@ -184,6 +188,10 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
 
   void setCompanyName(String name) {
     ref.read(titleControllerProvider(state.initialBenefit)).text = name;
+  }
+
+  void setCompanyId(int? id) {
+    state = state.copyWith(selectedCompanyId: id);
   }
 
   Future<void> showExpiryPicker(BuildContext context) async {
@@ -244,8 +252,8 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   Future<void> selectCompany(BuildContext context) async {
     // Push with Navigator to avoid go_router duplicate page key when opening
     // from /yuutai/add (outside shell) to /yuutai/company/search (inside shell).
-    final company = await Navigator.of(context).push<String>(
-      PageRouteBuilder<String>(
+    final company = await Navigator.of(context).push<CompanySearchItem>(
+      PageRouteBuilder<CompanySearchItem>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             const CompanySearchPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -262,7 +270,8 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       ),
     );
     if (company != null) {
-      setCompanyName(company);
+      setCompanyName(company.name);
+      setCompanyId(company.id);
     }
   }
 

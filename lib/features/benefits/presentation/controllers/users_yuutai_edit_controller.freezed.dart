@@ -17,6 +17,7 @@ mixin _$UsersYuutaiEditState {
   UsersYuutai? get initialBenefit;
   DateTime? get expireOn;
   String? get selectedFolderId;
+  int? get selectedCompanyId;
   Map<int, bool> get selectedPredefinedDays;
   bool get customDayEnabled;
   String get customDayValue;
@@ -41,6 +42,8 @@ mixin _$UsersYuutaiEditState {
                 other.expireOn == expireOn) &&
             (identical(other.selectedFolderId, selectedFolderId) ||
                 other.selectedFolderId == selectedFolderId) &&
+            (identical(other.selectedCompanyId, selectedCompanyId) ||
+                other.selectedCompanyId == selectedCompanyId) &&
             const DeepCollectionEquality()
                 .equals(other.selectedPredefinedDays, selectedPredefinedDays) &&
             (identical(other.customDayEnabled, customDayEnabled) ||
@@ -57,6 +60,7 @@ mixin _$UsersYuutaiEditState {
       initialBenefit,
       expireOn,
       selectedFolderId,
+      selectedCompanyId,
       const DeepCollectionEquality().hash(selectedPredefinedDays),
       customDayEnabled,
       customDayValue,
@@ -64,7 +68,7 @@ mixin _$UsersYuutaiEditState {
 
   @override
   String toString() {
-    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
+    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedCompanyId: $selectedCompanyId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
   }
 }
 
@@ -78,6 +82,7 @@ abstract mixin class $UsersYuutaiEditStateCopyWith<$Res> {
       {UsersYuutai? initialBenefit,
       DateTime? expireOn,
       String? selectedFolderId,
+      int? selectedCompanyId,
       Map<int, bool> selectedPredefinedDays,
       bool customDayEnabled,
       String customDayValue,
@@ -102,6 +107,7 @@ class _$UsersYuutaiEditStateCopyWithImpl<$Res>
     Object? initialBenefit = freezed,
     Object? expireOn = freezed,
     Object? selectedFolderId = freezed,
+    Object? selectedCompanyId = freezed,
     Object? selectedPredefinedDays = null,
     Object? customDayEnabled = null,
     Object? customDayValue = null,
@@ -120,6 +126,10 @@ class _$UsersYuutaiEditStateCopyWithImpl<$Res>
           ? _self.selectedFolderId
           : selectedFolderId // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedCompanyId: freezed == selectedCompanyId
+          ? _self.selectedCompanyId
+          : selectedCompanyId // ignore: cast_nullable_to_non_nullable
+              as int?,
       selectedPredefinedDays: null == selectedPredefinedDays
           ? _self.selectedPredefinedDays
           : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable
@@ -251,6 +261,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             UsersYuutai? initialBenefit,
             DateTime? expireOn,
             String? selectedFolderId,
+            int? selectedCompanyId,
             Map<int, bool> selectedPredefinedDays,
             bool customDayEnabled,
             String customDayValue,
@@ -265,6 +276,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             _that.initialBenefit,
             _that.expireOn,
             _that.selectedFolderId,
+            _that.selectedCompanyId,
             _that.selectedPredefinedDays,
             _that.customDayEnabled,
             _that.customDayValue,
@@ -293,6 +305,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             UsersYuutai? initialBenefit,
             DateTime? expireOn,
             String? selectedFolderId,
+            int? selectedCompanyId,
             Map<int, bool> selectedPredefinedDays,
             bool customDayEnabled,
             String customDayValue,
@@ -306,6 +319,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             _that.initialBenefit,
             _that.expireOn,
             _that.selectedFolderId,
+            _that.selectedCompanyId,
             _that.selectedPredefinedDays,
             _that.customDayEnabled,
             _that.customDayValue,
@@ -333,6 +347,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             UsersYuutai? initialBenefit,
             DateTime? expireOn,
             String? selectedFolderId,
+            int? selectedCompanyId,
             Map<int, bool> selectedPredefinedDays,
             bool customDayEnabled,
             String customDayValue,
@@ -346,6 +361,7 @@ extension UsersYuutaiEditStatePatterns on UsersYuutaiEditState {
             _that.initialBenefit,
             _that.expireOn,
             _that.selectedFolderId,
+            _that.selectedCompanyId,
             _that.selectedPredefinedDays,
             _that.customDayEnabled,
             _that.customDayValue,
@@ -363,6 +379,7 @@ class _UsersYuutaiEditState implements UsersYuutaiEditState {
       {this.initialBenefit,
       this.expireOn,
       this.selectedFolderId,
+      this.selectedCompanyId,
       final Map<int, bool> selectedPredefinedDays = _predefinedDayOptions,
       this.customDayEnabled = false,
       this.customDayValue = '',
@@ -375,6 +392,8 @@ class _UsersYuutaiEditState implements UsersYuutaiEditState {
   final DateTime? expireOn;
   @override
   final String? selectedFolderId;
+  @override
+  final int? selectedCompanyId;
   final Map<int, bool> _selectedPredefinedDays;
   @override
   @JsonKey()
@@ -415,6 +434,8 @@ class _UsersYuutaiEditState implements UsersYuutaiEditState {
                 other.expireOn == expireOn) &&
             (identical(other.selectedFolderId, selectedFolderId) ||
                 other.selectedFolderId == selectedFolderId) &&
+            (identical(other.selectedCompanyId, selectedCompanyId) ||
+                other.selectedCompanyId == selectedCompanyId) &&
             const DeepCollectionEquality().equals(
                 other._selectedPredefinedDays, _selectedPredefinedDays) &&
             (identical(other.customDayEnabled, customDayEnabled) ||
@@ -431,6 +452,7 @@ class _UsersYuutaiEditState implements UsersYuutaiEditState {
       initialBenefit,
       expireOn,
       selectedFolderId,
+      selectedCompanyId,
       const DeepCollectionEquality().hash(_selectedPredefinedDays),
       customDayEnabled,
       customDayValue,
@@ -438,7 +460,7 @@ class _UsersYuutaiEditState implements UsersYuutaiEditState {
 
   @override
   String toString() {
-    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
+    return 'UsersYuutaiEditState(initialBenefit: $initialBenefit, expireOn: $expireOn, selectedFolderId: $selectedFolderId, selectedCompanyId: $selectedCompanyId, selectedPredefinedDays: $selectedPredefinedDays, customDayEnabled: $customDayEnabled, customDayValue: $customDayValue, isLoading: $isLoading)';
   }
 }
 
@@ -454,6 +476,7 @@ abstract mixin class _$UsersYuutaiEditStateCopyWith<$Res>
       {UsersYuutai? initialBenefit,
       DateTime? expireOn,
       String? selectedFolderId,
+      int? selectedCompanyId,
       Map<int, bool> selectedPredefinedDays,
       bool customDayEnabled,
       String customDayValue,
@@ -479,6 +502,7 @@ class __$UsersYuutaiEditStateCopyWithImpl<$Res>
     Object? initialBenefit = freezed,
     Object? expireOn = freezed,
     Object? selectedFolderId = freezed,
+    Object? selectedCompanyId = freezed,
     Object? selectedPredefinedDays = null,
     Object? customDayEnabled = null,
     Object? customDayValue = null,
@@ -497,6 +521,10 @@ class __$UsersYuutaiEditStateCopyWithImpl<$Res>
           ? _self.selectedFolderId
           : selectedFolderId // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedCompanyId: freezed == selectedCompanyId
+          ? _self.selectedCompanyId
+          : selectedCompanyId // ignore: cast_nullable_to_non_nullable
+              as int?,
       selectedPredefinedDays: null == selectedPredefinedDays
           ? _self._selectedPredefinedDays
           : selectedPredefinedDays // ignore: cast_nullable_to_non_nullable

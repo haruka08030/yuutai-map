@@ -12,8 +12,14 @@ import 'package:flutter_stock/core/widgets/app_dialogs.dart';
 import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart';
 
 class UsersYuutaiListTile extends ConsumerWidget {
-  const UsersYuutaiListTile({super.key, required this.benefit, this.subtitle});
+  const UsersYuutaiListTile({
+    super.key,
+    required this.benefit,
+    this.stockCode,
+    this.subtitle,
+  });
   final UsersYuutai benefit;
+  final String? stockCode;
   final String? subtitle;
 
   @override
@@ -160,6 +166,21 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                               : null,
                                         ),
                                   ),
+                                  if (stockCode != null &&
+                                      stockCode!.isNotEmpty) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      '証券コード: $stockCode',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
                                   if (benefit.expiryDate != null) ...[
                                     const SizedBox(height: 4),
                                     ExpiryDateDisplay(

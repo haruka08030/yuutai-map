@@ -20,6 +20,12 @@ mixin _$MapState {
   bool get showAllStores;
   Set<String> get selectedCategories;
   String? get folderId;
+
+  /// 地方で絞り込み（例: 関東）
+  String? get selectedRegion;
+
+  /// 都道府県で絞り込み（例: 東京都）。指定時は selectedRegion より優先
+  String? get selectedPrefecture;
   bool get isGuest;
 
   /// Create a copy of MapState
@@ -45,6 +51,10 @@ mixin _$MapState {
                 .equals(other.selectedCategories, selectedCategories) &&
             (identical(other.folderId, folderId) ||
                 other.folderId == folderId) &&
+            (identical(other.selectedRegion, selectedRegion) ||
+                other.selectedRegion == selectedRegion) &&
+            (identical(other.selectedPrefecture, selectedPrefecture) ||
+                other.selectedPrefecture == selectedPrefecture) &&
             (identical(other.isGuest, isGuest) || other.isGuest == isGuest));
   }
 
@@ -57,11 +67,13 @@ mixin _$MapState {
       showAllStores,
       const DeepCollectionEquality().hash(selectedCategories),
       folderId,
+      selectedRegion,
+      selectedPrefecture,
       isGuest);
 
   @override
   String toString() {
-    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, folderId: $folderId, isGuest: $isGuest)';
+    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, folderId: $folderId, selectedRegion: $selectedRegion, selectedPrefecture: $selectedPrefecture, isGuest: $isGuest)';
   }
 }
 
@@ -77,6 +89,8 @@ abstract mixin class $MapStateCopyWith<$Res> {
       bool showAllStores,
       Set<String> selectedCategories,
       String? folderId,
+      String? selectedRegion,
+      String? selectedPrefecture,
       bool isGuest});
 }
 
@@ -98,6 +112,8 @@ class _$MapStateCopyWithImpl<$Res> implements $MapStateCopyWith<$Res> {
     Object? showAllStores = null,
     Object? selectedCategories = null,
     Object? folderId = freezed,
+    Object? selectedRegion = freezed,
+    Object? selectedPrefecture = freezed,
     Object? isGuest = null,
   }) {
     return _then(_self.copyWith(
@@ -124,6 +140,14 @@ class _$MapStateCopyWithImpl<$Res> implements $MapStateCopyWith<$Res> {
       folderId: freezed == folderId
           ? _self.folderId
           : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedRegion: freezed == selectedRegion
+          ? _self.selectedRegion
+          : selectedRegion // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedPrefecture: freezed == selectedPrefecture
+          ? _self.selectedPrefecture
+          : selectedPrefecture // ignore: cast_nullable_to_non_nullable
               as String?,
       isGuest: null == isGuest
           ? _self.isGuest
@@ -233,6 +257,8 @@ extension MapStatePatterns on MapState {
             bool showAllStores,
             Set<String> selectedCategories,
             String? folderId,
+            String? selectedRegion,
+            String? selectedPrefecture,
             bool isGuest)?
         $default, {
     required TResult orElse(),
@@ -247,6 +273,8 @@ extension MapStatePatterns on MapState {
             _that.showAllStores,
             _that.selectedCategories,
             _that.folderId,
+            _that.selectedRegion,
+            _that.selectedPrefecture,
             _that.isGuest);
       case _:
         return orElse();
@@ -275,6 +303,8 @@ extension MapStatePatterns on MapState {
             bool showAllStores,
             Set<String> selectedCategories,
             String? folderId,
+            String? selectedRegion,
+            String? selectedPrefecture,
             bool isGuest)
         $default,
   ) {
@@ -288,6 +318,8 @@ extension MapStatePatterns on MapState {
             _that.showAllStores,
             _that.selectedCategories,
             _that.folderId,
+            _that.selectedRegion,
+            _that.selectedPrefecture,
             _that.isGuest);
       case _:
         throw StateError('Unexpected subclass');
@@ -315,6 +347,8 @@ extension MapStatePatterns on MapState {
             bool showAllStores,
             Set<String> selectedCategories,
             String? folderId,
+            String? selectedRegion,
+            String? selectedPrefecture,
             bool isGuest)?
         $default,
   ) {
@@ -328,6 +362,8 @@ extension MapStatePatterns on MapState {
             _that.showAllStores,
             _that.selectedCategories,
             _that.folderId,
+            _that.selectedRegion,
+            _that.selectedPrefecture,
             _that.isGuest);
       case _:
         return null;
@@ -345,6 +381,8 @@ class _MapState implements MapState {
       required this.showAllStores,
       required final Set<String> selectedCategories,
       this.folderId,
+      this.selectedRegion,
+      this.selectedPrefecture,
       this.isGuest = false})
       : _items = items,
         _availableCategories = availableCategories,
@@ -382,6 +420,14 @@ class _MapState implements MapState {
 
   @override
   final String? folderId;
+
+  /// 地方で絞り込み（例: 関東）
+  @override
+  final String? selectedRegion;
+
+  /// 都道府県で絞り込み（例: 東京都）。指定時は selectedRegion より優先
+  @override
+  final String? selectedPrefecture;
   @override
   @JsonKey()
   final bool isGuest;
@@ -410,6 +456,10 @@ class _MapState implements MapState {
                 .equals(other._selectedCategories, _selectedCategories) &&
             (identical(other.folderId, folderId) ||
                 other.folderId == folderId) &&
+            (identical(other.selectedRegion, selectedRegion) ||
+                other.selectedRegion == selectedRegion) &&
+            (identical(other.selectedPrefecture, selectedPrefecture) ||
+                other.selectedPrefecture == selectedPrefecture) &&
             (identical(other.isGuest, isGuest) || other.isGuest == isGuest));
   }
 
@@ -422,11 +472,13 @@ class _MapState implements MapState {
       showAllStores,
       const DeepCollectionEquality().hash(_selectedCategories),
       folderId,
+      selectedRegion,
+      selectedPrefecture,
       isGuest);
 
   @override
   String toString() {
-    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, folderId: $folderId, isGuest: $isGuest)';
+    return 'MapState(items: $items, currentPosition: $currentPosition, availableCategories: $availableCategories, showAllStores: $showAllStores, selectedCategories: $selectedCategories, folderId: $folderId, selectedRegion: $selectedRegion, selectedPrefecture: $selectedPrefecture, isGuest: $isGuest)';
   }
 }
 
@@ -444,6 +496,8 @@ abstract mixin class _$MapStateCopyWith<$Res>
       bool showAllStores,
       Set<String> selectedCategories,
       String? folderId,
+      String? selectedRegion,
+      String? selectedPrefecture,
       bool isGuest});
 }
 
@@ -465,6 +519,8 @@ class __$MapStateCopyWithImpl<$Res> implements _$MapStateCopyWith<$Res> {
     Object? showAllStores = null,
     Object? selectedCategories = null,
     Object? folderId = freezed,
+    Object? selectedRegion = freezed,
+    Object? selectedPrefecture = freezed,
     Object? isGuest = null,
   }) {
     return _then(_MapState(
@@ -491,6 +547,14 @@ class __$MapStateCopyWithImpl<$Res> implements _$MapStateCopyWith<$Res> {
       folderId: freezed == folderId
           ? _self.folderId
           : folderId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedRegion: freezed == selectedRegion
+          ? _self.selectedRegion
+          : selectedRegion // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedPrefecture: freezed == selectedPrefecture
+          ? _self.selectedPrefecture
+          : selectedPrefecture // ignore: cast_nullable_to_non_nullable
               as String?,
       isGuest: null == isGuest
           ? _self.isGuest

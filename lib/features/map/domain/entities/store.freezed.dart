@@ -23,6 +23,7 @@ mixin _$Store {
   @JsonKey(name: 'category_tag')
   String? get category;
   String? get address;
+  String? get prefecture;
   @JsonKey(name: 'company_id')
   int? get companyId;
 
@@ -50,18 +51,20 @@ mixin _$Store {
             (identical(other.category, category) ||
                 other.category == category) &&
             (identical(other.address, address) || other.address == address) &&
+            (identical(other.prefecture, prefecture) ||
+                other.prefecture == prefecture) &&
             (identical(other.companyId, companyId) ||
                 other.companyId == companyId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, latitude, longitude, category, address, companyId);
+  int get hashCode => Object.hash(runtimeType, id, name, latitude, longitude,
+      category, address, prefecture, companyId);
 
   @override
   String toString() {
-    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category, address: $address, companyId: $companyId)';
+    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category, address: $address, prefecture: $prefecture, companyId: $companyId)';
   }
 }
 
@@ -77,6 +80,7 @@ abstract mixin class $StoreCopyWith<$Res> {
       @JsonKey(name: 'lng') double longitude,
       @JsonKey(name: 'category_tag') String? category,
       String? address,
+      String? prefecture,
       @JsonKey(name: 'company_id') int? companyId});
 }
 
@@ -98,6 +102,7 @@ class _$StoreCopyWithImpl<$Res> implements $StoreCopyWith<$Res> {
     Object? longitude = null,
     Object? category = freezed,
     Object? address = freezed,
+    Object? prefecture = freezed,
     Object? companyId = freezed,
   }) {
     return _then(_self.copyWith(
@@ -124,6 +129,10 @@ class _$StoreCopyWithImpl<$Res> implements $StoreCopyWith<$Res> {
       address: freezed == address
           ? _self.address
           : address // ignore: cast_nullable_to_non_nullable
+              as String?,
+      prefecture: freezed == prefecture
+          ? _self.prefecture
+          : prefecture // ignore: cast_nullable_to_non_nullable
               as String?,
       companyId: freezed == companyId
           ? _self.companyId
@@ -233,6 +242,7 @@ extension StorePatterns on Store {
             @JsonKey(name: 'lng') double longitude,
             @JsonKey(name: 'category_tag') String? category,
             String? address,
+            String? prefecture,
             @JsonKey(name: 'company_id') int? companyId)?
         $default, {
     required TResult orElse(),
@@ -241,7 +251,7 @@ extension StorePatterns on Store {
     switch (_that) {
       case _Store() when $default != null:
         return $default(_that.id, _that.name, _that.latitude, _that.longitude,
-            _that.category, _that.address, _that.companyId);
+            _that.category, _that.address, _that.prefecture, _that.companyId);
       case _:
         return orElse();
     }
@@ -269,6 +279,7 @@ extension StorePatterns on Store {
             @JsonKey(name: 'lng') double longitude,
             @JsonKey(name: 'category_tag') String? category,
             String? address,
+            String? prefecture,
             @JsonKey(name: 'company_id') int? companyId)
         $default,
   ) {
@@ -276,7 +287,7 @@ extension StorePatterns on Store {
     switch (_that) {
       case _Store():
         return $default(_that.id, _that.name, _that.latitude, _that.longitude,
-            _that.category, _that.address, _that.companyId);
+            _that.category, _that.address, _that.prefecture, _that.companyId);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -303,6 +314,7 @@ extension StorePatterns on Store {
             @JsonKey(name: 'lng') double longitude,
             @JsonKey(name: 'category_tag') String? category,
             String? address,
+            String? prefecture,
             @JsonKey(name: 'company_id') int? companyId)?
         $default,
   ) {
@@ -310,7 +322,7 @@ extension StorePatterns on Store {
     switch (_that) {
       case _Store() when $default != null:
         return $default(_that.id, _that.name, _that.latitude, _that.longitude,
-            _that.category, _that.address, _that.companyId);
+            _that.category, _that.address, _that.prefecture, _that.companyId);
       case _:
         return null;
     }
@@ -327,6 +339,7 @@ class _Store implements Store {
       @JsonKey(name: 'lng') required this.longitude,
       @JsonKey(name: 'category_tag') this.category,
       this.address,
+      this.prefecture,
       @JsonKey(name: 'company_id') this.companyId});
   factory _Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);
 
@@ -345,6 +358,8 @@ class _Store implements Store {
   final String? category;
   @override
   final String? address;
+  @override
+  final String? prefecture;
   @override
   @JsonKey(name: 'company_id')
   final int? companyId;
@@ -378,18 +393,20 @@ class _Store implements Store {
             (identical(other.category, category) ||
                 other.category == category) &&
             (identical(other.address, address) || other.address == address) &&
+            (identical(other.prefecture, prefecture) ||
+                other.prefecture == prefecture) &&
             (identical(other.companyId, companyId) ||
                 other.companyId == companyId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, latitude, longitude, category, address, companyId);
+  int get hashCode => Object.hash(runtimeType, id, name, latitude, longitude,
+      category, address, prefecture, companyId);
 
   @override
   String toString() {
-    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category, address: $address, companyId: $companyId)';
+    return 'Store(id: $id, name: $name, latitude: $latitude, longitude: $longitude, category: $category, address: $address, prefecture: $prefecture, companyId: $companyId)';
   }
 }
 
@@ -406,6 +423,7 @@ abstract mixin class _$StoreCopyWith<$Res> implements $StoreCopyWith<$Res> {
       @JsonKey(name: 'lng') double longitude,
       @JsonKey(name: 'category_tag') String? category,
       String? address,
+      String? prefecture,
       @JsonKey(name: 'company_id') int? companyId});
 }
 
@@ -427,6 +445,7 @@ class __$StoreCopyWithImpl<$Res> implements _$StoreCopyWith<$Res> {
     Object? longitude = null,
     Object? category = freezed,
     Object? address = freezed,
+    Object? prefecture = freezed,
     Object? companyId = freezed,
   }) {
     return _then(_Store(
@@ -453,6 +472,10 @@ class __$StoreCopyWithImpl<$Res> implements _$StoreCopyWith<$Res> {
       address: freezed == address
           ? _self.address
           : address // ignore: cast_nullable_to_non_nullable
+              as String?,
+      prefecture: freezed == prefecture
+          ? _self.prefecture
+          : prefecture // ignore: cast_nullable_to_non_nullable
               as String?,
       companyId: freezed == companyId
           ? _self.companyId
