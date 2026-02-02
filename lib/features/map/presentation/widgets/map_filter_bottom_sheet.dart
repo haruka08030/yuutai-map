@@ -101,6 +101,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 ),
               ),
               const SizedBox(height: 24),
+              // 表示トグル（一番上・タイトルなし）
               if (!widget.state.isGuest) ...[
                 Center(
                   child: Container(
@@ -176,61 +177,6 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-              ],
-              if (widget.state.isGuest) ...[
-                Text(
-                  'フォルダ',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.dividerColor(context)),
-                  ),
-                  child: Text(
-                    'ログインするとフォルダで絞り込みができます',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 14,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ] else if (!_tempShowAll) ...[
-                Text(
-                  'フォルダで絞り込み',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: 12),
-                foldersAsync.when(
-                  data: (folders) => _ModernPopupMenuButton<String?>(
-                    value: _tempFolderId,
-                    hint: 'すべてのフォルダ',
-                    items: [
-                      const _PopupMenuItem(value: null, label: 'すべてのフォルダ'),
-                      ...folders.map(
-                        (f) => _PopupMenuItem(value: f.id, label: f.name),
-                      ),
-                    ],
-                    onSelected: (value) =>
-                        setState(() => _tempFolderId = value),
-                  ),
-                  loading: () => const LinearProgressIndicator(),
-                  error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
                 ),
                 const SizedBox(height: 24),
               ],
@@ -310,6 +256,62 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 onSelected: (value) =>
                     setState(() => _tempSelectedCategory = value),
               ),
+              const SizedBox(height: 24),
+              if (widget.state.isGuest) ...[
+                Text(
+                  'フォルダ',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.dividerColor(context)),
+                  ),
+                  child: Text(
+                    'ログインするとフォルダで絞り込みができます',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ] else if (!_tempShowAll) ...[
+                Text(
+                  'フォルダで絞り込み',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                foldersAsync.when(
+                  data: (folders) => _ModernPopupMenuButton<String?>(
+                    value: _tempFolderId,
+                    hint: 'すべてのフォルダ',
+                    items: [
+                      const _PopupMenuItem(value: null, label: 'すべてのフォルダ'),
+                      ...folders.map(
+                        (f) => _PopupMenuItem(value: f.id, label: f.name),
+                      ),
+                    ],
+                    onSelected: (value) =>
+                        setState(() => _tempFolderId = value),
+                  ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
+                ),
+                const SizedBox(height: 24),
+              ],
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
