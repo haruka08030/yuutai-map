@@ -12,8 +12,7 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
     required bool showAllStores,
     required Set<String> selectedCategories,
     String? folderId,
-  })
-  onApply;
+  }) onApply;
 
   const MapFilterBottomSheet({
     super.key,
@@ -32,8 +31,7 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
       required bool showAllStores,
       required Set<String> selectedCategories,
       String? folderId,
-    })
-    onApply,
+    }) onApply,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -146,8 +144,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                   'ログインするとフォルダで絞り込みができます',
                   style: TextStyle(
                     color: Colors
-                        .grey
-                        .shade800, // Ensure contrast on light background
+                        .grey.shade800, // Ensure contrast on light background
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
@@ -193,7 +190,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                   ),
                 ),
                 loading: () => const LinearProgressIndicator(),
-                error: (_, _) => const Text('フォルダの読み込みに失敗しました'),
+                error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
               ),
               const SizedBox(height: 24),
             ],

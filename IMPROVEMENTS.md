@@ -32,13 +32,25 @@ on code quality, consistency, and maintainability.
 
 【優先度: 中】 機能の不備とプレースホルダー
 
-3. プライバシーポリシーURLの更新:
+3. Android ストレージ・ランタイム権限:
+   - ストレージ権限は Android 10+ 対応済み（scoped storage; API 33+ は
+     READ_MEDIA_IMAGES、API 29–32 は READ_EXTERNAL_STORAGE
+     maxSdkVersion=32）。WRITE_EXTERNAL_STORAGE は未使用。
+   - 危険な権限（位置・カメラ・ストレージ）は Android 6.0+
+     でランタイムにリクエストすること。位置は map_controller
+     でリクエスト済み。カメラ・ストレージを使う機能（例: ML Kit
+     OCR）を追加する場合は、その利用直前に permission_handler
+     またはプラグインの組み込みリクエストで権限を取得し、拒否時は機能を無効化すること。
+   - 関連ファイル: android/app/src/main/AndroidManifest.xml,
+     lib/features/map/presentation/controllers/map_controller.dart
+
+4. プライバシーポリシーURLの更新:
    設定画面にあるプライバシーポリシーのリンク先がダミー（#）になっています。
    - 関連ファイル: lib/features/settings/presentation/settings_page.dart
 
 【優先度: 低】 コード品質とメンテナンス
 
-5. Linterルールの見直し:
+6. Linterルールの見直し:
    コード品質ルールの一つ（library_private_types_in_public_api）が無効化されています。コードの保守性を向上
    させるために、このルールを有効化し、関連する警告を修正することを推奨します。
    - 関連ファイル: analysis_options.yaml

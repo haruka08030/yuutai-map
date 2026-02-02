@@ -40,6 +40,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/onboarding';
       }
 
+      // Logged-in or guest on root (AuthGate) → go to main app
+      if ((isLoggedIn || isGuest) && location == '/') {
+        return '/yuutai';
+      }
+
       final isAuthPath = location == '/login' || location == '/signup';
 
       // If already logged in, and trying to access auth path, go to yuutai
@@ -54,9 +59,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final isProtectedSubRoute =
           location.startsWith('/yuutai/add') || // Add/Edit require login
-          location.startsWith('/yuutai/edit') ||
-          location.startsWith('/settings/') ||
-          location == '/folders';
+              location.startsWith('/yuutai/edit') ||
+              location.startsWith('/settings/') ||
+              location == '/folders';
 
       // If not logged in AND not a guest, and trying to access a protected sub-route, go to login
       if (!isLoggedIn && !isGuest && isProtectedSubRoute) {
@@ -101,14 +106,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       StatefulShellRoute.indexedStack(
-        builder:
-            (
-              BuildContext context,
-              GoRouterState state,
-              StatefulNavigationShell navigationShell,
-            ) {
-              return ShellScreen(navigationShell: navigationShell);
-            },
+        builder: (
+          BuildContext context,
+          GoRouterState state,
+          StatefulNavigationShell navigationShell,
+        ) {
+          return ShellScreen(navigationShell: navigationShell);
+        },
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
             routes: <RouteBase>[
@@ -116,11 +120,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/yuutai',
                 builder: (BuildContext context, GoRouterState state) =>
                     UsersYuutaiPage(
-                      searchQuery: state.uri.queryParameters['search'] ?? '',
-                      selectedFolderId: state.uri.queryParameters['folderId'],
-                      showHistory:
-                          state.uri.queryParameters['showHistory'] == 'true',
-                    ),
+                  searchQuery: state.uri.queryParameters['search'] ?? '',
+                  selectedFolderId: state.uri.queryParameters['folderId'],
+                  showHistory:
+                      state.uri.queryParameters['showHistory'] == 'true',
+                ),
                 routes: [
                   GoRoute(
                     path: 'folders',
@@ -141,20 +145,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                         child: const CompanySearchPage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                              const begin = Offset(1.0, 0.0);
-                              const end = Offset.zero;
-                              const curve = Curves.ease;
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
 
-                              final tween = Tween(
-                                begin: begin,
-                                end: end,
-                              ).chain(CurveTween(curve: curve));
+                          final tween = Tween(
+                            begin: begin,
+                            end: end,
+                          ).chain(CurveTween(curve: curve));
 
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
                       );
                     },
                   ),
@@ -168,7 +172,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
@@ -192,7 +195,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(

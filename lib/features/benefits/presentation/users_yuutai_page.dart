@@ -140,11 +140,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     title: '優待を登録しよう！',
                     subtitle: isGuest
                         ? 'ログインすると優待を登録して管理できます'
-                        : '右上の「＋」ボタンから追加できます',
-                    actionLabel: isGuest ? null : '新規追加',
-                    onActionPressed: isGuest
-                        ? null
-                        : () => context.push('/yuutai/add'),
+                        : '右下の「＋」ボタンから追加できます',
                   );
                 }
 
@@ -152,7 +148,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   return _buildSimpleList(items);
                 }
 
-                // Grouping logic (Only if sorting by expiry date)
                 if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
                   final expiringSoon = items.where((b) {
                     if (b.expiryDate == null) return false;
