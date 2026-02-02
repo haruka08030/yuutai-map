@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 
-/// Design-accent teal from the map screen mock.
-const Color _kMapAccent = Color(0xFF2DD4BF);
 const Color _kBorderLight = Color(0x7FE2E7EF);
-const Color _kTextPrimary = Color(0xFF1E293B);
 const Color _kShadowLight = Color(0x0C000000);
 
 class MapHeader extends StatefulWidget {
@@ -94,7 +91,8 @@ class _MapHeaderState extends State<MapHeader> {
                                   },
                                 )
                               : null,
-                          prefixIconColor: _kTextPrimary,
+                          prefixIconColor:
+                              Theme.of(context).colorScheme.onSurface,
                         ).copyWith(
                           hintStyle: Theme.of(context)
                               .textTheme
@@ -108,7 +106,7 @@ class _MapHeaderState extends State<MapHeader> {
                               ),
                         ),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: _kTextPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize:
                                   app_theme.AppSearchBarStyle.hintFontSize,
                               fontWeight:
@@ -147,9 +145,9 @@ class _MapHeaderState extends State<MapHeader> {
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.filter_list_rounded,
-                          color: _kTextPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: 24,
                         ),
                       ),
@@ -206,34 +204,48 @@ class _CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: selected ? _kMapAccent : Colors.white,
+        color: selected
+            ? Theme.of(context).colorScheme.tertiary
+            : Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: selected ? null : Border.all(color: _kBorderLight),
         boxShadow: selected
-            ? const [
+            ? [
                 BoxShadow(
-                  color: Color(0x332DD3BE),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .tertiary
+                      .withValues(alpha: 0.25),
                   blurRadius: 6,
-                  offset: Offset(0, 4),
+                  offset: const Offset(0, 4),
                   spreadRadius: -1,
                 ),
                 BoxShadow(
-                  color: Color(0x332DD3BE),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .tertiary
+                      .withValues(alpha: 0.2),
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                   spreadRadius: -2,
                 ),
               ]
-            : const [
+            : [
                 BoxShadow(
-                  color: Color(0x19000000),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .shadow
+                      .withValues(alpha: 0.08),
                   blurRadius: 3,
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                 ),
                 BoxShadow(
-                  color: Color(0x19000000),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .shadow
+                      .withValues(alpha: 0.06),
                   blurRadius: 2,
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                   spreadRadius: -1,
                 ),
               ],
@@ -252,7 +264,9 @@ class _CategoryChip extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       fontSize: 14,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                      color: selected ? Colors.white : _kTextPrimary,
+                      color: selected
+                          ? Theme.of(context).colorScheme.onTertiary
+                          : Theme.of(context).colorScheme.onSurface,
                     ),
               ),
             ),

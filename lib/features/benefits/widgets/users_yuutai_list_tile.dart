@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
@@ -34,7 +34,8 @@ class UsersYuutaiListTile extends ConsumerWidget {
           extentRatio: 0.25,
           children: [
             SlidableAction(
-              onPressed: (_) => context.push('/yuutai/edit', extra: benefit),
+              onPressed: (_) =>
+                  YuutaiEditSheet.show(context, existing: benefit),
               backgroundColor: appColors?.editActionBackground ?? Colors.blue,
               foregroundColor: Colors.white,
               icon: Icons.edit_outlined,
@@ -76,7 +77,6 @@ class UsersYuutaiListTile extends ConsumerWidget {
         ),
         child: Card(
           margin: EdgeInsets.zero,
-          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             side: BorderSide(
@@ -85,7 +85,7 @@ class UsersYuutaiListTile extends ConsumerWidget {
             ),
           ),
           child: InkWell(
-            onTap: () => context.push('/yuutai/edit', extra: benefit),
+            onTap: () => YuutaiEditSheet.show(context, existing: benefit),
             borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppTheme.borderRadius),

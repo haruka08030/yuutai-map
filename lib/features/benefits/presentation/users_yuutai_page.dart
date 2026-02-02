@@ -5,6 +5,7 @@ import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_pr
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/core/widgets/app_error_view.dart';
@@ -180,7 +181,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                           context,
                           '期限間近',
                           Icons.timer_outlined,
-                          const Color(0xFFEF4444),
+                          Theme.of(context)
+                                  .extension<AppColors>()
+                                  ?.expiringSoon ??
+                              Theme.of(context).colorScheme.error,
                         ),
                         ...expiringSoon.map((b) => _buildTile(b)),
                         const SizedBox(height: 24),
@@ -213,7 +217,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       floatingActionButton: isGuest
           ? null
           : FloatingActionButton(
-              onPressed: () => context.push('/yuutai/add'),
+              onPressed: () => YuutaiEditSheet.show(context),
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               elevation: 4,
@@ -310,10 +314,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down_rounded,
                   size: 20,
-                  color: Color(0xFF2DD4BF),
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ],
             ),
@@ -385,7 +389,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1E293B),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
                 ],
@@ -480,27 +484,28 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF2DD4BF) : Colors.white,
+          color: selected ? colorScheme.tertiary : colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: selected
               ? [
-                  const BoxShadow(
-                    color: Color(0x332DD3BE),
+                  BoxShadow(
+                    color: colorScheme.tertiary.withValues(alpha: 0.25),
                     blurRadius: 6,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                     spreadRadius: -1,
                   ),
                 ]
               : [
-                  const BoxShadow(
-                    color: Color(0x19000000),
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.08),
                     blurRadius: 3,
-                    offset: Offset(0, 1),
+                    offset: const Offset(0, 1),
                   ),
                 ],
         ),
@@ -509,7 +514,8 @@ class _FilterChip extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 fontSize: 14,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                color: selected ? Colors.white : const Color(0xFF1E293B),
+                color:
+                    selected ? colorScheme.onTertiary : colorScheme.onSurface,
               ),
         ),
       ),
@@ -543,15 +549,15 @@ class _SortOption extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: selected
-                          ? const Color(0xFF2DD4BF)
-                          : const Color(0xFF1E293B),
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Theme.of(context).colorScheme.onSurface,
                     ),
               ),
             ),
             if (selected)
-              const Icon(
+              Icon(
                 Icons.check_rounded,
-                color: Color(0xFF2DD4BF),
+                color: Theme.of(context).colorScheme.tertiary,
                 size: 24,
               ),
           ],

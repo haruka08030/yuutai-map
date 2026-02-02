@@ -83,9 +83,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                                   ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right,
-                            color: Color(0xFF9CA3AF),
+                            color: AppTheme.placeholderColor(context),
                           ),
                         ],
                       ),
@@ -132,8 +132,8 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF24A19C),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
@@ -157,7 +157,7 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1B1C1F),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
       ),
     );
@@ -174,7 +174,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
-        fillColor: readOnly ? const Color(0xFFF9FAFB) : Colors.white,
+        fillColor: readOnly
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : Theme.of(context).colorScheme.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
@@ -205,7 +207,8 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.error),
             child: const Text('削除する'),
           ),
         ],

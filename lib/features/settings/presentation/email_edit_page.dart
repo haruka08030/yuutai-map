@@ -75,18 +75,18 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1B1C1F),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'name@example.com',
                     filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: EdgeInsets.symmetric(
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 16,
                     ),
@@ -101,7 +101,7 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                     return null;
                   },
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: const Color(0xFF1B1C1F),
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 16,
                       ),
                 ),
@@ -110,8 +110,8 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                   onPressed: _updateEmail,
                   isLoading: _isLoading,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF24A19C),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(

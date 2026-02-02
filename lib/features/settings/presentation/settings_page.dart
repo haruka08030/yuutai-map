@@ -57,14 +57,16 @@ class AuthOptionsPage extends StatelessWidget {
               Container(
                 width: 72,
                 height: 72,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).extension<AppColors>()?.skeletonBase ??
+                          const Color(0xFFF3F4F6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person_outline_rounded,
                   size: 36,
-                  color: Color(0xFF9CA3AF),
+                  color: AppTheme.placeholderColor(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -91,8 +93,9 @@ class AuthOptionsPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () => context.push('/login'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF24A19C),
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('ログイン'),
@@ -103,9 +106,11 @@ class AuthOptionsPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () => context.push('/signup'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF24A19C),
-                        side: const BorderSide(color: Color(0xFF24A19C)),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('新規登録'),
@@ -185,13 +190,16 @@ class AccountInfoPage extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF24A19C).withValues(alpha: 0.1),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person_rounded,
                       size: 32,
-                      color: Color(0xFF24A19C),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -238,7 +246,7 @@ class AccountInfoPage extends ConsumerWidget {
           label: 'ダークモード',
           trailing: Switch.adaptive(
             value: isDark,
-            activeTrackColor: const Color(0xFF24A19C),
+            activeTrackColor: Theme.of(context).colorScheme.primary,
             onChanged: (isOn) {
               ref
                   .read(themeProvider.notifier)
@@ -269,7 +277,7 @@ class AccountInfoPage extends ConsumerWidget {
         _SettingsTile(
           icon: Icons.logout_rounded,
           label: 'ログアウト',
-          labelColor: Colors.redAccent,
+          labelColor: Theme.of(context).colorScheme.error,
           onTap: () async {
             final confirm = await showDialog<bool>(
               context: context,
@@ -326,7 +334,7 @@ Widget _buildSectionHeader(BuildContext context, String title) {
       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF24A19C),
+            color: Theme.of(context).colorScheme.primary,
             letterSpacing: 0.5,
           ),
     ),
@@ -370,14 +378,13 @@ class _SettingsTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: (labelColor ?? const Color(0xFF24A19C)).withValues(
-                    alpha: 0.1,
-                  ),
+                  color: (labelColor ?? Theme.of(context).colorScheme.primary)
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: labelColor ?? const Color(0xFF24A19C),
+                  color: labelColor ?? Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
               ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_bar_search_field.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
@@ -184,36 +185,64 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
               )
             : null,
         body: widget.navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: widget.navigationShell.currentIndex,
-          onDestinationSelected: _goBranch,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          indicatorColor: const Color(0xFF24A19C).withValues(alpha: 0.1),
-          height: 64,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.list_alt_rounded, color: Color(0xFF9CA3AF)),
-              selectedIcon: Icon(
-                Icons.list_alt_rounded,
-                color: Color(0xFF24A19C),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.shadow.withValues(
+                      alpha: 0.12,
+                    ),
+                blurRadius: 12,
+                offset: const Offset(0, -2),
               ),
-              label: 'List',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.map_outlined, color: Color(0xFF9CA3AF)),
-              selectedIcon: Icon(Icons.map_rounded, color: Color(0xFF24A19C)),
-              label: 'Map',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined, color: Color(0xFF9CA3AF)),
-              selectedIcon: Icon(
-                Icons.settings_rounded,
-                color: Color(0xFF24A19C),
+            ],
+          ),
+          child: NavigationBar(
+            selectedIndex: widget.navigationShell.currentIndex,
+            onDestinationSelected: _goBranch,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            indicatorColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            height: 64,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+            destinations: [
+              NavigationDestination(
+                icon: Icon(
+                  Icons.list_alt_rounded,
+                  color: AppTheme.placeholderColor(context),
+                ),
+                selectedIcon: Icon(
+                  Icons.list_alt_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                label: 'List',
               ),
-              label: 'Settings',
-            ),
-          ],
+              NavigationDestination(
+                icon: Icon(
+                  Icons.map_outlined,
+                  color: AppTheme.placeholderColor(context),
+                ),
+                selectedIcon: Icon(
+                  Icons.map_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                label: 'Map',
+              ),
+              NavigationDestination(
+                icon: Icon(
+                  Icons.settings_outlined,
+                  color: AppTheme.placeholderColor(context),
+                ),
+                selectedIcon: Icon(
+                  Icons.settings_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                label: 'Settings',
+              ),
+            ],
+          ),
         ),
       );
     }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-const Color _kMapFabAccent = Color(0xFF2DD4BF);
 const Color _kMapFabBorder = Color(0x7FE2E7EF);
 const Color _kMapFabShadow = Color(0x19000000);
 
@@ -59,7 +58,7 @@ class _MapActionButton extends StatelessWidget {
           child: Icon(
             icon,
             size: iconSize,
-            color: _kMapFabAccent,
+            color: Theme.of(context).colorScheme.tertiary,
           ),
         ),
       ),

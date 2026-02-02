@@ -95,7 +95,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
               Center(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: AppTheme.dividerColor(context),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: ToggleButtons(
@@ -108,9 +108,9 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                     borderRadius: BorderRadius.circular(8),
                     borderColor: Colors.transparent,
                     selectedBorderColor: Colors.transparent,
-                    fillColor: Theme.of(context).primaryColor,
-                    selectedColor: Colors.white,
-                    color: Colors.grey.shade600,
+                    fillColor: Theme.of(context).colorScheme.primary,
+                    selectedColor: Theme.of(context).colorScheme.onPrimary,
+                    color: AppTheme.secondaryTextColor(context),
                     constraints: BoxConstraints(
                       minHeight: 40,
                       minWidth:
@@ -135,15 +135,14 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.dividerColor(context)),
                 ),
                 child: Text(
                   'ログインするとフォルダで絞り込みができます',
                   style: TextStyle(
-                    color: Colors
-                        .grey.shade800, // Ensure contrast on light background
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
@@ -244,8 +243,8 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                   context.pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF24A19C),
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text(

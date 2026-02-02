@@ -71,7 +71,7 @@ class EmptyStateView extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
             ),
             if (subtitle != null) ...[

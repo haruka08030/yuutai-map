@@ -128,10 +128,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.account_balance_wallet_outlined,
                       size: 64,
-                      color: Color(0xFF24A19C),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -141,7 +141,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF111827),
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                     ),
                     const SizedBox(height: 8),

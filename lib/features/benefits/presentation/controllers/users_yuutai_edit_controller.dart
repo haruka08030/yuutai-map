@@ -161,10 +161,10 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
       );
 
       await repo.upsert(entity, scheduleReminders: true);
+      ref.invalidate(activeUsersYuutaiProvider);
       if (context.mounted) {
         showSaveSuccessCardOverlay(context, onComplete: () {
           if (context.mounted) context.pop();
-          ref.invalidate(activeUsersYuutaiProvider);
         });
       }
     } catch (e) {
