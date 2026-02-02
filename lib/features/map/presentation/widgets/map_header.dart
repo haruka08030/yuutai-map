@@ -205,7 +205,7 @@ class _CategoryChip extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: selected
-            ? Theme.of(context).colorScheme.tertiary
+            ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: selected ? null : Border.all(color: _kBorderLight),
@@ -214,7 +214,7 @@ class _CategoryChip extends StatelessWidget {
                 BoxShadow(
                   color: Theme.of(context)
                       .colorScheme
-                      .tertiary
+                      .primary
                       .withValues(alpha: 0.25),
                   blurRadius: 6,
                   offset: const Offset(0, 4),
@@ -223,7 +223,7 @@ class _CategoryChip extends StatelessWidget {
                 BoxShadow(
                   color: Theme.of(context)
                       .colorScheme
-                      .tertiary
+                      .primary
                       .withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),

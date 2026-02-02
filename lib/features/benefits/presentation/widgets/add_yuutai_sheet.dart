@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/presentation/controllers/users_yuutai_edit_controller.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/users_yuutai_form.dart';
 
-/// 優待の追加・編集を下から約半分の高さで表示するシート。追加時は existing: null。
+bool _hasReminderSet(UsersYuutaiEditState state) {
+  final anyPredefined =
+      state.selectedPredefinedDays.values.any((selected) => selected);
+  final hasCustom =
+      state.customDayEnabled && state.customDayValue.trim().isNotEmpty;
+  return anyPredefined || hasCustom;
+}
+
+/// 期限表示: 当年は M/d、翌年以降は yyyy/M/d
+String _formatExpiryLabel(DateTime date) {
+  final now = DateTime.now();
+  if (date.year == now.year) {
+    return DateFormat('M/d', 'ja').format(date);
+  }
+  return DateFormat('yyyy/M/d', 'ja').format(date);
+}
+
 class YuutaiEditSheet extends HookConsumerWidget {
   const YuutaiEditSheet({super.key, this.existing});
 
   final UsersYuutai? existing;
 
-  /// 追加・編集シートを表示する。追加は existing: null、編集は existing: 対象の優待。
   static void show(BuildContext context, {UsersYuutai? existing}) {
     showModalBottomSheet<void>(
       context: context,
@@ -71,27 +87,57 @@ class YuutaiEditSheet extends HookConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: Row(
               children: [
-                const Spacer(),
-                // 期限（有効期限ピッカー）
-                IconButton(
-                  onPressed: () => notifier.showExpiryPicker(context),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: colorScheme.onSurfaceVariant,
+                InkWell(
+                  onTap: () => notifier.showExpiryPicker(context),
+                  borderRadius: BorderRadius.circular(24),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 24,
+                          color: controller.expireOn != null
+                              ? colorScheme.secondary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        if (controller.expireOn != null) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatExpiryLabel(controller.expireOn!),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                  icon: const Icon(Icons.calendar_today_rounded, size: 24),
-                  tooltip: '有効期限',
                 ),
-                // 通知（リマインダーピッカー）
                 IconButton(
                   onPressed: () => notifier.showReminderPicker(context),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.transparent,
-                    foregroundColor: colorScheme.onSurfaceVariant,
+                    foregroundColor: _hasReminderSet(controller)
+                        ? colorScheme.secondary
+                        : colorScheme.onSurfaceVariant,
                   ),
-                  icon: const Icon(Icons.notifications_outlined, size: 24),
+                  icon: Icon(
+                    _hasReminderSet(controller)
+                        ? Icons.notifications_active
+                        : Icons.notifications_outlined,
+                    size: 24,
+                  ),
                   tooltip: '通知タイミング',
                 ),
+                const Spacer(),
                 if (controller.isLoading)
                   Padding(
                     padding: const EdgeInsets.only(left: 4),
@@ -118,7 +164,6 @@ class YuutaiEditSheet extends HookConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // フォーム（ListView でスクロール）
           Expanded(
             child: Center(
               child: ConstrainedBox(

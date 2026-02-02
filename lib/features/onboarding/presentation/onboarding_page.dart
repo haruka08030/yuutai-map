@@ -257,7 +257,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               title: 'フォルダで整理',
               description: 'カテゴリー別に分類',
               icon: Icons.folder_outlined,
-              color: Theme.of(context).colorScheme.tertiary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ],
         ),
@@ -356,7 +356,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       height: 8,
       decoration: ShapeDecoration(
         color: isActive
-            ? colorScheme.tertiary
+            ? colorScheme.primary
             : colorScheme.onPrimary.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),

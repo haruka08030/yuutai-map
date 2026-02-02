@@ -270,14 +270,14 @@ class AppTheme {
   /// セカンダリカラー（編集・リンクなど）。プライマリと同系の Teal 600 でトーン統一
   static const Color _lightSecondary = Color(0xFF0D9488);
 
-  /// ターシャリカラー（チップ・FAB・選択アクセント）。明るい Teal 400
-  static const Color _lightTertiary = Color(0xFF2DD4BF);
+  /// 廃止: UI では使用しない。ColorScheme の必須項目のため primary と同じにしている
+  static const Color _lightTertiary = Color(0xFF24A19C);
 
   /// セカンダリカラー（Dark）
   static const Color _darkSecondary = Color(0xFF2DD4BF);
 
-  /// ターシャリカラー（Dark）
-  static const Color _darkTertiary = Color(0xFF5EEAD4);
+  /// 廃止: UI では使用しない。primary と同じにしている
+  static const Color _darkTertiary = Color(0xFF24A19C);
 
   static ThemeData get light {
     final base = ThemeData.light(useMaterial3: true);
@@ -457,8 +457,10 @@ class AppTheme {
       AppColors.light.secondaryText;
   static Color secondaryColor(BuildContext context) =>
       Theme.of(context).colorScheme.secondary;
+
+  /// 廃止: tertiary の代わりに primary を返す（UI では tertiary を使用しない）
   static Color tertiaryColor(BuildContext context) =>
-      Theme.of(context).colorScheme.tertiary;
+      Theme.of(context).colorScheme.primary;
   static Color benefitChipBackgroundColor(BuildContext context) =>
       Theme.of(context).extension<AppColors>()?.benefitChipBackground ??
       AppColors.light.benefitChipBackground;

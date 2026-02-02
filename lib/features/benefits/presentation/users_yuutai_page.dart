@@ -91,8 +91,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   }).toList();
                 }
 
-                // Apply list filter (すべて / 期限間近 / 有効 / 使用済み)
                 items = _applyListFilter(items, settings.listFilter);
+                items = List<UsersYuutai>.from(items);
 
                 // Apply Sorting
                 switch (settings.sortOrder) {
@@ -151,7 +151,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 }
 
                 if (widget.showHistory) {
-                  return _buildSimpleList(items);
+                  return _buildSimpleList(items, settings.listFilter);
                 }
 
                 if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
@@ -174,6 +174,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                       items.where((b) => !expiringSoon.contains(b)).toList();
 
                   return ListView(
+                    key: ValueKey(settings.listFilter),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     children: [
                       if (expiringSoon.isNotEmpty) ...[
@@ -205,6 +206,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
 
                 // Plain list for other sort orders
                 return ListView.builder(
+                  key: ValueKey(settings.listFilter),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: items.length,
                   itemBuilder: (context, index) => _buildTile(items[index]),
@@ -248,8 +250,14 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               children: [
                 _FilterChip(
                   label: 'すべて',
-                  selected: settings.listFilter == YuutaiListFilter.all,
-                  onTap: () => notifier.setListFilter(YuutaiListFilter.all),
+                  selected: !widget.showHistory &&
+                      settings.listFilter == YuutaiListFilter.all,
+                  onTap: () {
+                    notifier.setListFilter(YuutaiListFilter.all);
+                    if (widget.showHistory) {
+                      context.go('/yuutai');
+                    }
+                  },
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
@@ -317,7 +325,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
                   size: 20,
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -462,8 +470,12 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildSimpleList(List<UsersYuutai> items) {
+  Widget _buildSimpleList(
+    List<UsersYuutai> items,
+    YuutaiListFilter listFilter,
+  ) {
     return ListView.builder(
+      key: ValueKey(listFilter),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
       itemBuilder: (context, index) => _buildTile(items[index]),
@@ -490,12 +502,12 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? colorScheme.tertiary : colorScheme.surface,
+          color: selected ? colorScheme.primary : colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: colorScheme.tertiary.withValues(alpha: 0.25),
+                    color: colorScheme.primary.withValues(alpha: 0.25),
                     blurRadius: 6,
                     offset: const Offset(0, 4),
                     spreadRadius: -1,
@@ -514,8 +526,7 @@ class _FilterChip extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 fontSize: 14,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                color:
-                    selected ? colorScheme.onTertiary : colorScheme.onSurface,
+                color: selected ? colorScheme.onPrimary : colorScheme.onSurface,
               ),
         ),
       ),
@@ -549,7 +560,7 @@ class _SortOption extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: selected
-                          ? Theme.of(context).colorScheme.tertiary
+                          ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.onSurface,
                     ),
               ),
@@ -557,7 +568,7 @@ class _SortOption extends StatelessWidget {
             if (selected)
               Icon(
                 Icons.check_rounded,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 24,
               ),
           ],

@@ -196,7 +196,7 @@ class MapStoreDetailSheet extends ConsumerWidget {
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -245,7 +245,7 @@ class MapStoreDetailSheet extends ConsumerWidget {
                                 Icon(
                                   Icons.card_giftcard_rounded,
                                   size: 20,
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(

@@ -58,7 +58,7 @@ class _MapActionButton extends StatelessWidget {
           child: Icon(
             icon,
             size: iconSize,
-            color: Theme.of(context).colorScheme.tertiary,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
       ),
