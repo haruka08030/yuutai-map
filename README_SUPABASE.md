@@ -149,14 +149,38 @@ yuutai-map/
 ### データが重複する場合
 `scripts/seed_stores.dart` では既存データを削除してから新しいデータを投入します。重複を避けたい場合は、スクリプトを修正してください。
 
+## Edge Functions（バックエンドAPI）
+
+株主優待券をデータベースに登録するためのSupabase Edge Functionsが利用できます。
+
+### 利用可能なエンドポイント
+
+1. **create-benefit** - 単一の優待券を登録
+2. **create-benefits-batch** - 複数の優待券を一括登録
+
+詳細な使用方法は `supabase/functions/README.md` を参照してください。
+
+### デプロイ方法
+
+```bash
+# Edge Functionsをデプロイ
+./scripts/deploy_functions.sh
+
+# または個別にデプロイ
+supabase functions deploy create-benefit
+supabase functions deploy create-benefits-batch
+```
+
 ## 次のステップ
 
 1. アプリでSupabaseに接続するためのサービスクラスを実装
-2. 株主優待と店舗の関連データを追加
-3. 企業データの投入
-4. 地図表示機能の実装
+2. Edge Functions経由で株主優待データを追加
+3. 株主優待と店舗の関連データを追加
+4. 企業データの投入
+5. 地図表示機能の実装
 
 ## 参考資料
 
 - [Supabase Flutter Documentation](https://supabase.com/docs/reference/dart)
 - [Flutter Supabase Package](https://pub.dev/packages/supabase_flutter)
+- [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
