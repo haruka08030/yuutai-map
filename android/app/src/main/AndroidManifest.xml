@@ -1,8 +1,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      Android 10+ storage & media permission strategy (scoped storage):
+      - Android 13+ (API 33): Use granular READ_MEDIA_* (READ_MEDIA_IMAGES here).
+      - Android 10–12 (API 29–32): READ_EXTERNAL_STORAGE with maxSdkVersion="32".
+      - WRITE_EXTERNAL_STORAGE is not used; scoped storage / MediaStore is preferred.
+      All dangerous permissions (location, camera, storage) must be requested at runtime
+      when the feature is used (Android 6.0+). See IMPROVEMENTS.md for runtime handling.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Android 13+ (API 33): granular media permission (replaces READ_EXTERNAL_STORAGE) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Android 10–12 (API 29–32): legacy read; maxSdkVersion ensures it is not used on API 33+ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
     <application
         android:label="flutter_stock"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,6 +52,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+        
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

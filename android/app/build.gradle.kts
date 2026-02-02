@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.File
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -24,13 +27,22 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.flutter_stock"
+        applicationId = "io.supabase.flutterstock"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Read MAPS_API_KEY from local.properties
+        val localProperties = File(rootProject.projectDir, "local.properties")
+        val properties = Properties()
+        if (localProperties.exists()) {
+            localProperties.inputStream().use { properties.load(it) }
+        }
+        val mapsApiKey = properties.getProperty("MAPS_API_KEY") ?: ""
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
@@ -44,4 +56,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
 }

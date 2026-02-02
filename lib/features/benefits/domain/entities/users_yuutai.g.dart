@@ -1,0 +1,47 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'users_yuutai.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$UsersYuutaiImpl _$$UsersYuutaiImplFromJson(Map<String, dynamic> json) =>
+    _$UsersYuutaiImpl(
+      id: (json['id'] as num?)?.toInt(),
+      companyName: json['company_name'] as String? ?? '',
+      companyId: (json['company_id'] as num?)?.toInt(),
+      benefitDetail: json['benefit_detail'] as String?,
+      expiryDate: json['expiry_date'] == null
+          ? null
+          : DateTime.parse(json['expiry_date'] as String),
+      status:
+          $enumDecodeNullable(_$BenefitStatusEnumMap, json['status']) ??
+          BenefitStatus.active,
+      alertEnabled: json['alert_enabled'] as bool? ?? false,
+      notes: json['notes'] as String?,
+      notifyDaysBefore: (json['notify_days_before'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      folderId: json['folder_id'] as String?,
+    );
+
+Map<String, dynamic> _$$UsersYuutaiImplToJson(_$UsersYuutaiImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'company_name': instance.companyName,
+      'company_id': instance.companyId,
+      'benefit_detail': instance.benefitDetail,
+      'expiry_date': instance.expiryDate?.toIso8601String(),
+      'status': _$BenefitStatusEnumMap[instance.status]!,
+      'alert_enabled': instance.alertEnabled,
+      'notes': instance.notes,
+      'notify_days_before': instance.notifyDaysBefore,
+      'folder_id': instance.folderId,
+    };
+
+const _$BenefitStatusEnumMap = {
+  BenefitStatus.active: 'active',
+  BenefitStatus.used: 'used',
+  BenefitStatus.expired: 'expired',
+};

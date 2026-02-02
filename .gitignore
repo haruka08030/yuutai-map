@@ -3,7 +3,6 @@
 *.log
 *.pyc
 *.swp
-.DS_Store
 .atom/
 .build/
 .buildlog/
@@ -18,7 +17,7 @@ migrate_working_dir/
 *.iws
 .idea/
 
-
+# Flutter/Dart specific
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -27,6 +26,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+coverage/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+*.g.dart
+*.freezed.dart
 
 # Symbolication related
 app.*.symbols
@@ -39,8 +43,25 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# .env file
-/.env
+# .env files (all variants)
+.env
+*.env
+.env.*
+**/.env
+**/.env.*
 
 # secrets
 data_importer/serviceAccountKey.json
+
+# Android local properties (contains API keys)
+android/local.properties
+**/local.properties
+
+# Xcode config
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig
+
+# Firebase configuration
+ios/Runner/GoogleService-Info.plist
+
+output_data/

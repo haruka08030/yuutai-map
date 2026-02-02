@@ -1,12 +1,18 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_stock/domain/entities/users_yuutai.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-class NotificationService {
-  static final NotificationService instance = NotificationService._();
-  NotificationService._();
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return NotificationService();
+});
 
-  final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+class NotificationService {
+  NotificationService();
+
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     const AndroidInitializationSettings android = AndroidInitializationSettings(
@@ -21,26 +27,36 @@ class NotificationService {
       android: android,
       iOS: iOS,
     );
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings: settings);
   }
 
   Future<void> cancelAllFor(String id) async {
     final pending = await _plugin.pendingNotificationRequests();
     for (final p in pending) {
       if (p.payload == id) {
-        await _plugin.cancel(p.id);
+        await _plugin.cancel(id: p.id);
       }
     }
   }
 
-  Future<void> reschedulePresetReminders(UsersYuutai b) async {
-    await cancelAllFor(b.id);
+  Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+    return await _plugin.pendingNotificationRequests();
+  }
 
-    if (b.isUsed) {
+  Future<void> cancelNotification(int id) async {
+    await _plugin.cancel(id: id);
+  }
+
+  Future<void> reschedulePresetReminders(UsersYuutai b) async {
+    if (b.id == null) return;
+    final idStr = b.id.toString();
+    await cancelAllFor(idStr);
+
+    if (b.status == BenefitStatus.used || !b.alertEnabled) {
       return;
     }
 
-    final expireOn = b.expireOn;
+    final expireOn = b.expiryDate;
     if (expireOn == null) {
       return;
     }
@@ -50,23 +66,25 @@ class NotificationService {
       return;
     }
 
-    final presetDays = [1, 3, 7, 30];
-    final notifyAtHour = b.notifyAtHour ?? 9;
+    final daysList = b.notifyDaysBefore;
+    if (daysList == null || daysList.isEmpty) {
+      return;
+    }
 
-    for (final days in presetDays) {
-      if (b.notifyBeforeDays != null && b.notifyBeforeDays != days) {
-        continue;
-      }
+    final notifyAtHour = 9;
 
-      final scheduledAt = expireOn.subtract(Duration(days: days));
+    for (final day in daysList) {
+      if (day < 0) continue; // Do not schedule for negative days
+
+      final scheduledAt = expireOn.subtract(Duration(days: day));
       if (scheduledAt.isBefore(now)) {
-        continue;
+        continue; // Do not schedule for past dates
       }
 
       final notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
-          'benefit-reminder-$days',
-          '期限リマインダー ($days日前)',
+          'benefit-reminder-$day',
+          '期限リマインダー ($day日前)',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ),
@@ -78,13 +96,18 @@ class NotificationService {
         tz.local,
       );
 
+      // Create a unique ID for each notification to avoid collisions
+      // Ensure notification ID stays within 32-bit int range
+      final notificationId = ((b.id! * 1000) + day) % 2147483647;
+
       await _plugin.zonedSchedule(
-        b.id.hashCode + days,
-        '優待の期限が近づいています',
-        '「${b.title}」の期限が$days日後です。',
-        scheduledDate,
-        notificationDetails,
-        payload: b.id,
+        id: notificationId,
+        title: '優待の期限が近づいています',
+        body: '「${b.companyName}」の期限が${day == 0 ? "本日" : "あと$day日"}です。',
+        scheduledDate: scheduledDate,
+        notificationDetails: notificationDetails,
+        payload:
+            idStr, // Use the same payload to group notifications by benefit
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
