@@ -104,29 +104,76 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
               if (!widget.state.isGuest) ...[
                 Center(
                   child: Container(
+                    height: 40,
                     decoration: BoxDecoration(
                       color: AppTheme.dividerColor(context),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: ToggleButtons(
-                      isSelected: [!_tempShowAll, _tempShowAll],
-                      onPressed: (index) {
-                        setState(() {
-                          _tempShowAll = index == 1;
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      borderColor: Colors.transparent,
-                      selectedBorderColor: Colors.transparent,
-                      fillColor: Theme.of(context).colorScheme.primary,
-                      selectedColor: Theme.of(context).colorScheme.onPrimary,
-                      color: AppTheme.secondaryTextColor(context),
-                      constraints: BoxConstraints(
-                        minHeight: 40,
-                        minWidth:
-                            (MediaQuery.of(context).size.width - 48 - 4) / 2,
-                      ),
-                      children: const [Text('優待あり'), Text('全店舗')],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Material(
+                            color: _tempShowAll
+                                ? AppTheme.dividerColor(context)
+                                : Theme.of(context).colorScheme.primary,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(10),
+                              right: Radius.circular(4),
+                            ),
+                            child: InkWell(
+                              onTap: () => setState(() => _tempShowAll = false),
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(10),
+                                right: Radius.circular(4),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '優待あり',
+                                  style: TextStyle(
+                                    color: _tempShowAll
+                                        ? AppTheme.secondaryTextColor(context)
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Material(
+                            color: _tempShowAll
+                                ? Theme.of(context).colorScheme.primary
+                                : AppTheme.dividerColor(context),
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(4),
+                              right: Radius.circular(10),
+                            ),
+                            child: InkWell(
+                              onTap: () => setState(() => _tempShowAll = true),
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(4),
+                                right: Radius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '全店舗',
+                                  style: TextStyle(
+                                    color: _tempShowAll
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : AppTheme.secondaryTextColor(context),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
