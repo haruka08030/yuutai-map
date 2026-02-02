@@ -75,36 +75,6 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                     onPressed: () => Scaffold.of(context).openDrawer(),
                   ),
                 ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () async {
-                      // Get the current search query from the URL if it exists
-                      final currentSearchQuery = GoRouter.of(context)
-                          .routerDelegate
-                          .currentConfiguration
-                          .uri
-                          .queryParameters['search'];
-                      final String? result = await context.push<String?>(
-                        Uri(
-                          path: '/yuutai/search',
-                          queryParameters: currentSearchQuery != null
-                              ? {'q': currentSearchQuery}
-                              : null,
-                        ).toString(),
-                      );
-
-                      if (!context.mounted) return;
-
-                      if (result != null && result.isNotEmpty) {
-                        context.go('/yuutai?search=$result');
-                      } else if (result != null && result.isEmpty) {
-                        // If result is empty, clear the search query
-                        context.go('/yuutai');
-                      }
-                    },
-                  ),
-                ],
               )
             : null,
         drawer: AppDrawer(

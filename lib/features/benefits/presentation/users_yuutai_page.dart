@@ -258,16 +258,11 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 });
               },
               decoration: InputDecoration(
-                hintText: '企業名または優待内容を検索...',
+                hintText: '企業名で検索...',
                 hintStyle: GoogleFonts.outfit(
                   color: const Color(0xFF64748B),
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  size: 22,
-                  color: Color(0xFF64748B),
                 ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(

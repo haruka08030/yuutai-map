@@ -78,6 +78,7 @@ class _MapHeaderState extends State<MapHeader> {
                       child: TextField(
                         controller: _searchController,
                         onChanged: (value) {
+                          setState(() {});
                           widget.onSearchChanged?.call(value);
                         },
                         decoration: InputDecoration(
@@ -86,11 +87,6 @@ class _MapHeaderState extends State<MapHeader> {
                             color: const Color(0xFF64748B),
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.search_rounded,
-                            size: 20,
-                            color: _kTextPrimary,
                           ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
