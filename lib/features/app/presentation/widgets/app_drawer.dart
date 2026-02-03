@@ -166,16 +166,21 @@ class _MainDrawerBody extends ConsumerWidget {
             return Column(
               children: [
                 ...folders.map(
-                  (folder) => _DrawerListTile(
-                    icon: Icons.folder_outlined,
-                    iconColor: theme.colorScheme.primary,
-                    label: folder.name,
-                    count: yuutaiCounts[folder.id] ?? 0,
+                  (folder) => _DismissibleFolderTile(
+                    folder: folder,
                     selected: selectedFolderId == folder.id,
+                    count: yuutaiCounts[folder.id] ?? 0,
+                    theme: theme,
                     onTap: () => onFolderSelected(folder.id),
-                    onLongPressWithContext: folder.id != null
-                        ? (tileContext) =>
-                            _showFolderContextMenu(tileContext, ref, folder)
+                    onDelete: () => _deleteFolder(
+                      context,
+                      ref,
+                      folder,
+                      selectedFolderId,
+                      onFolderSelected,
+                    ),
+                    onLongPress: folder.id != null
+                        ? (ctx) => _showFolderContextMenu(ctx, ref, folder)
                         : null,
                   ),
                 ),
@@ -194,6 +199,29 @@ class _MainDrawerBody extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _deleteFolder(
+    BuildContext context,
+    WidgetRef ref,
+    Folder folder,
+    String? currentSelectedId,
+    Function(String?) onFolderSelected,
+  ) async {
+    final folderId = folder.id;
+    if (folderId == null) return;
+    try {
+      await ref.read(folderRepositoryProvider).deleteFolder(folderId);
+      if (currentSelectedId == folderId) {
+        onFolderSelected(null);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('削除に失敗しました: $e')),
+        );
+      }
+    }
   }
 
   void _showFolderContextMenu(
@@ -296,22 +324,13 @@ class _MainDrawerBody extends ConsumerWidget {
                                 ),
                               );
                               if (confirmed == true && tileContext.mounted) {
-                                final folderId = folder.id;
-                                if (folderId != null) {
-                                  try {
-                                    await ref
-                                        .read(folderRepositoryProvider)
-                                        .deleteFolder(folderId);
-                                  } catch (e) {
-                                    if (tileContext.mounted) {
-                                      ScaffoldMessenger.of(tileContext)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text('削除に失敗しました: $e')),
-                                      );
-                                    }
-                                  }
-                                }
+                                _deleteFolder(
+                                  tileContext,
+                                  ref,
+                                  folder,
+                                  selectedFolderId,
+                                  onFolderSelected,
+                                );
                               }
                             },
                           ),
@@ -334,6 +353,71 @@ class _MainDrawerBody extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => _RenameFolderDialog(folder: folder),
+    );
+  }
+}
+
+class _DismissibleFolderTile extends StatelessWidget {
+  const _DismissibleFolderTile({
+    required this.folder,
+    required this.selected,
+    required this.count,
+    required this.theme,
+    required this.onTap,
+    required this.onDelete,
+    this.onLongPress,
+  });
+
+  final Folder folder;
+  final bool selected;
+  final int count;
+  final ThemeData theme;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+  final void Function(BuildContext)? onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final folderId = folder.id;
+    if (folderId == null) {
+      return _DrawerListTile(
+        icon: Icons.folder_outlined,
+        iconColor: theme.colorScheme.primary,
+        label: folder.name,
+        count: count,
+        selected: selected,
+        onTap: onTap,
+        onLongPressWithContext: null,
+      );
+    }
+
+    return Dismissible(
+      key: ValueKey(folderId),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        margin: const EdgeInsets.only(bottom: 4),
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(_kDrawerItemRadius),
+        ),
+        child: const Icon(
+          Icons.delete_outline,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+      onDismissed: (_) => onDelete(),
+      child: _DrawerListTile(
+        icon: Icons.folder_outlined,
+        iconColor: theme.colorScheme.primary,
+        label: folder.name,
+        count: count,
+        selected: selected,
+        onTap: onTap,
+        onLongPressWithContext: onLongPress,
+      ),
     );
   }
 }
