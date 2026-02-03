@@ -485,7 +485,6 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     return UsersYuutaiListTile(
       benefit: b,
       stockCode: stockCode?.isNotEmpty == true ? stockCode : null,
-      subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
     );
   }
 

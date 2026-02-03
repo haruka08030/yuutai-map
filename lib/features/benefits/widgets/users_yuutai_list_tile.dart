@@ -16,11 +16,9 @@ class UsersYuutaiListTile extends ConsumerWidget {
     super.key,
     required this.benefit,
     this.stockCode,
-    this.subtitle,
   });
   final UsersYuutai benefit;
   final String? stockCode;
-  final String? subtitle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -171,14 +169,14 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  // 企業名（大きく・太字）
                                   Text(
                                     benefit.companyName,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyMedium!
+                                        .titleMedium!
                                         .copyWith(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
+                                          fontWeight: FontWeight.bold,
                                           color: isUsed
                                               ? AppTheme.secondaryTextColor(
                                                   context,
@@ -191,6 +189,33 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                               : null,
                                         ),
                                   ),
+                                  // 優待内容（グレー・やや小）
+                                  if (benefit.benefitDetail != null &&
+                                      benefit.benefitDetail!
+                                          .trim()
+                                          .isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      benefit.benefitDetail!.trim(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: isUsed
+                                                ? AppTheme.secondaryTextColor(
+                                                    context,
+                                                  )
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                            decoration: isUsed
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                          ),
+                                    ),
+                                  ],
                                   if (stockCode != null &&
                                       stockCode!.isNotEmpty) ...[
                                     const SizedBox(height: 4),
@@ -220,45 +245,14 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                       ),
                                     ),
                                   ],
+                                  // 期限（薄い緑チップ＋カレンダー＋日付・日本語）
                                   if (benefit.expiryDate != null) ...[
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 8),
                                     ExpiryDateDisplay(
                                       benefit: benefit,
                                       isUsed: isUsed,
                                       daysRemaining: daysRemaining,
-                                    ),
-                                  ],
-                                  if (subtitle != null) ...[
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            AppTheme.benefitChipBackgroundColor(
-                                          context,
-                                        ),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        subtitle!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium!
-                                            .copyWith(
-                                              fontSize: 12,
-                                              color:
-                                                  AppTheme.chipForegroundColor(
-                                                context,
-                                              ),
-                                              fontWeight: FontWeight.w400,
-                                              decoration: isUsed
-                                                  ? TextDecoration.lineThrough
-                                                  : null,
-                                            ),
-                                      ),
+                                      useChipStyle: true,
                                     ),
                                   ],
                                 ],
