@@ -130,43 +130,31 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply: ({
-        required bool showAllStores,
-        required Set<String> selectedCategories,
-        String? folderId,
-        String? selectedRegion,
-        String? selectedPrefecture,
-      }) {
-        ref.read(mapControllerProvider.notifier).applyFilters(
-              showAllStores: showAllStores,
-              selectedCategories: selectedCategories,
-              folderId: folderId,
-              selectedRegion: selectedRegion,
-              selectedPrefecture: selectedPrefecture,
-            );
+      onApply: (params) {
+        ref.read(mapControllerProvider.notifier).applyFilters(params);
         _animateToLocation(
-          selectedPrefecture: selectedPrefecture,
-          selectedRegion: selectedRegion,
+          prefecture: params.prefecture,
+          region: params.region,
         );
       },
     );
   }
 
   Future<void> _animateToLocation({
-    String? selectedPrefecture,
-    String? selectedRegion,
+    String? prefecture,
+    String? region,
   }) async {
     List<double>? center;
     double zoom = 10;
-    if (selectedPrefecture != null &&
-        selectedPrefecture.isNotEmpty &&
-        JapaneseRegions.prefectureCenters.containsKey(selectedPrefecture)) {
-      center = JapaneseRegions.prefectureCenters[selectedPrefecture];
+    if (prefecture != null &&
+        prefecture.isNotEmpty &&
+        JapaneseRegions.prefectureCenters.containsKey(prefecture)) {
+      center = JapaneseRegions.prefectureCenters[prefecture];
       zoom = 9;
-    } else if (selectedRegion != null &&
-        selectedRegion.isNotEmpty &&
-        JapaneseRegions.regionCenters.containsKey(selectedRegion)) {
-      center = JapaneseRegions.regionCenters[selectedRegion];
+    } else if (region != null &&
+        region.isNotEmpty &&
+        JapaneseRegions.regionCenters.containsKey(region)) {
+      center = JapaneseRegions.regionCenters[region];
       zoom = 8;
     }
     if (center == null || center.length < 2) return;
@@ -225,6 +213,32 @@ class _MapPageState extends ConsumerState<MapPage> {
         final showSearchEmptyOverlay =
             _searchQuery.isNotEmpty && filteredPlaces.isEmpty;
 
+        // フィルター適用エラーはマップを隠さず SnackBar で一度だけ表示
+        final errorMessage = state.filterError;
+        if (errorMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            ref.read(mapControllerProvider.notifier).clearFilterError();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                action: SnackBarAction(
+                  label: '再試行',
+                  onPressed: () {
+                    ref.read(mapControllerProvider.notifier).applyFilters((
+                      showAllStores: state.showAllStores,
+                      categories: state.categories,
+                      folderId: state.folderId,
+                      region: state.region,
+                      prefecture: state.prefecture,
+                    ));
+                  },
+                ),
+              ),
+            );
+          });
+        }
+
         return Scaffold(
           body: Stack(
             children: [
@@ -254,31 +268,33 @@ class _MapPageState extends ConsumerState<MapPage> {
                 state: state,
                 searchController: _searchController,
                 onFilterPressed: () => _showFilterSheet(state),
-                onCategoryChanged: (selectedCategories) {
-                  ref.read(mapControllerProvider.notifier).applyFilters(
-                        showAllStores: state.showAllStores,
-                        selectedCategories: selectedCategories,
-                        folderId: state.folderId,
-                        selectedRegion: state.selectedRegion,
-                        selectedPrefecture: state.selectedPrefecture,
-                      );
+                onCategoryChanged: (categories) {
+                  ref.read(mapControllerProvider.notifier).applyFilters((
+                    showAllStores: state.showAllStores,
+                    categories: categories,
+                    folderId: state.folderId,
+                    region: state.region,
+                    prefecture: state.prefecture,
+                  ));
                 },
                 onSearchChanged: (query) {
                   setState(() {
                     _searchQuery = query;
                   });
                 },
-                onClearLocationFilter: () {
-                  ref.read(mapControllerProvider.notifier).applyFilters(
-                        showAllStores: state.showAllStores,
-                        selectedCategories: state.selectedCategories,
-                        folderId: state.folderId,
-                        selectedRegion: null,
-                        selectedPrefecture: null,
-                      );
-                },
               ),
               const MapStatusBanner(),
+              if (state.isApplying)
+                const Positioned.fill(
+                  child: ModalBarrier(
+                    color: Colors.black26,
+                    dismissible: false,
+                  ),
+                ),
+              if (state.isApplying)
+                const Center(
+                  child: AppLoadingIndicator(),
+                ),
               if (showSearchEmptyOverlay)
                 Positioned.fill(
                   child: Container(

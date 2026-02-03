@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/data/store_repository.dart';
 import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
+import 'package:flutter_stock/features/map/domain/entities/store.dart';
+import 'package:flutter_stock/features/map/domain/map_filter_params.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
@@ -22,13 +25,14 @@ class MapController extends AsyncNotifier<MapState> {
   Future<MapState> build() async {
     ref.listen<String?>(selectedFolderIdProvider, (prev, next) {
       if (state.value != null && prev != next) {
-        applyFilters(
-          showAllStores: state.value!.showAllStores,
-          selectedCategories: state.value!.selectedCategories,
+        final s = state.value!;
+        applyFilters((
+          showAllStores: s.showAllStores,
+          categories: s.categories,
           folderId: next,
-          selectedRegion: state.value!.selectedRegion,
-          selectedPrefecture: state.value!.selectedPrefecture,
-        );
+          region: s.region,
+          prefecture: s.prefecture,
+        ));
       }
     });
 
@@ -42,20 +46,20 @@ class MapController extends AsyncNotifier<MapState> {
       currentPosition: currentPosition,
       availableCategories: availableCategories,
       showAllStores: isGuest,
-      selectedCategories: const {},
+      categories: const {},
       isGuest: isGuest,
       folderId: selectedFolderId,
-      selectedRegion: null,
-      selectedPrefecture: null,
+      region: null,
+      prefecture: null,
     );
 
     // Fetch initial items and update state
     final items = await _fetchItems(
       showAllStores: initialState.showAllStores,
-      selectedCategories: initialState.selectedCategories,
+      categories: initialState.categories,
       folderId: initialState.folderId,
-      selectedRegion: initialState.selectedRegion,
-      selectedPrefecture: initialState.selectedPrefecture,
+      region: initialState.region,
+      prefecture: initialState.prefecture,
     );
     return initialState.copyWith(items: items);
   }
@@ -91,53 +95,53 @@ class MapController extends AsyncNotifier<MapState> {
     return storeRepo.getAvailableCategories();
   }
 
+  static Place _placeFromStore(Store store) {
+    return Place(
+      id: store.id,
+      name: store.name,
+      latLng: LatLng(store.latitude, store.longitude),
+      category: store.category,
+      address: store.address,
+      prefecture: store.prefecture,
+      companyId: store.companyId,
+    );
+  }
+
   List<String>? _prefecturesFromLocation({
-    String? selectedRegion,
-    String? selectedPrefecture,
+    String? region,
+    String? prefecture,
   }) {
-    if (selectedPrefecture != null && selectedPrefecture.isNotEmpty) {
-      return [selectedPrefecture];
+    if (prefecture != null && prefecture.isNotEmpty) {
+      return [prefecture];
     }
-    if (selectedRegion != null &&
-        selectedRegion.isNotEmpty &&
-        JapaneseRegions.regionToPrefectures.containsKey(selectedRegion)) {
-      return JapaneseRegions.regionToPrefectures[selectedRegion]!.toList();
+    if (region != null &&
+        region.isNotEmpty &&
+        JapaneseRegions.regionToPrefectures.containsKey(region)) {
+      return JapaneseRegions.regionToPrefectures[region]!.toList();
     }
     return null;
   }
 
   Future<List<Place>> _fetchItems({
     required bool showAllStores,
-    required Set<String> selectedCategories,
+    required Set<String> categories,
     String? folderId,
-    String? selectedRegion,
-    String? selectedPrefecture,
+    String? region,
+    String? prefecture,
   }) async {
     final storeRepo = ref.read(storeRepositoryProvider);
     final prefectures = _prefecturesFromLocation(
-      selectedRegion: selectedRegion,
-      selectedPrefecture: selectedPrefecture,
+      region: region,
+      prefecture: prefecture,
     );
     final List<Place> items = [];
 
     if (showAllStores) {
       final stores = await storeRepo.getStores(
-        categories: selectedCategories.toList(),
+        categories: categories.toList(),
         prefectures: prefectures,
       );
-      for (final store in stores) {
-        items.add(
-          Place(
-            id: store.id,
-            name: store.name,
-            latLng: LatLng(store.latitude, store.longitude),
-            category: store.category,
-            address: store.address,
-            prefecture: store.prefecture,
-            companyId: store.companyId,
-          ),
-        );
-      }
+      items.addAll(stores.map(_placeFromStore));
     } else {
       var benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
       if (folderId != null) {
@@ -147,62 +151,87 @@ class MapController extends AsyncNotifier<MapState> {
         if (benefit.companyId != null) {
           final stores = await storeRepo.getStores(
             companyId: benefit.companyId.toString(),
-            categories: selectedCategories.toList(),
+            categories: categories.toList(),
             prefectures: prefectures,
           );
-          for (final store in stores) {
-            items.add(
-              Place(
-                id: store.id,
-                name: store.name,
-                latLng: LatLng(store.latitude, store.longitude),
-                category: store.category,
-                address: store.address,
-                prefecture: store.prefecture,
-                companyId: store.companyId,
-              ),
-            );
-          }
+          items.addAll(stores.map(_placeFromStore));
         }
       }
     }
     return items;
   }
 
-  Future<void> applyFilters({
-    required bool showAllStores,
-    required Set<String> selectedCategories,
-    String? folderId,
-    String? selectedRegion,
-    String? selectedPrefecture,
-  }) async {
-    final oldState = await future;
-    // ignore: invalid_use_of_internal_member
-    state = const AsyncLoading<MapState>().copyWithPrevious(
-      AsyncData(oldState),
+  /// フィルター適用中・エラー時も前のマップを表示したままにする（UX優先）
+  Future<void> applyFilters(FilterParams params) async {
+    final oldState = state.value;
+    if (oldState == null) {
+      state = const AsyncLoading<MapState>();
+      try {
+        final items = await _fetchItems(
+          showAllStores: params.showAllStores,
+          categories: params.categories,
+          folderId: params.folderId,
+          region: params.region,
+          prefecture: params.prefecture,
+        );
+        final base = await future;
+        state = AsyncData(
+          base.copyWith(
+            items: items,
+            showAllStores: params.showAllStores,
+            categories: params.categories,
+            folderId: params.folderId,
+            region: params.region,
+            prefecture: params.prefecture,
+          ),
+        );
+      } catch (e, st) {
+        state = AsyncError<MapState>(e, st);
+      }
+      return;
+    }
+
+    state = AsyncData(
+      oldState.copyWith(
+        isApplying: true,
+        filterError: null,
+      ),
     );
 
     try {
       final items = await _fetchItems(
-        showAllStores: showAllStores,
-        selectedCategories: selectedCategories,
-        folderId: folderId,
-        selectedRegion: selectedRegion,
-        selectedPrefecture: selectedPrefecture,
+        showAllStores: params.showAllStores,
+        categories: params.categories,
+        folderId: params.folderId,
+        region: params.region,
+        prefecture: params.prefecture,
       );
       state = AsyncData(
         oldState.copyWith(
           items: items,
-          showAllStores: showAllStores,
-          selectedCategories: selectedCategories,
-          folderId: folderId,
-          selectedRegion: selectedRegion,
-          selectedPrefecture: selectedPrefecture,
+          showAllStores: params.showAllStores,
+          categories: params.categories,
+          folderId: params.folderId,
+          region: params.region,
+          prefecture: params.prefecture,
+          isApplying: false,
+          filterError: null,
         ),
       );
-    } catch (e, st) {
-      // ignore: invalid_use_of_internal_member
-      state = AsyncError<MapState>(e, st).copyWithPrevious(AsyncData(oldState));
+    } catch (e, _) {
+      state = AsyncData(
+        oldState.copyWith(
+          isApplying: false,
+          filterError: AppException.from(e).message,
+        ),
+      );
+    }
+  }
+
+  void clearFilterError() {
+    final value = state.value;
+    if (value != null && value.filterError != null) {
+      state = AsyncData(value.copyWith(filterError: null));
     }
   }
 }

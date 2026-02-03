@@ -13,7 +13,6 @@ class MapHeader extends StatefulWidget {
     required this.onFilterPressed,
     required this.onCategoryChanged,
     this.onSearchChanged,
-    this.onClearLocationFilter,
   });
 
   final MapState state;
@@ -21,10 +20,8 @@ class MapHeader extends StatefulWidget {
   /// 検索欄。渡すと親でクリア可能（0件時の「検索をクリア」と同期）
   final TextEditingController? searchController;
   final VoidCallback onFilterPressed;
-  final void Function(Set<String> selectedCategories) onCategoryChanged;
+  final void Function(Set<String> categories) onCategoryChanged;
   final void Function(String query)? onSearchChanged;
-
-  final VoidCallback? onClearLocationFilter;
 
   @override
   State<MapHeader> createState() => _MapHeaderState();
@@ -132,63 +129,12 @@ class _MapHeaderState extends State<MapHeader> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    elevation: 0,
-                    shadowColor: _kShadowLight,
-                    child: InkWell(
-                      onTap: widget.onFilterPressed,
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _kBorderLight),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: _kShadowLight,
-                              blurRadius: 15,
-                              offset: Offset(0, 10),
-                              spreadRadius: -3,
-                            ),
-                            BoxShadow(
-                              color: _kShadowLight,
-                              blurRadius: 6,
-                              offset: Offset(0, 4),
-                              spreadRadius: -4,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.filter_list_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 24,
-                        ),
-                      ),
-                    ),
+                  _FilterIconButton(
+                    hasActiveFilter: _hasActiveFilter(widget.state),
+                    onTap: widget.onFilterPressed,
                   ),
                 ],
               ),
-              // 食べログ風: 適用中のエリアをチップで表示し、タップでクリア
-              if (widget.onClearLocationFilter != null &&
-                  (widget.state.selectedPrefecture != null ||
-                      widget.state.selectedRegion != null)) ...[
-                const SizedBox(height: 10),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _AreaChip(
-                        label: widget.state.selectedPrefecture ??
-                            widget.state.selectedRegion!,
-                        onClear: widget.onClearLocationFilter!,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
               const SizedBox(height: 16),
               // Category chips
               SizedBox(
@@ -198,7 +144,7 @@ class _MapHeaderState extends State<MapHeader> {
                   children: [
                     _CategoryChip(
                       label: _allLabel,
-                      selected: widget.state.selectedCategories.isEmpty,
+                      selected: widget.state.categories.isEmpty,
                       onTap: () => widget.onCategoryChanged({}),
                     ),
                     ...widget.state.availableCategories.map(
@@ -206,8 +152,7 @@ class _MapHeaderState extends State<MapHeader> {
                         padding: const EdgeInsets.only(left: 7),
                         child: _CategoryChip(
                           label: category,
-                          selected: widget.state.selectedCategories
-                              .contains(category),
+                          selected: widget.state.categories.contains(category),
                           onTap: () => widget.onCategoryChanged({category}),
                         ),
                       ),
@@ -221,45 +166,68 @@ class _MapHeaderState extends State<MapHeader> {
       ),
     );
   }
+
+  /// 地方・都道府県・カテゴリ・フォルダのいずれかが適用されていれば true
+  static bool _hasActiveFilter(MapState state) {
+    if (state.region != null || state.prefecture != null) {
+      return true;
+    }
+    if (state.categories.isNotEmpty) return true;
+    if (!state.showAllStores && state.folderId != null) return true;
+    return false;
+  }
 }
 
-/// 適用中のエリア表示（食べログ風・タップでクリア）
-class _AreaChip extends StatelessWidget {
-  const _AreaChip({
-    required this.label,
-    required this.onClear,
+/// フィルターボタン。適用中は塗りつぶしアイコン＋primary色で表現
+class _FilterIconButton extends StatelessWidget {
+  const _FilterIconButton({
+    required this.hasActiveFilter,
+    required this.onTap,
   });
 
-  final String label;
-  final VoidCallback onClear;
+  final bool hasActiveFilter;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Material(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      borderRadius: BorderRadius.circular(20),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      elevation: 0,
+      shadowColor: _kShadowLight,
       child: InkWell(
-        onTap: onClear,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _kBorderLight),
+            boxShadow: const [
+              BoxShadow(
+                color: _kShadowLight,
+                blurRadius: 15,
+                offset: Offset(0, 10),
+                spreadRadius: -3,
               ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.close_rounded,
-                size: 18,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              BoxShadow(
+                color: _kShadowLight,
+                blurRadius: 6,
+                offset: Offset(0, 4),
+                spreadRadius: -4,
               ),
             ],
+          ),
+          child: Icon(
+            hasActiveFilter
+                ? Icons.filter_alt_rounded
+                : Icons.filter_list_rounded,
+            color: hasActiveFilter
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface,
+            size: 24,
           ),
         ),
       ),

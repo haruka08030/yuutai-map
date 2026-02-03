@@ -19,7 +19,7 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
   });
 
   final MapState state;
-  final void Function(MapFilterParams params) onApply;
+  final void Function(FilterParams params) onApply;
 
   @override
   ConsumerState<MapFilterBottomSheet> createState() =>
@@ -28,7 +28,7 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
   static Future<void> show({
     required BuildContext context,
     required MapState state,
-    required void Function(MapFilterParams params) onApply,
+    required void Function(FilterParams params) onApply,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -40,48 +40,42 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
   }
 }
 
-/// showMenu は value: null の項目選択時も null を返すため、「すべて」は sentinel で表現する
-const String _kAllLocation = '';
-const String _kAllFolderId = '__all__';
+/// showMenu は value: null の項目選択時も null を返すため、「すべて」は sentinel で表現
+const String _kAll = '';
+const String _kAllFolder = '__all__';
 
 class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
-  late bool _tempShowAll;
-  late String _tempSelectedCategory;
-  late String _tempFolderId;
-  late String _tempSelectedRegion;
-  late String _tempSelectedPrefecture;
+  late bool _showAll;
+  late String _category;
+  late String _folderId;
+  late String _region;
+  late String _prefecture;
 
   @override
   void initState() {
     super.initState();
-    _tempShowAll = widget.state.showAllStores;
-    _tempSelectedCategory = widget.state.selectedCategories.isEmpty
-        ? _kAllLocation
-        : widget.state.selectedCategories.first;
-    _tempFolderId = widget.state.folderId ?? _kAllFolderId;
-    _tempSelectedRegion = widget.state.selectedRegion ?? _kAllLocation;
-    _tempSelectedPrefecture = widget.state.selectedPrefecture ?? _kAllLocation;
+    _showAll = widget.state.showAllStores;
+    _category =
+        widget.state.categories.isEmpty ? _kAll : widget.state.categories.first;
+    _folderId = widget.state.folderId ?? _kAllFolder;
+    _region = widget.state.region ?? _kAll;
+    _prefecture = widget.state.prefecture ?? _kAll;
   }
 
   List<String> get _prefectureOptions {
-    if (_tempSelectedRegion != _kAllLocation &&
-        JapaneseRegions.regionToPrefectures.containsKey(_tempSelectedRegion)) {
-      return JapaneseRegions.regionToPrefectures[_tempSelectedRegion]!;
+    if (_region != _kAll &&
+        JapaneseRegions.regionToPrefectures.containsKey(_region)) {
+      return JapaneseRegions.regionToPrefectures[_region]!;
     }
     return JapaneseRegions.prefectureNames;
   }
 
-  MapFilterParams get _currentParams => (
-        showAllStores: _tempShowAll,
-        selectedCategories: _tempSelectedCategory == _kAllLocation
-            ? <String>{}
-            : {_tempSelectedCategory},
-        folderId: _tempFolderId == _kAllFolderId ? null : _tempFolderId,
-        selectedRegion:
-            _tempSelectedRegion == _kAllLocation ? null : _tempSelectedRegion,
-        selectedPrefecture: _tempSelectedPrefecture == _kAllLocation
-            ? null
-            : _tempSelectedPrefecture,
+  FilterParams get _currentParams => (
+        showAllStores: _showAll,
+        categories: _category == _kAll ? <String>{} : {_category},
+        folderId: _folderId == _kAllFolder ? null : _folderId,
+        region: _region == _kAll ? null : _region,
+        prefecture: _prefecture == _kAll ? null : _prefecture,
       );
 
   @override
@@ -124,8 +118,8 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         Center(
           child: SegmentedControl(
             labels: const ['優待あり', '全店舗'],
-            selectedIndex: _tempShowAll ? 1 : 0,
-            onChanged: (index) => setState(() => _tempShowAll = index == 1),
+            selectedIndex: _showAll ? 1 : 0,
+            onChanged: (index) => setState(() => _showAll = index == 1),
           ),
         ),
         const SizedBox(height: 24),
@@ -145,23 +139,23 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
           children: [
             Expanded(
               child: SelectMenuButton<String>(
-                value: _tempSelectedRegion,
+                value: _region,
                 hint: 'すべての地方',
                 items: [
-                  const SelectMenuItem(value: _kAllLocation, label: 'すべての地方'),
+                  const SelectMenuItem(value: _kAll, label: 'すべての地方'),
                   ...JapaneseRegions.regionNames.map(
                     (region) => SelectMenuItem(value: region, label: region),
                   ),
                 ],
                 onSelected: (value) {
                   setState(() {
-                    _tempSelectedRegion = value;
-                    if (value != _kAllLocation &&
+                    _region = value;
+                    if (value != _kAll &&
                         (!JapaneseRegions.regionToPrefectures
                                 .containsKey(value) ||
                             !JapaneseRegions.regionToPrefectures[value]!
-                                .contains(_tempSelectedPrefecture))) {
-                      _tempSelectedPrefecture = _kAllLocation;
+                                .contains(_prefecture))) {
+                      _prefecture = _kAll;
                     }
                   });
                 },
@@ -170,16 +164,15 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             const SizedBox(width: 12),
             Expanded(
               child: SelectMenuButton<String>(
-                value: _tempSelectedPrefecture,
+                value: _prefecture,
                 hint: 'すべての都道府県',
                 items: [
-                  const SelectMenuItem(value: _kAllLocation, label: 'すべての都道府県'),
+                  const SelectMenuItem(value: _kAll, label: 'すべての都道府県'),
                   ..._prefectureOptions.map(
                     (pref) => SelectMenuItem(value: pref, label: pref),
                   ),
                 ],
-                onSelected: (value) =>
-                    setState(() => _tempSelectedPrefecture = value),
+                onSelected: (value) => setState(() => _prefecture = value),
               ),
             ),
           ],
@@ -197,15 +190,15 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         const SectionLabel(label: 'カテゴリ'),
         const SizedBox(height: 12),
         SelectMenuButton<String>(
-          value: _tempSelectedCategory,
+          value: _category,
           hint: 'すべてのカテゴリ',
           items: [
-            const SelectMenuItem(value: _kAllLocation, label: 'すべてのカテゴリ'),
+            const SelectMenuItem(value: _kAll, label: 'すべてのカテゴリ'),
             ...widget.state.availableCategories.map(
               (category) => SelectMenuItem(value: category, label: category),
             ),
           ],
-          onSelected: (value) => setState(() => _tempSelectedCategory = value),
+          onSelected: (value) => setState(() => _category = value),
         ),
         const SizedBox(height: 24),
       ],
@@ -241,7 +234,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         ],
       );
     }
-    if (_tempShowAll) return const SizedBox.shrink();
+    if (_showAll) return const SizedBox.shrink();
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,15 +243,15 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         const SizedBox(height: 12),
         foldersAsync.when(
           data: (folders) => SelectMenuButton<String>(
-            value: _tempFolderId,
+            value: _folderId,
             hint: 'すべてのフォルダ',
             items: [
-              const SelectMenuItem(value: _kAllFolderId, label: 'すべてのフォルダ'),
+              const SelectMenuItem(value: _kAllFolder, label: 'すべてのフォルダ'),
               ...folders
                   .where((f) => f.id != null && f.id!.isNotEmpty)
                   .map((f) => SelectMenuItem(value: f.id!, label: f.name)),
             ],
-            onSelected: (value) => setState(() => _tempFolderId = value),
+            onSelected: (value) => setState(() => _folderId = value),
           ),
           loading: () => const LinearProgressIndicator(),
           error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
