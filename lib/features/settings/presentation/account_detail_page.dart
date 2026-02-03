@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 
@@ -46,16 +47,14 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                   vertical: 32,
                 ),
                 children: [
-                  _buildFieldLabel('お名前'),
+                  _buildFieldLabel('ユーザー名'),
                   const SizedBox(height: 12),
-                  _buildTextField(_nameController, '名前を入力'),
+                  _buildTextField(_nameController, 'ユーザー名を入力'),
                   const SizedBox(height: 24),
                   _buildFieldLabel('メールアドレス'),
                   const SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () {
-                      context.go('/settings/account/email/edit');
-                    },
+                    onTap: () => context.go('/settings/account/email/edit'),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -91,6 +90,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 32),
+                  _buildLinkedAccountsSection(),
+                  const SizedBox(height: 32),
                   const SizedBox(height: 48),
                   Center(
                     child: TextButton(
@@ -147,6 +149,113 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
         ),
       ),
     );
+  }
+
+  static String _providerLabel(String provider) {
+    switch (provider) {
+      case 'email':
+        return 'メール';
+      case 'google':
+        return 'Google';
+      case 'apple':
+        return 'Apple';
+      default:
+        return provider;
+    }
+  }
+
+  Widget _buildLinkedAccountsSection() {
+    final identitiesAsync = ref.watch(userIdentitiesProvider);
+    return identitiesAsync.when(
+      data: (identities) {
+        final providers = identities.map((i) => i.provider).toSet();
+        final hasGoogle = providers.contains('google');
+        final labels = <String>[];
+        if (providers.contains('email')) labels.add('メール');
+        if (providers.contains('google')) labels.add('Google');
+        if (providers.contains('apple')) labels.add('Apple');
+
+        // 前回のログイン方法: lastSignInAt が最も新しい identity
+        UserIdentity? lastUsedIdentity;
+        DateTime? latestAt;
+        for (final i in identities) {
+          final at = i.lastSignInAt;
+          if (at == null || at.isEmpty) continue;
+          final dt = DateTime.tryParse(at);
+          if (dt != null && (latestAt == null || dt.isAfter(latestAt))) {
+            latestAt = dt;
+            lastUsedIdentity = i;
+          }
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildFieldLabel('ログイン方法'),
+            const SizedBox(height: 12),
+            if (labels.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Text(
+                  '連携済み: ${labels.join('、')}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.secondaryTextColor(context),
+                      ),
+                ),
+              ),
+            if (lastUsedIdentity != null) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Text(
+                  '前回のログイン: ${_providerLabel(lastUsedIdentity.provider)}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.secondaryTextColor(context),
+                      ),
+                ),
+              ),
+            ],
+            if (!hasGoogle) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _linkGoogle(currentContext: context),
+                icon: const Icon(Icons.add_link, size: 20),
+                label: const Text('Googleアカウントを連携する'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Future<void> _linkGoogle({required BuildContext currentContext}) async {
+    try {
+      await ref.read(authRepositoryProvider).linkGoogleIdentity();
+      if (!currentContext.mounted) return;
+      ref.invalidate(userIdentitiesProvider);
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        const SnackBar(content: Text('Googleアカウントを連携しました')),
+      );
+    } on AuthException catch (e) {
+      if (!currentContext.mounted) return;
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (e) {
+      if (!currentContext.mounted) return;
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        const SnackBar(content: Text('連携に失敗しました。しばらくしてからお試しください。')),
+      );
+    }
   }
 
   Widget _buildFieldLabel(String label) {
