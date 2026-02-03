@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
 class AccountDetailPage extends ConsumerStatefulWidget {
   const AccountDetailPage({super.key});
@@ -15,6 +16,7 @@ class AccountDetailPage extends ConsumerStatefulWidget {
 class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -57,7 +59,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                     onTap: () => context.go('/settings/account/email/edit'),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(
@@ -76,7 +80,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                                   .bodyLarge!
                                   .copyWith(
                                     color: _emailController.text.isNotEmpty
-                                        ? const Color(0xFF1B1C1F)
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
                                         : AppTheme.secondaryTextColor(context),
                                     fontSize: 16,
                                   ),
@@ -110,29 +116,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
               padding: const EdgeInsets.all(24.0),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final currentContext =
-                        context; // Store context before async gap
-                    try {
-                      final authRepository = ref.read(authRepositoryProvider);
-                      await authRepository.updateUserProfile(
-                        username: _nameController.text,
-                      );
-                      ref.invalidate(authRepositoryProvider);
-                      if (!currentContext.mounted) return;
-                      ScaffoldMessenger.of(currentContext).showSnackBar(
-                        const SnackBar(content: Text('変更を保存しました')),
-                      );
-                    } catch (e) {
-                      // Log the full error for debugging
-                      debugPrint('Failed to update profile: $e');
-                      if (!currentContext.mounted) return;
-                      ScaffoldMessenger.of(currentContext).showSnackBar(
-                        const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')),
-                      );
-                    }
-                  },
+                child: LoadingElevatedButton(
+                  onPressed: _saveProfile,
+                  isLoading: _isSaving,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -149,6 +135,31 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveProfile() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    final currentContext = context;
+    try {
+      final authRepository = ref.read(authRepositoryProvider);
+      await authRepository.updateUserProfile(
+        username: _nameController.text,
+      );
+      ref.invalidate(authRepositoryProvider);
+      if (!currentContext.mounted) return;
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        const SnackBar(content: Text('変更を保存しました')),
+      );
+    } catch (e) {
+      debugPrint('Failed to update profile: $e');
+      if (!currentContext.mounted) return;
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   static String _providerLabel(String provider) {
