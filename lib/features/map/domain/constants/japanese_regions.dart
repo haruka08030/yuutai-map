@@ -1,8 +1,6 @@
-/// 地方（地域）と都道府県の対応
 class JapaneseRegions {
   JapaneseRegions._();
 
-  /// 地方名のリスト（「すべて」以外の選択肢用）
   static const List<String> regionNames = [
     '北海道',
     '東北',
@@ -14,7 +12,6 @@ class JapaneseRegions {
     '九州・沖縄',
   ];
 
-  /// 都道府県名のリスト（47都道府県）
   static const List<String> prefectureNames = [
     '北海道',
     '青森県',
@@ -65,7 +62,6 @@ class JapaneseRegions {
     '沖縄県',
   ];
 
-  /// 地方名 → その地方に属する都道府県のリスト
   static const Map<String, List<String>> regionToPrefectures = {
     '北海道': ['北海道'],
     '東北': [
@@ -130,7 +126,6 @@ class JapaneseRegions {
     ],
   };
 
-  /// 都道府県が属する地方を返す。見つからなければ null。
   static String? regionOfPrefecture(String prefecture) {
     for (final entry in regionToPrefectures.entries) {
       if (entry.value.contains(prefecture)) return entry.key;
@@ -138,7 +133,6 @@ class JapaneseRegions {
     return null;
   }
 
-  /// 都道府県名 → [緯度, 経度]（県庁所在地付近、マップ中心表示用）
   static const Map<String, List<double>> prefectureCenters = {
     '北海道': [43.0646, 141.3469],
     '青森県': [40.8244, 140.7400],
@@ -189,7 +183,6 @@ class JapaneseRegions {
     '沖縄県': [26.2124, 127.6792],
   };
 
-  /// 地方名 → [緯度, 経度]（地方の中心付近、マップ中心表示用）
   static const Map<String, List<double>> regionCenters = {
     '北海道': [43.0646, 141.3469],
     '東北': [39.5, 140.8],

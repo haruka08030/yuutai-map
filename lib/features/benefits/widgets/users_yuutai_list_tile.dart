@@ -216,14 +216,13 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // 企業名（大きく・太字）
                                   Text(
                                     benefit.companyName,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .titleMedium!
+                                        .bodyLarge!
                                         .copyWith(
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w400,
                                           color: isUsed
                                               ? AppTheme.secondaryTextColor(
                                                   context,
@@ -292,7 +291,6 @@ class UsersYuutaiListTile extends ConsumerWidget {
                                       ),
                                     ),
                                   ],
-                                  // 期限（薄い緑チップ＋カレンダー＋日付・日本語）
                                   if (benefit.expiryDate != null) ...[
                                     const SizedBox(height: 8),
                                     ExpiryDateDisplay(

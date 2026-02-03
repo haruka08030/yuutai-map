@@ -6,6 +6,7 @@
       "Bash(cat:*)",
       "Bash(flutter clean:*)",
       "Bash(flutter run:*)",
+      "Bash(flutter analyze:*)",
       "Read(//tmp/**)",
       "Bash(git add:*)",
       "Bash(git check-ignore:*)",
