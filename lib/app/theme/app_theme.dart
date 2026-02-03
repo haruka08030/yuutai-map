@@ -10,6 +10,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.divider,
     required this.placeholder,
     required this.benefitChipBackground,
+    required this.folderActionBackground,
     required this.editActionBackground,
     required this.deleteActionBackground,
     required this.deleteActionForeground,
@@ -34,6 +35,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color divider;
   final Color placeholder;
   final Color benefitChipBackground;
+  final Color folderActionBackground;
   final Color editActionBackground;
   final Color deleteActionBackground;
   final Color deleteActionForeground;
@@ -59,6 +61,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? divider,
     Color? placeholder,
     Color? benefitChipBackground,
+    Color? folderActionBackground,
     Color? editActionBackground,
     Color? deleteActionBackground,
     Color? deleteActionForeground,
@@ -84,6 +87,8 @@ class AppColors extends ThemeExtension<AppColors> {
       placeholder: placeholder ?? this.placeholder,
       benefitChipBackground:
           benefitChipBackground ?? this.benefitChipBackground,
+      folderActionBackground:
+          folderActionBackground ?? this.folderActionBackground,
       editActionBackground: editActionBackground ?? this.editActionBackground,
       deleteActionBackground:
           deleteActionBackground ?? this.deleteActionBackground,
@@ -124,6 +129,11 @@ class AppColors extends ThemeExtension<AppColors> {
       benefitChipBackground: Color.lerp(
         benefitChipBackground,
         other.benefitChipBackground,
+        t,
+      )!,
+      folderActionBackground: Color.lerp(
+        folderActionBackground,
+        other.folderActionBackground,
         t,
       )!,
       editActionBackground: Color.lerp(
@@ -193,6 +203,7 @@ class AppColors extends ThemeExtension<AppColors> {
     placeholder: Color(0xFF94A3B8), // Slate 400
     benefitChipBackground: Color(0xFFF0FDFA), // Teal 50
     chipForeground: Color(0xFF0D9488), // Teal 600
+    folderActionBackground: Color(0xFF2563EB), // Blue 600
     editActionBackground: Color(0xFF0D9488), // Teal 600
     deleteActionBackground: Color(0xFFEF4444), // Red 500
     deleteActionForeground: Color(0xFFFFFFFF),
@@ -218,6 +229,7 @@ class AppColors extends ThemeExtension<AppColors> {
     placeholder: Color(0xFF64748B), // Slate 500
     benefitChipBackground: Color(0xFF134E4A), // Teal 900
     chipForeground: Color(0xFF2DD4BF), // Teal 400
+    folderActionBackground: Color(0xFF60A5FA), // Blue 400
     editActionBackground: Color(0xFF2DD4BF), // Teal 400
     deleteActionBackground: Color(0xFFF87171), // Red 400
     deleteActionForeground: Color(0xFFFFFFFF),

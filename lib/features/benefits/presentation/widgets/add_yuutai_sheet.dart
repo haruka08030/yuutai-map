@@ -14,7 +14,6 @@ bool _hasReminderSet(UsersYuutaiEditState state) {
   return anyPredefined || hasCustom;
 }
 
-/// 期限表示: 当年は MM/dd、翌年以降は yyyy/MM/dd（1桁は0埋め）
 String _formatExpiryLabel(DateTime date) {
   final now = DateTime.now();
   if (date.year == now.year) {

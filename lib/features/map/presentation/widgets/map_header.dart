@@ -9,27 +9,42 @@ class MapHeader extends StatefulWidget {
   const MapHeader({
     super.key,
     required this.state,
+    this.searchController,
     required this.onFilterPressed,
     required this.onCategoryChanged,
     this.onSearchChanged,
+    this.onClearLocationFilter,
   });
 
   final MapState state;
+
+  /// 検索欄。渡すと親でクリア可能（0件時の「検索をクリア」と同期）
+  final TextEditingController? searchController;
   final VoidCallback onFilterPressed;
   final void Function(Set<String> selectedCategories) onCategoryChanged;
   final void Function(String query)? onSearchChanged;
+
+  final VoidCallback? onClearLocationFilter;
 
   @override
   State<MapHeader> createState() => _MapHeaderState();
 }
 
 class _MapHeaderState extends State<MapHeader> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
   static const String _allLabel = 'すべて';
 
   @override
+  void initState() {
+    super.initState();
+    _searchController = widget.searchController ?? TextEditingController();
+  }
+
+  @override
   void dispose() {
-    _searchController.dispose();
+    if (widget.searchController == null) {
+      _searchController.dispose();
+    }
     super.dispose();
   }
 
@@ -94,6 +109,7 @@ class _MapHeaderState extends State<MapHeader> {
                           prefixIconColor:
                               Theme.of(context).colorScheme.onSurface,
                         ).copyWith(
+                          hintText: 'エリア・店舗名で検索',
                           hintStyle: Theme.of(context)
                               .textTheme
                               .bodyMedium!
@@ -155,6 +171,24 @@ class _MapHeaderState extends State<MapHeader> {
                   ),
                 ],
               ),
+              // 食べログ風: 適用中のエリアをチップで表示し、タップでクリア
+              if (widget.onClearLocationFilter != null &&
+                  (widget.state.selectedPrefecture != null ||
+                      widget.state.selectedRegion != null)) ...[
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _AreaChip(
+                        label: widget.state.selectedPrefecture ??
+                            widget.state.selectedRegion!,
+                        onClear: widget.onClearLocationFilter!,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               // Category chips
               SizedBox(
@@ -180,6 +214,50 @@ class _MapHeaderState extends State<MapHeader> {
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 適用中のエリア表示（食べログ風・タップでクリア）
+class _AreaChip extends StatelessWidget {
+  const _AreaChip({
+    required this.label,
+    required this.onClear,
+  });
+
+  final String label;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onClear,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ],
           ),

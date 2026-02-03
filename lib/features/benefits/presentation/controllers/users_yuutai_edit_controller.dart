@@ -271,7 +271,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
     );
     if (company != null) {
       setCompanyName(company.name);
-      setCompanyId(company.id);
+      setCompanyId(company.id == 0 ? null : company.id);
     }
   }
 
@@ -295,111 +295,180 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
   }
 
   Future<void> showReminderPicker(BuildContext context) async {
-    final tempSelectedDays = Map<int, bool>.from(state.selectedPredefinedDays);
-    bool tempCustomEnabled = state.customDayEnabled;
-    final tempCustomCtl = TextEditingController(text: state.customDayValue);
+    final initialDays = Map<int, bool>.from(state.selectedPredefinedDays);
+    final initialCustomEnabled = state.customDayEnabled;
+    final initialCustomValue = state.customDayValue;
 
-    try {
-      await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          return StatefulBuilder(
-            builder: (dialogContext, setDialogState) {
-              return SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 12,
-                    bottom: MediaQuery.of(dialogContext).viewInsets.bottom + 12,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setDialogState(() {
-                                tempSelectedDays.updateAll(
-                                  (key, value) => false,
-                                );
-                                tempCustomEnabled = false;
-                                tempCustomCtl.clear();
-                              });
-                            },
-                            child: const Text('クリア'),
-                          ),
-                          FilledButton(
-                            onPressed: () {
-                              updateReminderSettings(
-                                tempSelectedDays,
-                                tempCustomEnabled,
-                                tempCustomCtl.text,
-                              );
-                              Navigator.of(dialogContext).pop();
-                            },
-                            child: const Text('決定'),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      ...tempSelectedDays.entries.map((entry) {
-                        return CheckboxListTile(
-                          title: Text(entry.key == 0 ? '当日' : '${entry.key}日前'),
-                          value: entry.value,
-                          onChanged: (bool? value) {
-                            setDialogState(() {
-                              tempSelectedDays[entry.key] = value!;
-                            });
-                          },
-                        );
-                      }),
-                      CheckboxListTile(
-                        title: Row(
-                          children: [
-                            const Text('カスタム:'),
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              width: 60,
-                              child: TextFormField(
-                                controller: tempCustomCtl,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                textAlign: TextAlign.center,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                ),
-                                enabled: tempCustomEnabled,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text('日前'),
-                          ],
-                        ),
-                        value: tempCustomEnabled,
-                        onChanged: (bool? value) {
-                          setDialogState(() {
-                            tempCustomEnabled = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
+      builder: (dialogContext) => _ReminderPickerDialog(
+        initialSelectedDays: initialDays,
+        initialCustomEnabled: initialCustomEnabled,
+        initialCustomValue: initialCustomValue,
+        onConfirm: (
+          selectedDays,
+          customEnabled,
+          customValue,
+        ) {
+          updateReminderSettings(selectedDays, customEnabled, customValue);
         },
-      );
-    } finally {
-      tempCustomCtl.dispose();
-    }
+      ),
+    );
+  }
+}
+
+class _ReminderPickerDialog extends StatefulWidget {
+  const _ReminderPickerDialog({
+    required this.initialSelectedDays,
+    required this.initialCustomEnabled,
+    required this.initialCustomValue,
+    required this.onConfirm,
+  });
+
+  final Map<int, bool> initialSelectedDays;
+  final bool initialCustomEnabled;
+  final String initialCustomValue;
+  final void Function(
+    Map<int, bool> selectedDays,
+    bool customEnabled,
+    String customValue,
+  ) onConfirm;
+
+  @override
+  State<_ReminderPickerDialog> createState() => _ReminderPickerDialogState();
+}
+
+class _ReminderPickerDialogState extends State<_ReminderPickerDialog> {
+  late Map<int, bool> _selectedDays;
+  late bool _customEnabled;
+  late TextEditingController _customCtl;
+  String? _validationError;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDays = Map<int, bool>.from(widget.initialSelectedDays);
+    _customEnabled = widget.initialCustomEnabled;
+    _customCtl = TextEditingController(text: widget.initialCustomValue);
+  }
+
+  @override
+  void dispose() {
+    _customCtl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ..._selectedDays.entries.map((entry) {
+              return CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  entry.key == 0 ? '当日' : '${entry.key}日前',
+                ),
+                value: entry.value,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _selectedDays[entry.key] = value!;
+                  });
+                },
+              );
+            }),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Row(
+                children: [
+                  const Text('カスタム:'),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 56,
+                    child: TextFormField(
+                      controller: _customCtl,
+                      onChanged: (_) {
+                        if (_validationError != null) {
+                          setState(() => _validationError = null);
+                        }
+                      },
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      textAlign: TextAlign.center,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                      ),
+                      enabled: _customEnabled,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text('日前'),
+                ],
+              ),
+              value: _customEnabled,
+              onChanged: (bool? value) {
+                setState(() {
+                  _customEnabled = value!;
+                  _validationError = null;
+                });
+              },
+            ),
+            if (_validationError != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _validationError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              _selectedDays.updateAll((key, value) => false);
+              _customEnabled = false;
+              _customCtl.clear();
+            });
+          },
+          child: const Text('クリア'),
+        ),
+        FilledButton(
+          onPressed: () {
+            if (_customEnabled && _customCtl.text.trim().isEmpty) {
+              setState(() {
+                _validationError = 'カスタムを選択した場合は日数を入力してください';
+              });
+              return;
+            }
+            widget.onConfirm(
+              _selectedDays,
+              _customEnabled,
+              _customCtl.text,
+            );
+            Navigator.of(context).pop();
+          },
+          child: const Text('決定'),
+        ),
+      ],
+    );
   }
 }
 

@@ -35,6 +35,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
   late final MarkerGenerator _markerGenerator;
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   static const Map<String, Color> _categoryColors = {
@@ -53,9 +54,15 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   void initState() {
+    super.initState();
     _markerGenerator = MarkerGenerator();
     _clusterManager = _initClusterManager();
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   ClusterManager<Place> _initClusterManager() {
@@ -245,6 +252,7 @@ class _MapPageState extends ConsumerState<MapPage> {
               ),
               MapHeader(
                 state: state,
+                searchController: _searchController,
                 onFilterPressed: () => _showFilterSheet(state),
                 onCategoryChanged: (selectedCategories) {
                   ref.read(mapControllerProvider.notifier).applyFilters(
@@ -276,7 +284,15 @@ class _MapPageState extends ConsumerState<MapPage> {
                   child: Container(
                     color: Theme.of(context).colorScheme.surface,
                     child: SafeArea(
-                      child: MapStoreEmptyState(query: _searchQuery),
+                      child: MapStoreEmptyState(
+                        query: _searchQuery,
+                        onClearPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),

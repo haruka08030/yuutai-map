@@ -6,10 +6,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
 import 'package:flutter_stock/core/widgets/app_dialogs.dart';
 import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart';
+
+Future<void> _moveBenefitToFolder(
+  BuildContext context,
+  WidgetRef ref,
+  UsersYuutai benefit,
+) async {
+  await HapticFeedback.lightImpact();
+  if (!context.mounted) return;
+  final result = await showModalBottomSheet<String?>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (sheetContext) => Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.5,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(sheetContext).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: const FolderSelectionSheetContent(),
+    ),
+  );
+  if (!context.mounted || benefit.id == null) return;
+  // result == null: キャンセル or 未分類。ここでは「変更なし」として扱う
+  if (result == null) return;
+  final repo = ref.read(usersYuutaiRepositoryProvider);
+  await repo.upsert(
+    benefit.copyWith(folderId: result),
+    scheduleReminders: false,
+  );
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('フォルダに移動しました')),
+  );
+}
 
 class UsersYuutaiListTile extends ConsumerWidget {
   const UsersYuutaiListTile({
@@ -35,18 +72,28 @@ class UsersYuutaiListTile extends ConsumerWidget {
         key: ValueKey(benefit.id),
         startActionPane: ActionPane(
           motion: const DrawerMotion(),
-          extentRatio: 0.25,
+          extentRatio: 0.4,
           children: [
             SlidableAction(
-              onPressed: (_) =>
-                  YuutaiEditSheet.show(context, existing: benefit),
-              backgroundColor: appColors?.editActionBackground ?? Colors.blue,
+              onPressed: (_) => _moveBenefitToFolder(context, ref, benefit),
+              backgroundColor:
+                  appColors?.folderActionBackground ?? Colors.blue.shade700,
               foregroundColor: Colors.white,
-              icon: Icons.edit_outlined,
-              label: '編集',
+              icon: Icons.folder_outlined,
+              label: 'フォルダ',
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(12),
               ),
+            ),
+            SlidableAction(
+              onPressed: (_) =>
+                  YuutaiEditSheet.show(context, existing: benefit),
+              backgroundColor:
+                  appColors?.editActionBackground ?? Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              icon: Icons.edit_outlined,
+              label: '編集',
+              borderRadius: BorderRadius.zero,
             ),
           ],
         ),
