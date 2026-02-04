@@ -381,7 +381,7 @@ class _SettingsTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: (labelColor ?? Theme.of(context).colorScheme.primary)
                       .withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 ),
                 child: Icon(
                   icon,

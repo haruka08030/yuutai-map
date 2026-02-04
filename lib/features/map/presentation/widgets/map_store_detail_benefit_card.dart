@@ -8,16 +8,6 @@ const Color _kExpiryRed = Color(0xFFEF4444);
 const Color _kExpiryRedBg = Color(0x19EF4343);
 const Color _kBenefitBg = Color(0x7FF1F4F8);
 
-String _expiryLabel(UsersYuutai b) {
-  if (b.expiryDate == null) return '';
-  final days = calculateDaysRemaining(b.expiryDate!);
-  if (days < 0) return '期限切れ';
-  if (days == 0) return '本日まで';
-  if (days == 1) return '明日まで';
-  return 'あと$days日';
-}
-
-/// 店舗に紐づく優待1件を表示するカード
 class MapStoreDetailBenefitCard extends StatelessWidget {
   const MapStoreDetailBenefitCard({super.key, required this.benefit});
 
@@ -29,7 +19,7 @@ class MapStoreDetailBenefitCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _kBenefitBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,10 +53,10 @@ class MapStoreDetailBenefitCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: _kExpiryRedBg,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppTheme.borderRadius),
                   ),
                   child: Text(
-                    _expiryLabel(benefit),
+                    getExpiryShortLabel(benefit.expiryDate!),
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: _kExpiryRed,
                           fontSize: 10,

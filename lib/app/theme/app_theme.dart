@@ -34,7 +34,11 @@ TextTheme _refinedTextTheme(TextTheme base) {
 }
 
 class AppTheme {
+  /// カード・シート・ボタン（大）などで使用
   static const double borderRadius = 16.0;
+
+  /// ボタン・入力欄・チップなどで使用
+  static const double radiusSmall = 12.0;
 
   /// セカンダリカラー（編集・リンクなど）。プライマリと同系の Teal 600 でトーン統一
   static const Color _lightSecondary = Color(0xFF0D9488);
@@ -104,7 +108,7 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(radiusSmall),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -117,15 +121,15 @@ class AppTheme {
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFF24A19C), width: 2),
         ),
         labelStyle: const TextStyle(color: Color(0xFF6B7280)),
@@ -190,7 +194,7 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(radiusSmall),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -203,15 +207,15 @@ class AppTheme {
           vertical: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFF374151)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFF374151)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: const BorderSide(color: Color(0xFF24A19C), width: 2),
         ),
         labelStyle: const TextStyle(color: Color(0xFF9CA3AF)),

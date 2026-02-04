@@ -36,3 +36,11 @@ int calculateDaysRemaining(DateTime date) {
   final expireDate = DateTime(date.year, date.month, date.day);
   return expireDate.difference(today).inDays;
 }
+
+String getExpiryShortLabel(DateTime expiryDate) {
+  final days = calculateDaysRemaining(expiryDate);
+  if (days < 0) return '期限切れ';
+  if (days == 0) return '本日まで';
+  if (days == 1) return '明日まで';
+  return 'あと$days日';
+}

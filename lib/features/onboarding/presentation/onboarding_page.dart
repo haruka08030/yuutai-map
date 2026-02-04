@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/theme/theme_provider.dart';
 import 'package:flutter_stock/features/onboarding/provider/onboarding_provider.dart';
 
@@ -116,7 +118,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       foregroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                            BorderRadius.circular(AppTheme.radiusSmall),
                       ),
                     ),
                     child: Text(
@@ -299,7 +302,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
         boxShadow: [
           BoxShadow(
             color: colorScheme.shadow.withValues(alpha: 0.06),
@@ -315,7 +318,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             height: 48,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
             ),
             child: Icon(icon, color: color, size: 24),
           ),

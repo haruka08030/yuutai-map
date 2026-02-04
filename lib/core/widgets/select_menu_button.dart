@@ -39,12 +39,12 @@ class SelectMenuButton<T> extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => _showPopupMenu(context),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             border: Border.all(
               color: AppTheme.dividerColor(context).withValues(alpha: 0.3),
             ),
@@ -96,7 +96,7 @@ class SelectMenuButton<T> extends StatelessWidget {
       position: position,
       elevation: 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
       ),
       constraints: BoxConstraints(
         minWidth: button.size.width,

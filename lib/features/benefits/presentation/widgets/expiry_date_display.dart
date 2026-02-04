@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/yuutai_constants.dart';
 
 class ExpiryDateDisplay extends StatelessWidget {
   const ExpiryDateDisplay({
@@ -35,10 +36,10 @@ class ExpiryDateDisplay extends StatelessWidget {
     IconData? icon;
 
     if (!isUsed && daysRemaining != null) {
-      if (daysRemaining! <= 7) {
+      if (daysRemaining! <= YuutaiConstants.expiringUrgentDays) {
         color = appColors?.expiringUrgent ?? Colors.red;
         icon = Icons.timer_outlined;
-      } else if (daysRemaining! <= 30) {
+      } else if (daysRemaining! <= YuutaiConstants.expiringSoonDays) {
         color = appColors?.expiringSoon ?? Colors.orange;
         icon = Icons.warning_amber_rounded;
       }
@@ -92,11 +93,11 @@ class _ExpiryDateChip extends StatelessWidget {
     Color chipBg = AppTheme.benefitChipBackgroundColor(context);
     Color chipFg = AppTheme.chipForegroundColor(context);
     if (!isUsed && daysRemaining != null) {
-      if (daysRemaining! <= 7) {
+      if (daysRemaining! <= YuutaiConstants.expiringUrgentDays) {
         chipFg = appColors?.expiringUrgent ?? Colors.red;
         chipBg =
             (appColors?.expiringUrgent ?? Colors.red).withValues(alpha: 0.12);
-      } else if (daysRemaining! <= 30) {
+      } else if (daysRemaining! <= YuutaiConstants.expiringSoonDays) {
         chipFg = appColors?.expiringSoon ?? Colors.orange;
         chipBg =
             (appColors?.expiringSoon ?? Colors.orange).withValues(alpha: 0.12);

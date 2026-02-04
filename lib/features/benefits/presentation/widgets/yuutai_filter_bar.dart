@@ -76,10 +76,8 @@ class YuutaiFilterBar extends StatelessWidget {
                   label: '使用済み',
                   selected: settings.listFilter == YuutaiListFilter.used,
                   onTap: () {
-                    if (showHistory) {
-                      notifier.setListFilter(YuutaiListFilter.used);
-                    } else {
-                      notifier.setListFilter(YuutaiListFilter.used);
+                    notifier.setListFilter(YuutaiListFilter.used);
+                    if (!showHistory) {
                       context.go('/yuutai?showHistory=true');
                     }
                   },

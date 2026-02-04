@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 
@@ -81,7 +83,8 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
                     height: 56,
                     decoration: BoxDecoration(
                       color: colorScheme.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.borderRadius),
                     ),
                     child: Icon(
                       Icons.create_new_folder_rounded,
@@ -100,16 +103,16 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
                 labelText: 'フォルダ名',
                 hintText: '例: カフェ・外食',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   borderSide: BorderSide(
                     color: colorScheme.outlineVariant,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   borderSide: BorderSide(
                     color: colorScheme.primary,
                     width: 2,
@@ -143,7 +146,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(100, 48),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                     ),
                   ),
                   child: _isCreating

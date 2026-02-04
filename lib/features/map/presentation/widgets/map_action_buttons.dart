@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_stock/app/theme/app_theme.dart';
+
 const Color _kMapFabBorder = Color(0x7FE2E7EF);
 const Color _kMapFabShadow = Color(0x19000000);
 
@@ -42,17 +44,17 @@ class _MapActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppTheme.borderRadius),
       elevation: 0,
       shadowColor: _kMapFabShadow,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
         child: Container(
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             border: Border.all(color: _kMapFabBorder),
           ),
           child: Icon(

@@ -8,6 +8,8 @@ import 'package:flutter_stock/core/widgets/empty_state_view.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/core/utils/date_utils.dart';
+import 'package:flutter_stock/features/benefits/domain/yuutai_constants.dart';
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_stock/features/benefits/presentation/widgets/yuutai_filter_bar.dart';
@@ -22,7 +24,6 @@ const int _skeletonItemCount = 8;
 const double _errorViewHeightOffset = 200;
 const double _listPaddingVertical = 8;
 const double _sectionSpacing = 24;
-const double _expiringSoonDays = 30;
 const double _filterChipSpacing = 8;
 const double _sortIconSize = 18;
 const double _sectionHeaderPaddingL = 20;
@@ -49,16 +50,6 @@ class UsersYuutaiPage extends ConsumerStatefulWidget {
 
 class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final settings = ref.watch(yuutaiListSettingsProvider);
     final isGuest = ref.watch(isGuestProvider);
@@ -66,7 +57,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     final companyIds = ref.watch(benefitCompanyIdsProvider(widget.showHistory));
     final stockCodesAsync = ref.watch(companyStockCodesProvider(companyIds));
     final stockCodeMap =
-        stockCodesAsync.whenOrNull(data: (map) => map) ?? <int, String>{};
+        stockCodesAsync.whenOrNull(data: (codes) => codes) ?? <int, String>{};
 
     final asyncBenefits = !widget.showHistory
         ? ref.watch(activeUsersYuutaiProvider)
@@ -217,23 +208,16 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   }
 
                   if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
-                    final expiringSoon = items.where((b) {
-                      if (b.expiryDate == null) return false;
-                      final today = DateTime.now();
-                      final diff = DateTime(
-                        b.expiryDate!.year,
-                        b.expiryDate!.month,
-                        b.expiryDate!.day,
-                      )
-                          .difference(
-                            DateTime(today.year, today.month, today.day),
-                          )
-                          .inDays;
-                      return diff >= 0 && diff <= _expiringSoonDays;
+                    final expiringSoon = items.where((benefit) {
+                      final expiry = benefit.expiryDate;
+                      return expiry != null &&
+                          isWithinNextDays(
+                              expiry, YuutaiConstants.expiringSoonDays);
                     }).toList();
 
-                    final others =
-                        items.where((b) => !expiringSoon.contains(b)).toList();
+                    final others = items
+                        .where((benefit) => !expiringSoon.contains(benefit))
+                        .toList();
 
                     return ListView(
                       key: ValueKey(settings.listFilter),
@@ -251,8 +235,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                                     ?.expiringSoon ??
                                 Theme.of(context).colorScheme.error,
                           ),
-                          ...expiringSoon.map(
-                              (b) => _buildTile(b, stockCodeMap[b.companyId])),
+                          ...expiringSoon.map((benefit) => _buildBenefitTile(
+                              benefit, stockCodeMap[benefit.companyId])),
                           const SizedBox(height: _sectionSpacing),
                         ],
                         if (others.isNotEmpty) ...[
@@ -263,8 +247,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                               Icons.list_alt_rounded,
                               null,
                             ),
-                          ...others.map(
-                              (b) => _buildTile(b, stockCodeMap[b.companyId])),
+                          ...others.map((benefit) => _buildBenefitTile(
+                              benefit, stockCodeMap[benefit.companyId])),
                         ],
                       ],
                     );
@@ -277,7 +261,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     padding: const EdgeInsets.symmetric(
                         vertical: _listPaddingVertical),
                     itemCount: items.length,
-                    itemBuilder: (context, index) => _buildTile(
+                    itemBuilder: (context, index) => _buildBenefitTile(
                       items[index],
                       stockCodeMap[items[index].companyId],
                     ),
@@ -309,22 +293,19 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
       case YuutaiListFilter.all:
         return items;
       case YuutaiListFilter.expiringSoon:
-        final today = DateTime.now();
-        final todayDate = DateTime(today.year, today.month, today.day);
-        return items.where((b) {
-          if (b.expiryDate == null) return false;
-          final expiryDate = DateTime(
-            b.expiryDate!.year,
-            b.expiryDate!.month,
-            b.expiryDate!.day,
-          );
-          final diff = expiryDate.difference(todayDate).inDays;
-          return diff >= 0 && diff <= _expiringSoonDays;
+        return items.where((benefit) {
+          final expiry = benefit.expiryDate;
+          return expiry != null &&
+              isWithinNextDays(expiry, YuutaiConstants.expiringSoonDays);
         }).toList();
       case YuutaiListFilter.active:
-        return items.where((b) => b.status == BenefitStatus.active).toList();
+        return items
+            .where((benefit) => benefit.status == BenefitStatus.active)
+            .toList();
       case YuutaiListFilter.used:
-        return items.where((b) => b.status == BenefitStatus.used).toList();
+        return items
+            .where((benefit) => benefit.status == BenefitStatus.used)
+            .toList();
     }
   }
 
@@ -362,9 +343,9 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildTile(UsersYuutai b, [String? stockCode]) {
+  Widget _buildBenefitTile(UsersYuutai benefit, [String? stockCode]) {
     return UsersYuutaiListTile(
-      benefit: b,
+      benefit: benefit,
       stockCode: stockCode?.isNotEmpty == true ? stockCode : null,
     );
   }
@@ -377,9 +358,9 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     return ListView.builder(
       key: ValueKey(listFilter),
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: _listPaddingVertical),
       itemCount: items.length,
-      itemBuilder: (context, index) => _buildTile(
+      itemBuilder: (context, index) => _buildBenefitTile(
         items[index],
         stockCodeMap[items[index].companyId],
       ),

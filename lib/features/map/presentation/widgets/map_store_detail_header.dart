@@ -31,7 +31,7 @@ class MapStoreDetailHeader extends StatelessWidget {
           height: 56,
           decoration: BoxDecoration(
             color: _kStoreIconRed,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
           ),
           child: const Icon(
             Icons.store_rounded,

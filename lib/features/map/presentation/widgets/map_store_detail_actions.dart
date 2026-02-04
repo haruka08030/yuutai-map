@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 
@@ -19,13 +20,13 @@ class MapStoreDetailActions extends StatelessWidget {
         Expanded(
           child: Material(
             color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             child: InkWell(
               onTap: () {
                 Navigator.of(context).pop();
                 context.push('/store/detail', extra: place);
               },
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppTheme.borderRadius),
               child: Container(
                 height: 56,
                 alignment: Alignment.center,
@@ -55,12 +56,12 @@ class MapStoreDetailActions extends StatelessWidget {
         const SizedBox(width: 12),
         Material(
           color: _kShareButtonBg,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppTheme.borderRadius),
           child: InkWell(
             onTap: () {
               showSnackBarMessage(context, '共有機能は準備中です');
             },
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             child: SizedBox(
               width: 56,
               height: 56,

@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/shell_screen.dart';
 import 'package:flutter_stock/features/auth/presentation/auth_gate.dart';
-import 'package:flutter_stock/features/auth/presentation/login_page.dart';
-import 'package:flutter_stock/features/auth/presentation/signup_page.dart';
+import 'package:flutter_stock/features/auth/presentation/auth_page.dart';
 import 'package:flutter_stock/features/auth/provider/auth_notifier.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/benefits/presentation/users_yuutai_edit_page.dart';
@@ -91,8 +90,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => const OnboardingPage(),
       ),
-      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-      GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const AuthPage(isSignUp: false),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const AuthPage(isSignUp: true),
+      ),
       // Yuutai add and edit pages, outside the shell to hide the navigation bar
       GoRoute(
         path: '/yuutai/add',

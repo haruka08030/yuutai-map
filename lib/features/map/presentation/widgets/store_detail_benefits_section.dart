@@ -31,7 +31,7 @@ class StoreDetailBenefitsSection extends ConsumerWidget {
           benefitsAsync.when(
             data: (benefits) {
               final matching = benefits
-                  .where((b) => b.companyId == place.companyId)
+                  .where((benefit) => benefit.companyId == place.companyId)
                   .toList();
               return _BenefitsList(matchingBenefits: matching);
             },
@@ -57,13 +57,13 @@ class _BenefitsList extends ConsumerWidget {
     }
 
     final companyIds = matchingBenefits
-        .map((b) => b.companyId)
+        .map((benefit) => benefit.companyId)
         .whereType<int>()
         .toSet()
         .toList();
     final stockCodesAsync = ref.watch(companyStockCodesProvider(companyIds));
     final stockCodeMap =
-        stockCodesAsync.whenOrNull(data: (m) => m) ?? <int, String>{};
+        stockCodesAsync.whenOrNull(data: (codes) => codes) ?? <int, String>{};
 
     return ListView.separated(
       shrinkWrap: true,
@@ -71,11 +71,13 @@ class _BenefitsList extends ConsumerWidget {
       itemCount: matchingBenefits.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
-        final b = matchingBenefits[index];
-        final code = b.companyId != null ? stockCodeMap[b.companyId] : null;
+        final benefit = matchingBenefits[index];
+        final stockCode =
+            benefit.companyId != null ? stockCodeMap[benefit.companyId] : null;
         return UsersYuutaiListTile(
-          benefit: b,
-          stockCode: (code != null && code.isNotEmpty) ? code : null,
+          benefit: benefit,
+          stockCode:
+              (stockCode != null && stockCode.isNotEmpty) ? stockCode : null,
         );
       },
     );

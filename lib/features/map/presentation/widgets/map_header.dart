@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 
@@ -182,17 +184,17 @@ class _FilterIconButton extends StatelessWidget {
         : app_theme.AppSearchBarStyle.shadowLight;
     return Material(
       color: surfaceColor,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppTheme.borderRadius),
       elevation: 0,
       shadowColor: shadowColor,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
         child: Container(
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppTheme.borderRadius),
             border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
