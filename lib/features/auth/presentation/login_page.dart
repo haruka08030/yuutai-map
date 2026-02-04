@@ -1,14 +1,32 @@
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/core/utils/validators.dart';
-import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
+
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/snackbar_utils.dart';
-import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
+import 'package:flutter_stock/core/utils/validators.dart';
+import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart';
+import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
+
+// レイアウト定数
+const double _contentMaxWidth = 420;
+const double _contentPaddingH = 32;
+const double _contentPaddingV = 48;
+const double _iconSize = 64;
+const double _titleFontSize = 28;
+const double _subtitleFontSize = 15;
+const double _linkFontSize = 13;
+const double _spacingAfterIcon = 24;
+const double _spacingAfterTitle = 8;
+const double _spacingBeforeForm = 48;
+const double _fieldSpacing = 16;
+const double _spacingBeforeLoginButton = 24;
+const double _spacingBeforeDivider = 32;
+const double _spacingBeforeGuest = 48;
+const double _spacingAfterSignUpPrompt = 16;
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -100,12 +118,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420.0),
+            constraints: const BoxConstraints(maxWidth: _contentMaxWidth),
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(
-                horizontal: 32.0,
-                vertical: 48.0,
+                horizontal: _contentPaddingH,
+                vertical: _contentPaddingV,
               ),
               child: Form(
                 key: _formKey,
@@ -116,30 +134,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   children: [
                     Icon(
                       Icons.account_balance_wallet_outlined,
-                      size: 64,
+                      size: _iconSize,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: _spacingAfterIcon),
                     Text(
                       'おかえりなさい',
                       textAlign: TextAlign.center,
                       style:
                           Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                fontSize: 28,
+                                fontSize: _titleFontSize,
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: _spacingAfterTitle),
                     Text(
                       '続行するにはログインしてください',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: _subtitleFontSize,
                         color: AppTheme.secondaryTextColor(context),
                       ),
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: _spacingBeforeForm),
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -158,7 +176,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: _fieldSpacing),
                     TextFormField(
                       controller: _passwordController,
                       decoration: const InputDecoration(
@@ -183,29 +201,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         child: const Text(
                           'パスワードを忘れましたか？',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: _linkFontSize,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: _spacingBeforeLoginButton),
                     LoadingElevatedButton(
                       onPressed: _signInWithEmail,
                       isLoading: _isLoading,
                       child: const Text('ログイン'),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: _spacingBeforeDivider),
                     const OrDivider(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: _spacingBeforeDivider),
                     SocialSignInButtons(
                       isLoading: _isLoading,
                       onSignInWithGoogle: _signInWithGoogle,
                       onSignInWithApple: _signInWithApple,
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: _spacingBeforeGuest),
                     SignUpPrompt(isLoading: _isLoading),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: _spacingAfterSignUpPrompt),
                     TextButton(
                       onPressed: _isLoading ? null : _signInAsGuest,
                       child: const Text('ゲストとして利用'),

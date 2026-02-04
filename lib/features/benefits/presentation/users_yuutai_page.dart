@@ -1,20 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/widgets/app_error_view.dart';
+import 'package:flutter_stock/core/widgets/empty_state_view.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
+import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
-import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/benefits/widgets/users_yuutai_skeleton_tile.dart';
-import 'package:flutter_stock/features/benefits/presentation/widgets/add_yuutai_sheet.dart';
-import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/core/widgets/empty_state_view.dart';
-import 'package:flutter_stock/core/widgets/app_error_view.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
-import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
-import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+
+// リスト・UI定数
+const int _skeletonItemCount = 8;
+const double _errorViewHeightOffset = 200;
+const double _listPaddingVertical = 8;
+const double _sectionSpacing = 24;
+const double _expiringSoonDays = 30;
+const double _filterChipSpacing = 8;
+const double _searchSectionPaddingH = 16;
+const double _searchSectionPaddingV = 12;
+const double _sortIconSize = 18;
+const double _sortLabelFontSize = 14;
+const double _sectionHeaderPaddingL = 20;
+const double _sectionHeaderPaddingR = 16;
+const double _sectionHeaderPaddingV = 16;
+const double _sectionHeaderTitleFontSize = 15;
+const double _fabIconSize = 28;
+const double _bottomSheetRadius = 16;
+const double _bottomSheetPaddingV = 24;
+const double _sortOptionPaddingH = 24;
+const double _sortOptionPaddingV = 16;
+const double _sortOptionTitleFontSize = 18;
+const double _sortOptionLabelFontSize = 16;
 
 class UsersYuutaiPage extends ConsumerStatefulWidget {
   const UsersYuutaiPage({
@@ -76,14 +100,15 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               },
               child: asyncBenefits.when(
                 loading: () => ListView.builder(
-                  itemCount: 8,
+                  itemCount: _skeletonItemCount,
                   itemBuilder: (context, index) =>
                       const UsersYuutaiSkeletonTile(),
                 ),
                 error: (err, stack) => SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height - 200,
+                    height: MediaQuery.of(context).size.height -
+                        _errorViewHeightOffset,
                     child: AppErrorView(
                       message: AppException.from(err).message,
                       onRetry: () => ref.invalidate(listProvider),
@@ -181,7 +206,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     return SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 200,
+                        height: MediaQuery.of(context).size.height -
+                            _errorViewHeightOffset,
                         child: emptyWidget,
                       ),
                     );
@@ -208,7 +234,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                             DateTime(today.year, today.month, today.day),
                           )
                           .inDays;
-                      return diff >= 0 && diff <= 30;
+                      return diff >= 0 && diff <= _expiringSoonDays;
                     }).toList();
 
                     final others =
@@ -217,7 +243,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     return ListView(
                       key: ValueKey(settings.listFilter),
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: _listPaddingVertical),
                       children: [
                         if (expiringSoon.isNotEmpty) ...[
                           _buildSectionHeader(
@@ -231,7 +258,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                           ),
                           ...expiringSoon.map(
                               (b) => _buildTile(b, stockCodeMap[b.companyId])),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: _sectionSpacing),
                         ],
                         if (others.isNotEmpty) ...[
                           if (expiringSoon.isNotEmpty)
@@ -252,7 +279,8 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   return ListView.builder(
                     key: ValueKey(settings.listFilter),
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: _listPaddingVertical),
                     itemCount: items.length,
                     itemBuilder: (context, index) => _buildTile(
                       items[index],
@@ -273,7 +301,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               foregroundColor: Colors.white,
               elevation: 4,
               shape: const CircleBorder(),
-              child: const Icon(Icons.add, size: 28),
+              child: const Icon(Icons.add, size: _fabIconSize),
             ),
     );
   }
@@ -288,11 +316,15 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
         color: Theme.of(context).appBarTheme.backgroundColor ??
             Theme.of(context).colorScheme.surface,
       ),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(
+        _searchSectionPaddingH,
+        _searchSectionPaddingV,
+        _searchSectionPaddingH,
+        _searchSectionPaddingV,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Filter Chips Row
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -308,7 +340,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                     }
                   },
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: _filterChipSpacing),
                 _FilterChip(
                   label: '期限間近',
                   selected:
@@ -316,13 +348,13 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   onTap: () =>
                       notifier.setListFilter(YuutaiListFilter.expiringSoon),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: _filterChipSpacing),
                 _FilterChip(
                   label: '有効',
                   selected: settings.listFilter == YuutaiListFilter.active,
                   onTap: () => notifier.setListFilter(YuutaiListFilter.active),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: _filterChipSpacing),
                 _FilterChip(
                   label: '使用済み',
                   selected: settings.listFilter == YuutaiListFilter.used,
@@ -338,26 +370,25 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          // Sort Section
+          const SizedBox(height: _searchSectionPaddingH),
           InkWell(
             onTap: () {
               _showSortOptions(context, settings, notifier);
             },
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(_bottomSheetRadius),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Icon(
                   Icons.sort_rounded,
-                  size: 18,
+                  size: _sortIconSize,
                   color: AppTheme.secondaryTextColor(context),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: _filterChipSpacing),
                 Text(
                   '並び替え：',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 14,
+                        fontSize: _sortLabelFontSize,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.secondaryTextColor(context),
                       ),
@@ -365,7 +396,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 Text(
                   _getSortLabel(settings.sortOrder),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 14,
+                        fontSize: _sortLabelFontSize,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -402,7 +433,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
             b.expiryDate!.day,
           );
           final diff = expiryDate.difference(todayDate).inDays;
-          return diff >= 0 && diff <= 30;
+          return diff >= 0 && diff <= _expiringSoonDays;
         }).toList();
       case YuutaiListFilter.active:
         return items.where((b) => b.status == BenefitStatus.active).toList();
@@ -430,21 +461,23 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(_bottomSheetRadius)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.symmetric(vertical: _bottomSheetPaddingV),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: _sortOptionPaddingH),
               child: Row(
                 children: [
                   Text(
                     '並び替え',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontSize: 18,
+                          fontSize: _sortOptionTitleFontSize,
                           fontWeight: FontWeight.w700,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -452,7 +485,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: _searchSectionPaddingH),
             _SortOption(
               label: '期限日',
               selected: settings.sortOrder == YuutaiSortOrder.expiryDate,
@@ -490,19 +523,24 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     Color? color,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 16, 12),
+      padding: const EdgeInsets.fromLTRB(
+        _sectionHeaderPaddingL,
+        _sectionHeaderPaddingV,
+        _sectionHeaderPaddingR,
+        12,
+      ),
       child: Row(
         children: [
           Icon(
             icon,
-            size: 18,
+            size: _sortIconSize,
             color: color ?? Theme.of(context).colorScheme.primary,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: _filterChipSpacing),
           Text(
             title,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  fontSize: 15,
+                  fontSize: _sectionHeaderTitleFontSize,
                   fontWeight: FontWeight.bold,
                   color: color ?? Theme.of(context).colorScheme.primary,
                 ),
@@ -604,14 +642,17 @@ class _SortOption extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: _sortOptionPaddingH,
+          vertical: _sortOptionPaddingV,
+        ),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 16,
+                      fontSize: _sortOptionLabelFontSize,
                       fontWeight: FontWeight.w500,
                       color: selected
                           ? Theme.of(context).colorScheme.primary

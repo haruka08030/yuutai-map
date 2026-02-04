@@ -2,13 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_bar_search_field.dart';
 import 'package:flutter_stock/features/app/presentation/widgets/app_drawer.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
 import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
-import 'package:go_router/go_router.dart';
+
+/// この幅以上で NavigationRail レイアウトに切り替える
+const double _largeScreenBreakpoint = 600;
+
+/// 検索入力のデバウンス時間（ミリ秒）
+const int _searchDebounceMs = 250;
+
+/// ボトムナビの高さ
+const double _bottomNavHeight = 64;
 
 class ShellScreen extends ConsumerStatefulWidget {
   const ShellScreen({super.key, required this.navigationShell});
@@ -60,7 +70,8 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedFolderId = ref.watch(selectedFolderIdProvider);
-    final bool isLargeScreen = MediaQuery.of(context).size.width >= 600;
+    final isLargeScreen =
+        MediaQuery.of(context).size.width >= _largeScreenBreakpoint;
 
     if (isLargeScreen) {
       return Scaffold(
@@ -126,7 +137,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
                     onChanged: (value) {
                       _yuutaiSearchDebounce?.cancel();
                       _yuutaiSearchDebounce = Timer(
-                        const Duration(milliseconds: 250),
+                        const Duration(milliseconds: _searchDebounceMs),
                         () => _setYuutaiSearchQuery(context, value),
                       );
                     },
@@ -205,7 +216,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
             surfaceTintColor: Colors.transparent,
             indicatorColor:
                 Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            height: 64,
+            height: _bottomNavHeight,
             labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
             destinations: [
               NavigationDestination(
