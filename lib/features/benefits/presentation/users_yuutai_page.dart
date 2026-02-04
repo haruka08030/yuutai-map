@@ -61,7 +61,10 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
         ? historyUsersYuutaiProvider
         : activeUsersYuutaiProvider;
 
+    final surfaceColor = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).colorScheme.surface;
     return Scaffold(
+      backgroundColor: surfaceColor,
       body: Column(
         children: [
           _buildSearchAndFilterSection(context, settings, settingsNotifier),
