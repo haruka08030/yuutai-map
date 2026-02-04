@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 
-const Color _kBorderLight = Color(0x7FE2E7EF);
-const Color _kShadowLight = Color(0x0C000000);
-
 class MapHeader extends StatefulWidget {
   const MapHeader({
     super.key,
@@ -65,26 +62,9 @@ class _MapHeaderState extends State<MapHeader> {
                   Expanded(
                     child: Container(
                       height: app_theme.AppSearchBarStyle.height,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            app_theme.AppSearchBarStyle.borderRadiusValue,
-                        border: Border.all(color: _kBorderLight),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: _kShadowLight,
-                            blurRadius: 15,
-                            offset: Offset(0, 10),
-                            spreadRadius: -3,
-                          ),
-                          BoxShadow(
-                            color: _kShadowLight,
-                            blurRadius: 6,
-                            offset: Offset(0, 4),
-                            spreadRadius: -4,
-                          ),
-                        ],
-                      ),
+                      decoration:
+                          app_theme.AppSearchBarStyle.containerDecoration(
+                              context),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (value) {
@@ -191,11 +171,20 @@ class _FilterIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final surfaceColor =
+        isDark ? theme.colorScheme.surfaceContainerHighest : Colors.white;
+    final borderColor = isDark
+        ? theme.colorScheme.outlineVariant
+        : app_theme.AppSearchBarStyle.borderLight;
+    final shadowColor = isDark
+        ? theme.colorScheme.shadow.withValues(alpha: 0.08)
+        : app_theme.AppSearchBarStyle.shadowLight;
     return Material(
-      color: Colors.white,
+      color: surfaceColor,
       borderRadius: BorderRadius.circular(16),
       elevation: 0,
-      shadowColor: _kShadowLight,
+      shadowColor: shadowColor,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -204,18 +193,20 @@ class _FilterIconButton extends StatelessWidget {
           height: 48,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _kBorderLight),
-            boxShadow: const [
+            border: Border.all(color: borderColor),
+            boxShadow: [
               BoxShadow(
-                color: _kShadowLight,
+                color: shadowColor,
                 blurRadius: 15,
-                offset: Offset(0, 10),
+                offset: const Offset(0, 10),
                 spreadRadius: -3,
               ),
               BoxShadow(
-                color: _kShadowLight,
+                color: isDark
+                    ? theme.colorScheme.shadow.withValues(alpha: 0.06)
+                    : app_theme.AppSearchBarStyle.shadowLight,
                 blurRadius: 6,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
                 spreadRadius: -4,
               ),
             ],
@@ -248,13 +239,19 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: selected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surface,
+        color: selected ? theme.colorScheme.primary : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: selected ? null : Border.all(color: _kBorderLight),
+        border: selected
+            ? null
+            : Border.all(
+                color: isDark
+                    ? theme.colorScheme.outlineVariant
+                    : app_theme.AppSearchBarStyle.borderLight,
+              ),
         boxShadow: selected
             ? [
                 BoxShadow(

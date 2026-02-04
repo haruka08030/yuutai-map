@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 
 /// AppBar用の検索テキストフィールド。URLと同期する検索クエリ用。
+/// 装飾は [AppSearchBarStyle.containerDecoration] で一覧・マップ共通。
 class AppBarSearchField extends StatefulWidget {
   const AppBarSearchField({
     super.key,
@@ -50,10 +51,7 @@ class _AppBarSearchFieldState extends State<AppBarSearchField> {
   Widget build(BuildContext context) {
     return Container(
       height: app_theme.AppSearchBarStyle.height,
-      decoration: BoxDecoration(
-        color: app_theme.AppSearchBarStyle.appBarSearchFieldBackgroundColor,
-        borderRadius: app_theme.AppSearchBarStyle.borderRadiusValue,
-      ),
+      decoration: app_theme.AppSearchBarStyle.containerDecoration(context),
       alignment: Alignment.center,
       child: TextField(
         controller: widget.controller,
