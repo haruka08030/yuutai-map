@@ -213,6 +213,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
 
                     return ListView(
                       key: ValueKey(settings.listFilter),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       children: [
                         if (expiringSoon.isNotEmpty) ...[
@@ -247,6 +248,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
                   // Plain list for other sort orders
                   return ListView.builder(
                     key: ValueKey(settings.listFilter),
+                    physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     itemCount: items.length,
                     itemBuilder: (context, index) => _buildTile(
@@ -521,6 +523,7 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
   ) {
     return ListView.builder(
       key: ValueKey(listFilter),
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
       itemBuilder: (context, index) => _buildTile(
