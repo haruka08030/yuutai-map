@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/widgets/bottom_sheet_drag_handle.dart';
 import 'package:flutter_stock/core/widgets/section_label.dart';
@@ -44,6 +45,15 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
 const String _kAll = '';
 const String _kAllFolder = '__all__';
 
+const double _sheetTopRadius = 24;
+const EdgeInsets _sheetPadding = EdgeInsets.fromLTRB(24, 12, 24, 32);
+const double _sectionSpacing = 24;
+const double _bottomSpacing = 40;
+const double _rowSpacing = 12;
+const double _guestMessageFontSize = 14;
+const double _guestMessageBorderRadius = 12;
+const double _applyButtonPaddingVertical = 16;
+
 class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
   late bool _showAll;
   late String _category;
@@ -85,9 +95,11 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(_sheetTopRadius),
+        ),
       ),
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+      padding: _sheetPadding,
       child: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -96,12 +108,12 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const BottomSheetDragHandle(),
-              const SizedBox(height: 24),
+              const SizedBox(height: _sectionSpacing),
               _buildStoreModeSection(),
               _buildLocationSection(),
               _buildCategorySection(),
               _buildFolderSection(foldersAsync),
-              const SizedBox(height: 40),
+              const SizedBox(height: _bottomSpacing),
               _buildApplyButton(context),
             ],
           ),
@@ -123,7 +135,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             onChanged: (index) => setState(() => _showAll = index == 1),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: _sectionSpacing),
       ],
     );
   }
@@ -134,7 +146,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SectionLabel(label: '場所'),
-        const SizedBox(height: 12),
+        const SizedBox(height: _rowSpacing),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -162,7 +174,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
                 },
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: _rowSpacing),
             Expanded(
               child: SelectMenuButton<String>(
                 value: _prefecture,
@@ -178,7 +190,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: _sectionSpacing),
       ],
     );
   }
@@ -189,7 +201,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SectionLabel(label: 'カテゴリ'),
-        const SizedBox(height: 12),
+        const SizedBox(height: _rowSpacing),
         SelectMenuButton<String>(
           value: _category,
           hint: 'すべてのカテゴリ',
@@ -201,7 +213,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
           ],
           onSelected: (value) => setState(() => _category = value),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: _sectionSpacing),
       ],
     );
   }
@@ -213,25 +225,9 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionLabel(label: 'フォルダ'),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.dividerColor(context)),
-            ),
-            child: Text(
-              'ログインするとフォルダで絞り込みができます',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: _rowSpacing),
+          _buildGuestFolderMessage(context),
+          const SizedBox(height: _sectionSpacing),
         ],
       );
     }
@@ -241,7 +237,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SectionLabel(label: 'フォルダで絞り込み'),
-        const SizedBox(height: 12),
+        const SizedBox(height: _rowSpacing),
         foldersAsync.when(
           data: (folders) => SelectMenuButton<String>(
             value: _folderId,
@@ -257,8 +253,28 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
           loading: () => const LinearProgressIndicator(),
           error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: _sectionSpacing),
       ],
+    );
+  }
+
+  Widget _buildGuestFolderMessage(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(_guestMessageBorderRadius),
+        border: Border.all(color: AppTheme.dividerColor(context)),
+      ),
+      child: Text(
+        'ログインするとフォルダで絞り込みができます',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontSize: _guestMessageFontSize,
+        ),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -273,7 +289,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: _applyButtonPaddingVertical),
         ),
         child: const Text(
           '適用する',

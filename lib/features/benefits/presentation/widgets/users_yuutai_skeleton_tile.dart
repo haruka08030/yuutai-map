@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_stock/app/theme/app_theme.dart';
 
 class UsersYuutaiSkeletonTile extends StatelessWidget {
@@ -8,7 +9,7 @@ class UsersYuutaiSkeletonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final skeletonBase =
         Theme.of(context).extension<AppColors>()?.skeletonBase ??
-        Colors.grey[200]!;
+            Colors.grey[200]!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),

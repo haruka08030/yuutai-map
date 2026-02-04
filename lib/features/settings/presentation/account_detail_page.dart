@@ -2,10 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
+
+// レイアウト定数
+const double _listPaddingH = 24;
+const double _listPaddingV = 32;
+const double _fieldSpacing = 12;
+const double _sectionSpacing = 24;
+const double _bodyFontSize = 16;
+const double _labelFontSize = 14;
+const double _saveButtonPadding = 24;
+const double _saveButtonVertical = 16;
+const double _sectionSpacingLarge = 32;
+const double _deleteSectionTop = 48;
+const Color _textPrimary = Color(0xFF1B1C1F);
 
 class AccountDetailPage extends ConsumerStatefulWidget {
   const AccountDetailPage({super.key});
@@ -46,92 +60,26 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+                  horizontal: _listPaddingH,
+                  vertical: _listPaddingV,
                 ),
                 children: [
                   _buildFieldLabel('ユーザー名'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: _fieldSpacing),
                   _buildTextField(_nameController, 'ユーザー名を入力'),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: _sectionSpacing),
                   _buildFieldLabel('メールアドレス'),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => context.go('/settings/account/email/edit'),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _emailController.text.isNotEmpty
-                                  ? _emailController.text
-                                  : '未設定',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    color: _emailController.text.isNotEmpty
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                        : AppTheme.secondaryTextColor(context),
-                                    fontSize: 16,
-                                  ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: AppTheme.placeholderColor(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: _fieldSpacing),
+                  _buildEmailTile(context),
+                  const SizedBox(height: _sectionSpacingLarge),
                   _buildLinkedAccountsSection(),
-                  const SizedBox(height: 32),
-                  const SizedBox(height: 48),
-                  Center(
-                    child: TextButton(
-                      onPressed: _showDeleteConfirmation,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppTheme.secondaryTextColor(context),
-                      ),
-                      child: const Text('アカウントを削除する'),
-                    ),
-                  ),
+                  const SizedBox(height: _sectionSpacingLarge),
+                  const SizedBox(height: _deleteSectionTop),
+                  _buildDeleteAccountButton(context),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: LoadingElevatedButton(
-                  onPressed: _saveProfile,
-                  isLoading: _isSaving,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    '変更を保存する',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
+            _buildSaveButton(context),
           ],
         ),
       ),
@@ -159,6 +107,22 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
     }
   }
 
+  /// lastSignInAt が最も新しい identity を返す
+  static UserIdentity? _findLastUsedIdentity(List<UserIdentity> identities) {
+    UserIdentity? lastUsed;
+    DateTime? latestAt;
+    for (final i in identities) {
+      final at = i.lastSignInAt;
+      if (at == null || at.isEmpty) continue;
+      final dt = DateTime.tryParse(at);
+      if (dt != null && (latestAt == null || dt.isAfter(latestAt))) {
+        latestAt = dt;
+        lastUsed = i;
+      }
+    }
+    return lastUsed;
+  }
+
   static String _providerLabel(String provider) {
     switch (provider) {
       case 'email':
@@ -172,29 +136,83 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
     }
   }
 
+  Widget _buildEmailTile(BuildContext context) {
+    final hasEmail = _emailController.text.isNotEmpty;
+    return GestureDetector(
+      onTap: () => context.go('/settings/account/email/edit'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                hasEmail ? _emailController.text : '未設定',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: hasEmail
+                          ? Theme.of(context).colorScheme.onSurface
+                          : AppTheme.secondaryTextColor(context),
+                      fontSize: _bodyFontSize,
+                    ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: AppTheme.placeholderColor(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(_saveButtonPadding),
+      child: SizedBox(
+        width: double.infinity,
+        child: LoadingElevatedButton(
+          onPressed: _saveProfile,
+          isLoading: _isSaving,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            padding: const EdgeInsets.symmetric(vertical: _saveButtonVertical),
+          ),
+          child: const Text(
+            '変更を保存する',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteAccountButton(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: _showDeleteConfirmation,
+        style: TextButton.styleFrom(
+          foregroundColor: AppTheme.secondaryTextColor(context),
+        ),
+        child: const Text('アカウントを削除する'),
+      ),
+    );
+  }
+
   Widget _buildLinkedAccountsSection() {
     final identitiesAsync = ref.watch(userIdentitiesProvider);
     return identitiesAsync.when(
       data: (identities) {
         final providers = identities.map((i) => i.provider).toSet();
-        final hasGoogle = providers.contains('google');
-        final labels = <String>[];
-        if (providers.contains('email')) labels.add('メール');
-        if (providers.contains('google')) labels.add('Google');
-        if (providers.contains('apple')) labels.add('Apple');
-
-        // 前回のログイン方法: lastSignInAt が最も新しい identity
-        UserIdentity? lastUsedIdentity;
-        DateTime? latestAt;
-        for (final i in identities) {
-          final at = i.lastSignInAt;
-          if (at == null || at.isEmpty) continue;
-          final dt = DateTime.tryParse(at);
-          if (dt != null && (latestAt == null || dt.isAfter(latestAt))) {
-            latestAt = dt;
-            lastUsedIdentity = i;
-          }
-        }
+        final labels = providers.map(_providerLabel).toList();
+        final lastUsedIdentity = _findLastUsedIdentity(identities);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +241,7 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
                 ),
               ),
             ],
-            if (!hasGoogle) ...[
+            if (!providers.contains('google')) ...[
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => _linkGoogle(currentContext: context),
@@ -272,7 +290,7 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              fontSize: 14,
+              fontSize: _labelFontSize,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -300,10 +318,9 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
         ),
       ),
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: readOnly
-                ? AppTheme.secondaryTextColor(context)
-                : const Color(0xFF1B1C1F),
-            fontSize: 16,
+            color:
+                readOnly ? AppTheme.secondaryTextColor(context) : _textPrimary,
+            fontSize: _bodyFontSize,
           ),
     );
   }

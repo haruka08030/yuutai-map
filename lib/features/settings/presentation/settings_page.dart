@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/app/theme/theme_provider.dart';
-import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
-import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/app/theme/theme_provider.dart';
+import 'package:flutter_stock/core/utils/url_launcher_utils.dart';
+import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
+import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
 /// 本番公開前に実際のプライバシーポリシーURLに差し替える（IMPROVEMENTS.md 参照）
 const String _privacyPolicyUrl = 'https://your-privacy-policy-url.com';

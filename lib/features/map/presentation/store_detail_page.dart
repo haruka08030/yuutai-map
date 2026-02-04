@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/store_detail_benefits_section.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/store_detail_header.dart';

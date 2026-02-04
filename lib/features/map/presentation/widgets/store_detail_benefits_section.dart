@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
-import 'package:flutter_stock/features/benefits/widgets/users_yuutai_list_tile.dart';
+import 'package:flutter_stock/features/benefits/presentation/widgets/users_yuutai_list_tile.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 
 /// 店舗詳細ページの「利用可能な優待」セクション

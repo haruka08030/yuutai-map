@@ -27,11 +27,15 @@ abstract class MapState with _$MapState {
     String? filterError,
   }) = _MapState;
 
-  /// 現在の状態からフィルター用パラメータを組み立てる。categories だけ上書きしたい場合に使用。
-  FilterParams toFilterParams({Set<String>? categories}) => (
+  /// 現在の状態からフィルター用パラメータを組み立てる。任意で categories / folderId を上書き可能。
+  FilterParams toFilterParams({
+    Set<String>? categories,
+    String? folderId,
+  }) =>
+      (
         showAllStores: showAllStores,
         categories: categories ?? this.categories,
-        folderId: folderId,
+        folderId: folderId ?? this.folderId,
         region: region,
         prefecture: prefecture,
       );

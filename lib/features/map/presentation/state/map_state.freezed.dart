@@ -404,7 +404,7 @@ extension MapStatePatterns on MapState {
 
 /// @nodoc
 
-class _MapState implements MapState {
+class _MapState extends MapState {
   const _MapState(
       {required final List<Place> items,
       required this.currentPosition,
@@ -419,7 +419,8 @@ class _MapState implements MapState {
       this.filterError})
       : _items = items,
         _availableCategories = availableCategories,
-        _categories = categories;
+        _categories = categories,
+        super._();
 
   final List<Place> _items;
   @override

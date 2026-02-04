@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/features/app/providers/app_providers.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
@@ -11,13 +14,9 @@ import 'package:flutter_stock/features/map/domain/entities/store.dart';
 import 'package:flutter_stock/features/map/domain/map_filter_params.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 final mapControllerProvider = AsyncNotifierProvider<MapController, MapState>(
-  () {
-    return MapController();
-  },
+  MapController.new,
 );
 
 class MapController extends AsyncNotifier<MapState> {
@@ -25,14 +24,7 @@ class MapController extends AsyncNotifier<MapState> {
   Future<MapState> build() async {
     ref.listen<String?>(selectedFolderIdProvider, (prev, next) {
       if (state.value != null && prev != next) {
-        final s = state.value!;
-        applyFilters((
-          showAllStores: s.showAllStores,
-          categories: s.categories,
-          folderId: next,
-          region: s.region,
-          prefecture: s.prefecture,
-        ));
+        applyFilters(state.value!.toFilterParams(folderId: next));
       }
     });
 
@@ -65,22 +57,19 @@ class MapController extends AsyncNotifier<MapState> {
   }
 
   Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled =
+        await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled.');
     }
 
-    permission = await Geolocator.checkPermission();
+    var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         throw Exception('Location permissions are denied');
       }
     }
-
     if (permission == LocationPermission.deniedForever) {
       throw Exception(
         'Location permissions are permanently denied, we cannot request permissions.',
@@ -175,16 +164,7 @@ class MapController extends AsyncNotifier<MapState> {
           prefecture: params.prefecture,
         );
         final base = await future;
-        state = AsyncData(
-          base.copyWith(
-            items: items,
-            showAllStores: params.showAllStores,
-            categories: params.categories,
-            folderId: params.folderId,
-            region: params.region,
-            prefecture: params.prefecture,
-          ),
-        );
+        state = AsyncData(_applyParamsToState(base, params, items));
       } catch (e, st) {
         state = AsyncError<MapState>(e, st);
       }
@@ -192,10 +172,7 @@ class MapController extends AsyncNotifier<MapState> {
     }
 
     state = AsyncData(
-      oldState.copyWith(
-        isApplying: true,
-        filterError: null,
-      ),
+      oldState.copyWith(isApplying: true, filterError: null),
     );
 
     try {
@@ -207,13 +184,7 @@ class MapController extends AsyncNotifier<MapState> {
         prefecture: params.prefecture,
       );
       state = AsyncData(
-        oldState.copyWith(
-          items: items,
-          showAllStores: params.showAllStores,
-          categories: params.categories,
-          folderId: params.folderId,
-          region: params.region,
-          prefecture: params.prefecture,
+        _applyParamsToState(oldState, params, items).copyWith(
           isApplying: false,
           filterError: null,
         ),
@@ -227,6 +198,20 @@ class MapController extends AsyncNotifier<MapState> {
       );
     }
   }
+
+  MapState _applyParamsToState(
+    MapState from,
+    FilterParams params,
+    List<Place> items,
+  ) =>
+      from.copyWith(
+        items: items,
+        showAllStores: params.showAllStores,
+        categories: params.categories,
+        folderId: params.folderId,
+        region: params.region,
+        prefecture: params.prefecture,
+      );
 
   void clearFilterError() {
     final value = state.value;
