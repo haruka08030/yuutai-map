@@ -101,9 +101,9 @@ class MapStoreDetailSheet extends ConsumerWidget {
                   benefitsAsync.when(
                     data: (benefits) {
                       final matching = benefits
-                          .where((b) =>
-                              b.companyId != null &&
-                              b.companyId == place.companyId)
+                          .where((benefit) =>
+                              benefit.companyId != null &&
+                              benefit.companyId == place.companyId)
                           .toList();
                       final benefit =
                           matching.isNotEmpty ? matching.first : null;

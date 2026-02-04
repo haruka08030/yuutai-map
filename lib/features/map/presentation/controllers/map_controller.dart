@@ -57,8 +57,7 @@ class MapController extends AsyncNotifier<MapState> {
   }
 
   Future<Position> _determinePosition() async {
-    final serviceEnabled =
-        await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled.');
     }
@@ -134,7 +133,8 @@ class MapController extends AsyncNotifier<MapState> {
     } else {
       var benefits = await ref.read(usersYuutaiRepositoryProvider).getActive();
       if (folderId != null) {
-        benefits = benefits.where((b) => b.folderId == folderId).toList();
+        benefits =
+            benefits.where((benefit) => benefit.folderId == folderId).toList();
       }
       for (final benefit in benefits) {
         if (benefit.companyId != null) {

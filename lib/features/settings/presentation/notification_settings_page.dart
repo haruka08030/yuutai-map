@@ -45,7 +45,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               return Column(
                 children: notifications.map((n) {
                   final benefit = activeBenefitsAsync.value?.firstWhereOrNull(
-                    (b) => b.id.toString() == n.payload,
+                    (candidate) => candidate.id.toString() == n.payload,
                   );
 
                   return ListTile(

@@ -10,8 +10,12 @@ final benefitCompanyIdsProvider =
     showHistory ? historyUsersYuutaiProvider : activeUsersYuutaiProvider,
   );
   return async.when(
-    data: (list) =>
-        list.map((b) => b.companyId).whereType<int>().toSet().toList()..sort(),
+    data: (list) => list
+        .map((benefit) => benefit.companyId)
+        .whereType<int>()
+        .toSet()
+        .toList()
+      ..sort(),
     loading: () => <int>[],
     error: (_, __) => <int>[],
   );

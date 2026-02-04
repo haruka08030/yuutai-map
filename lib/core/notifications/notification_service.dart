@@ -47,16 +47,16 @@ class NotificationService {
     await _plugin.cancel(id: id);
   }
 
-  Future<void> reschedulePresetReminders(UsersYuutai b) async {
-    if (b.id == null) return;
-    final idStr = b.id.toString();
+  Future<void> reschedulePresetReminders(UsersYuutai benefit) async {
+    if (benefit.id == null) return;
+    final idStr = benefit.id.toString();
     await cancelAllFor(idStr);
 
-    if (b.status == BenefitStatus.used || !b.alertEnabled) {
+    if (benefit.status == BenefitStatus.used || !benefit.alertEnabled) {
       return;
     }
 
-    final expireOn = b.expiryDate;
+    final expireOn = benefit.expiryDate;
     if (expireOn == null) {
       return;
     }
@@ -66,7 +66,7 @@ class NotificationService {
       return;
     }
 
-    final daysList = b.notifyDaysBefore;
+    final daysList = benefit.notifyDaysBefore;
     if (daysList == null || daysList.isEmpty) {
       return;
     }
@@ -98,12 +98,12 @@ class NotificationService {
 
       // Create a unique ID for each notification to avoid collisions
       // Ensure notification ID stays within 32-bit int range
-      final notificationId = ((b.id! * 1000) + day) % 2147483647;
+      final notificationId = ((benefit.id! * 1000) + day) % 2147483647;
 
       await _plugin.zonedSchedule(
         id: notificationId,
         title: '優待の期限が近づいています',
-        body: '「${b.companyName}」の期限が${day == 0 ? "本日" : "あと$day日"}です。',
+        body: '「${benefit.companyName}」の期限が${day == 0 ? "本日" : "あと$day日"}です。',
         scheduledDate: scheduledDate,
         notificationDetails: notificationDetails,
         payload:

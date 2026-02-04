@@ -35,7 +35,9 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
   @override
   Stream<List<domain.UsersYuutai>> watchActive() {
     return watchAll().map(
-      (list) => list.where((i) => i.status == BenefitStatus.active).toList(),
+      (list) => list
+          .where((benefit) => benefit.status == BenefitStatus.active)
+          .toList(),
     );
   }
 
@@ -54,14 +56,14 @@ class UsersYuutaiRepositorySupabase implements UsersYuutaiRepository {
 
   @override
   Future<void> upsert(
-    domain.UsersYuutai b, {
+    domain.UsersYuutai benefit, {
     bool scheduleReminders = true,
   }) async {
     if (_user == null) {
       throw Exception('User not logged in');
     }
 
-    final data = b.toJson();
+    final data = benefit.toJson();
     data['user_id'] = _user!.id;
     // Remove id if null to let DB auto-increment
     if (data['id'] == null) {

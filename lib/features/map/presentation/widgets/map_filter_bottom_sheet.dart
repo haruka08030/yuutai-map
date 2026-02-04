@@ -245,8 +245,9 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
             items: [
               const SelectMenuItem(value: _kAllFolder, label: 'すべてのフォルダ'),
               ...folders
-                  .where((f) => f.id != null && f.id!.isNotEmpty)
-                  .map((f) => SelectMenuItem(value: f.id!, label: f.name)),
+                  .where((folder) => folder.id != null && folder.id!.isNotEmpty)
+                  .map((folder) =>
+                      SelectMenuItem(value: folder.id!, label: folder.name)),
             ],
             onSelected: (value) => setState(() => _folderId = value),
           ),
@@ -289,7 +290,8 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          padding: const EdgeInsets.symmetric(vertical: _applyButtonPaddingVertical),
+          padding:
+              const EdgeInsets.symmetric(vertical: _applyButtonPaddingVertical),
         ),
         child: const Text(
           '適用する',
