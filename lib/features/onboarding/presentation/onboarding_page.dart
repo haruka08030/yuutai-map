@@ -18,7 +18,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final List<OnboardingContent> _pages = [
     const OnboardingContent(
       title: '優待マップ',
-      description: 'The best to do list application for you',
+      description: 'あなたの優待をマップで管理',
       icon: Icons.map_outlined,
       isFirstPage: true,
     ),

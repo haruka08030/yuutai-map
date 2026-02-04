@@ -7,6 +7,7 @@ class Place with ClusterItem {
     required this.name,
     required this.latLng,
     this.address,
+    this.prefecture,
     this.companyId,
     this.isClosed = false,
     this.category,
@@ -15,6 +16,7 @@ class Place with ClusterItem {
   final int id;
   final String name;
   final String? address;
+  final String? prefecture;
   final int? companyId;
   final bool isClosed;
   final LatLng latLng;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/features/benefits/provider/company_provider.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/benefits/provider/yuutai_list_settings_provider.dart';
 import 'package:flutter_stock/features/benefits/domain/yuutai_list_settings.dart';
@@ -47,171 +48,219 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     final settings = ref.watch(yuutaiListSettingsProvider);
     final isGuest = ref.watch(isGuestProvider);
     final settingsNotifier = ref.read(yuutaiListSettingsProvider.notifier);
+    final companyIds = ref.watch(benefitCompanyIdsProvider(widget.showHistory));
+    final stockCodesAsync = ref.watch(companyStockCodesProvider(companyIds));
+    final stockCodeMap =
+        stockCodesAsync.whenOrNull(data: (map) => map) ?? <int, String>{};
 
     final asyncBenefits = !widget.showHistory
         ? ref.watch(activeUsersYuutaiProvider)
         : ref.watch(historyUsersYuutaiProvider);
 
+    final listProvider = widget.showHistory
+        ? historyUsersYuutaiProvider
+        : activeUsersYuutaiProvider;
+
+    final surfaceColor = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).colorScheme.surface;
     return Scaffold(
+      backgroundColor: surfaceColor,
       body: Column(
         children: [
           _buildSearchAndFilterSection(context, settings, settingsNotifier),
           Expanded(
-            child: asyncBenefits.when(
-              loading: () => ListView.builder(
-                itemCount: 8,
-                itemBuilder: (context, index) =>
-                    const UsersYuutaiSkeletonTile(),
-              ),
-              error: (err, stack) => AppErrorView(
-                message: AppException.from(err).message,
-                onRetry: () => ref.invalidate(activeUsersYuutaiProvider),
-              ),
-              data: (data) {
-                var items = data;
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(listProvider);
+                await ref.read(listProvider.future);
+              },
+              child: asyncBenefits.when(
+                loading: () => ListView.builder(
+                  itemCount: 8,
+                  itemBuilder: (context, index) =>
+                      const UsersYuutaiSkeletonTile(),
+                ),
+                error: (err, stack) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height - 200,
+                    child: AppErrorView(
+                      message: AppException.from(err).message,
+                      onRetry: () => ref.invalidate(listProvider),
+                    ),
+                  ),
+                ),
+                data: (data) {
+                  var items = data;
 
-                // Apply folder filter from URL or settings
-                final effectiveFolderId =
-                    widget.selectedFolderId ?? settings.folderId;
-                if (effectiveFolderId != null) {
-                  items = items
-                      .where((benefit) => benefit.folderId == effectiveFolderId)
-                      .toList();
-                }
+                  // Apply folder filter from URL or settings
+                  final effectiveFolderId =
+                      widget.selectedFolderId ?? settings.folderId;
+                  if (effectiveFolderId != null) {
+                    items = items
+                        .where(
+                            (benefit) => benefit.folderId == effectiveFolderId)
+                        .toList();
+                  }
 
-                // Apply search filter
-                final searchQuery = widget.searchQuery;
-                if (searchQuery.isNotEmpty) {
-                  items = items.where((benefit) {
-                    final query = searchQuery.toLowerCase();
-                    final title = benefit.companyName.toLowerCase();
-                    final benefitText =
-                        benefit.benefitDetail?.toLowerCase() ?? '';
-                    return title.contains(query) || benefitText.contains(query);
-                  }).toList();
-                }
+                  // Apply search filter（企業名・優待内容・証券番号）
+                  final searchQuery = widget.searchQuery;
+                  if (searchQuery.isNotEmpty) {
+                    items = items.where((benefit) {
+                      final query = searchQuery.toLowerCase();
+                      final title = benefit.companyName.toLowerCase();
+                      final benefitText =
+                          benefit.benefitDetail?.toLowerCase() ?? '';
+                      final stockCode =
+                          (stockCodeMap[benefit.companyId] ?? '').toLowerCase();
+                      return title.contains(query) ||
+                          benefitText.contains(query) ||
+                          stockCode.contains(query);
+                    }).toList();
+                  }
 
-                items = _applyListFilter(items, settings.listFilter);
-                items = List<UsersYuutai>.from(items);
+                  items = _applyListFilter(items, settings.listFilter);
+                  items = List<UsersYuutai>.from(items);
 
-                // Apply Sorting
-                switch (settings.sortOrder) {
-                  case YuutaiSortOrder.expiryDate:
-                    // For expiryDate, we keep nulls (no expiry) at the end
-                    items.sort((a, b) {
-                      if (a.expiryDate == null && b.expiryDate == null) {
-                        return 0;
+                  // Apply Sorting
+                  switch (settings.sortOrder) {
+                    case YuutaiSortOrder.expiryDate:
+                      // For expiryDate, we keep nulls (no expiry) at the end
+                      items.sort((a, b) {
+                        if (a.expiryDate == null && b.expiryDate == null) {
+                          return 0;
+                        }
+                        if (a.expiryDate == null) {
+                          return 1;
+                        }
+                        if (b.expiryDate == null) {
+                          return -1;
+                        }
+                        return a.expiryDate!.compareTo(b.expiryDate!);
+                      });
+                      break;
+                    case YuutaiSortOrder.companyName:
+                      items.sort(
+                        (a, b) => a.companyName.compareTo(b.companyName),
+                      );
+                      break;
+                    case YuutaiSortOrder.createdAt:
+                      // id is auto-incrementing in many cases, or we can use id as proxy for creation order
+                      // If we had createdAt in UsersYuutai, we would use that.
+                      // For now, let's sort by id descending (newest first)
+                      items.sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+                      break;
+                  }
+
+                  if (items.isEmpty) {
+                    Widget emptyWidget;
+                    if (widget.showHistory) {
+                      emptyWidget = const EmptyStateView(
+                        icon: Icons.history_toggle_off,
+                        title: '使用履歴がありません',
+                        subtitle: '使用した優待はここに表示されます',
+                      );
+                    } else {
+                      final displayQuery = widget.searchQuery;
+                      if (displayQuery.isNotEmpty) {
+                        emptyWidget = EmptyStateView(
+                          icon: Icons.search_off,
+                          title: '「$displayQuery」は見つかりませんでした',
+                          subtitle: '別のキーワードで試してみてください',
+                        );
+                      } else {
+                        emptyWidget = EmptyStateView(
+                          imagePath: 'assets/images/empty_state.png',
+                          title: '優待を登録しよう！',
+                          subtitle: isGuest
+                              ? 'ログインすると優待を登録して管理できます'
+                              : '右下の「＋」ボタンから追加できます',
+                        );
                       }
-                      if (a.expiryDate == null) {
-                        return 1;
-                      }
-                      if (b.expiryDate == null) {
-                        return -1;
-                      }
-                      return a.expiryDate!.compareTo(b.expiryDate!);
-                    });
-                    break;
-                  case YuutaiSortOrder.companyName:
-                    items.sort(
-                      (a, b) => a.companyName.compareTo(b.companyName),
+                    }
+                    return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height - 200,
+                        child: emptyWidget,
+                      ),
                     );
-                    break;
-                  case YuutaiSortOrder.createdAt:
-                    // id is auto-incrementing in many cases, or we can use id as proxy for creation order
-                    // If we had createdAt in UsersYuutai, we would use that.
-                    // For now, let's sort by id descending (newest first)
-                    items.sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
-                    break;
-                }
+                  }
 
-                if (items.isEmpty) {
                   if (widget.showHistory) {
-                    return const EmptyStateView(
-                      icon: Icons.history_toggle_off,
-                      title: '使用履歴がありません',
-                      subtitle: '使用した優待はここに表示されます',
+                    return _buildSimpleList(
+                      items,
+                      settings.listFilter,
+                      stockCodeMap,
                     );
                   }
 
-                  final displayQuery = widget.searchQuery;
-                  if (displayQuery.isNotEmpty) {
-                    return EmptyStateView(
-                      icon: Icons.search_off,
-                      title: '「$displayQuery」は見つかりませんでした',
-                      subtitle: '別のキーワードで試してみてください',
-                    );
-                  }
+                  if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
+                    final expiringSoon = items.where((b) {
+                      if (b.expiryDate == null) return false;
+                      final today = DateTime.now();
+                      final diff = DateTime(
+                        b.expiryDate!.year,
+                        b.expiryDate!.month,
+                        b.expiryDate!.day,
+                      )
+                          .difference(
+                            DateTime(today.year, today.month, today.day),
+                          )
+                          .inDays;
+                      return diff >= 0 && diff <= 30;
+                    }).toList();
 
-                  return EmptyStateView(
-                    imagePath: 'assets/images/empty_state.png',
-                    title: '優待を登録しよう！',
-                    subtitle:
-                        isGuest ? 'ログインすると優待を登録して管理できます' : '右下の「＋」ボタンから追加できます',
-                  );
-                }
+                    final others =
+                        items.where((b) => !expiringSoon.contains(b)).toList();
 
-                if (widget.showHistory) {
-                  return _buildSimpleList(items, settings.listFilter);
-                }
-
-                if (settings.sortOrder == YuutaiSortOrder.expiryDate) {
-                  final expiringSoon = items.where((b) {
-                    if (b.expiryDate == null) return false;
-                    final today = DateTime.now();
-                    final diff = DateTime(
-                      b.expiryDate!.year,
-                      b.expiryDate!.month,
-                      b.expiryDate!.day,
-                    )
-                        .difference(
-                          DateTime(today.year, today.month, today.day),
-                        )
-                        .inDays;
-                    return diff >= 0 && diff <= 30;
-                  }).toList();
-
-                  final others =
-                      items.where((b) => !expiringSoon.contains(b)).toList();
-
-                  return ListView(
-                    key: ValueKey(settings.listFilter),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    children: [
-                      if (expiringSoon.isNotEmpty) ...[
-                        _buildSectionHeader(
-                          context,
-                          '期限間近',
-                          Icons.timer_outlined,
-                          Theme.of(context)
-                                  .extension<AppColors>()
-                                  ?.expiringSoon ??
-                              Theme.of(context).colorScheme.error,
-                        ),
-                        ...expiringSoon.map((b) => _buildTile(b)),
-                        const SizedBox(height: 24),
-                      ],
-                      if (others.isNotEmpty) ...[
-                        if (expiringSoon.isNotEmpty)
+                    return ListView(
+                      key: ValueKey(settings.listFilter),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      children: [
+                        if (expiringSoon.isNotEmpty) ...[
                           _buildSectionHeader(
                             context,
-                            'すべて',
-                            Icons.list_alt_rounded,
-                            null,
+                            '期限間近',
+                            Icons.timer_outlined,
+                            Theme.of(context)
+                                    .extension<AppColors>()
+                                    ?.expiringSoon ??
+                                Theme.of(context).colorScheme.error,
                           ),
-                        ...others.map((b) => _buildTile(b)),
+                          ...expiringSoon.map(
+                              (b) => _buildTile(b, stockCodeMap[b.companyId])),
+                          const SizedBox(height: 24),
+                        ],
+                        if (others.isNotEmpty) ...[
+                          if (expiringSoon.isNotEmpty)
+                            _buildSectionHeader(
+                              context,
+                              'すべて',
+                              Icons.list_alt_rounded,
+                              null,
+                            ),
+                          ...others.map(
+                              (b) => _buildTile(b, stockCodeMap[b.companyId])),
+                        ],
                       ],
-                    ],
-                  );
-                }
+                    );
+                  }
 
-                // Plain list for other sort orders
-                return ListView.builder(
-                  key: ValueKey(settings.listFilter),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) => _buildTile(items[index]),
-                );
-              },
+                  // Plain list for other sort orders
+                  return ListView.builder(
+                    key: ValueKey(settings.listFilter),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) => _buildTile(
+                      items[index],
+                      stockCodeMap[items[index].companyId],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -463,22 +512,27 @@ class _UsersYuutaiPageState extends ConsumerState<UsersYuutaiPage> {
     );
   }
 
-  Widget _buildTile(UsersYuutai b) {
+  Widget _buildTile(UsersYuutai b, [String? stockCode]) {
     return UsersYuutaiListTile(
       benefit: b,
-      subtitle: (b.benefitDetail?.isNotEmpty ?? false) ? b.benefitDetail : null,
+      stockCode: stockCode?.isNotEmpty == true ? stockCode : null,
     );
   }
 
   Widget _buildSimpleList(
     List<UsersYuutai> items,
     YuutaiListFilter listFilter,
+    Map<int, String> stockCodeMap,
   ) {
     return ListView.builder(
       key: ValueKey(listFilter),
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: items.length,
-      itemBuilder: (context, index) => _buildTile(items[index]),
+      itemBuilder: (context, index) => _buildTile(
+        items[index],
+        stockCodeMap[items[index].companyId],
+      ),
     );
   }
 }

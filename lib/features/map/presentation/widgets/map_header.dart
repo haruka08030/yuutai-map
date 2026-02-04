@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/search_bar_theme.dart' as app_theme;
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 
-const Color _kBorderLight = Color(0x7FE2E7EF);
-const Color _kShadowLight = Color(0x0C000000);
-
 class MapHeader extends StatefulWidget {
   const MapHeader({
     super.key,
     required this.state,
+    this.searchController,
     required this.onFilterPressed,
     required this.onCategoryChanged,
     this.onSearchChanged,
   });
 
   final MapState state;
+
+  /// 検索欄。渡すと親でクリア可能（0件時の「検索をクリア」と同期）
+  final TextEditingController? searchController;
   final VoidCallback onFilterPressed;
-  final void Function(Set<String> selectedCategories) onCategoryChanged;
+  final void Function(Set<String> categories) onCategoryChanged;
   final void Function(String query)? onSearchChanged;
 
   @override
@@ -24,12 +25,20 @@ class MapHeader extends StatefulWidget {
 }
 
 class _MapHeaderState extends State<MapHeader> {
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
   static const String _allLabel = 'すべて';
 
   @override
+  void initState() {
+    super.initState();
+    _searchController = widget.searchController ?? TextEditingController();
+  }
+
+  @override
   void dispose() {
-    _searchController.dispose();
+    if (widget.searchController == null) {
+      _searchController.dispose();
+    }
     super.dispose();
   }
 
@@ -53,26 +62,9 @@ class _MapHeaderState extends State<MapHeader> {
                   Expanded(
                     child: Container(
                       height: app_theme.AppSearchBarStyle.height,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            app_theme.AppSearchBarStyle.borderRadiusValue,
-                        border: Border.all(color: _kBorderLight),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: _kShadowLight,
-                            blurRadius: 15,
-                            offset: Offset(0, 10),
-                            spreadRadius: -3,
-                          ),
-                          BoxShadow(
-                            color: _kShadowLight,
-                            blurRadius: 6,
-                            offset: Offset(0, 4),
-                            spreadRadius: -4,
-                          ),
-                        ],
-                      ),
+                      decoration:
+                          app_theme.AppSearchBarStyle.containerDecoration(
+                              context),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (value) {
@@ -94,6 +86,7 @@ class _MapHeaderState extends State<MapHeader> {
                           prefixIconColor:
                               Theme.of(context).colorScheme.onSurface,
                         ).copyWith(
+                          hintText: 'エリア・店舗名で検索',
                           hintStyle: Theme.of(context)
                               .textTheme
                               .bodyMedium!
@@ -116,42 +109,9 @@ class _MapHeaderState extends State<MapHeader> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    elevation: 0,
-                    shadowColor: _kShadowLight,
-                    child: InkWell(
-                      onTap: widget.onFilterPressed,
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _kBorderLight),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: _kShadowLight,
-                              blurRadius: 15,
-                              offset: Offset(0, 10),
-                              spreadRadius: -3,
-                            ),
-                            BoxShadow(
-                              color: _kShadowLight,
-                              blurRadius: 6,
-                              offset: Offset(0, 4),
-                              spreadRadius: -4,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.filter_list_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 24,
-                        ),
-                      ),
-                    ),
+                  _FilterIconButton(
+                    hasActiveFilter: _hasActiveFilter(widget.state),
+                    onTap: widget.onFilterPressed,
                   ),
                 ],
               ),
@@ -164,7 +124,7 @@ class _MapHeaderState extends State<MapHeader> {
                   children: [
                     _CategoryChip(
                       label: _allLabel,
-                      selected: widget.state.selectedCategories.isEmpty,
+                      selected: widget.state.categories.isEmpty,
                       onTap: () => widget.onCategoryChanged({}),
                     ),
                     ...widget.state.availableCategories.map(
@@ -172,8 +132,7 @@ class _MapHeaderState extends State<MapHeader> {
                         padding: const EdgeInsets.only(left: 7),
                         child: _CategoryChip(
                           label: category,
-                          selected: widget.state.selectedCategories
-                              .contains(category),
+                          selected: widget.state.categories.contains(category),
                           onTap: () => widget.onCategoryChanged({category}),
                         ),
                       ),
@@ -182,6 +141,84 @@ class _MapHeaderState extends State<MapHeader> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 地方・都道府県・カテゴリ・フォルダのいずれかが適用されていれば true
+  static bool _hasActiveFilter(MapState state) {
+    if (state.region != null || state.prefecture != null) {
+      return true;
+    }
+    if (state.categories.isNotEmpty) return true;
+    if (!state.showAllStores && state.folderId != null) return true;
+    return false;
+  }
+}
+
+/// フィルターボタン。適用中は塗りつぶしアイコン＋primary色で表現
+class _FilterIconButton extends StatelessWidget {
+  const _FilterIconButton({
+    required this.hasActiveFilter,
+    required this.onTap,
+  });
+
+  final bool hasActiveFilter;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final surfaceColor =
+        isDark ? theme.colorScheme.surfaceContainerHighest : Colors.white;
+    final borderColor = isDark
+        ? theme.colorScheme.outlineVariant
+        : app_theme.AppSearchBarStyle.borderLight;
+    final shadowColor = isDark
+        ? theme.colorScheme.shadow.withValues(alpha: 0.08)
+        : app_theme.AppSearchBarStyle.shadowLight;
+    return Material(
+      color: surfaceColor,
+      borderRadius: BorderRadius.circular(16),
+      elevation: 0,
+      shadowColor: shadowColor,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor,
+                blurRadius: 15,
+                offset: const Offset(0, 10),
+                spreadRadius: -3,
+              ),
+              BoxShadow(
+                color: isDark
+                    ? theme.colorScheme.shadow.withValues(alpha: 0.06)
+                    : app_theme.AppSearchBarStyle.shadowLight,
+                blurRadius: 6,
+                offset: const Offset(0, 4),
+                spreadRadius: -4,
+              ),
+            ],
+          ),
+          child: Icon(
+            hasActiveFilter
+                ? Icons.filter_alt_rounded
+                : Icons.filter_list_rounded,
+            color: hasActiveFilter
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface,
+            size: 24,
           ),
         ),
       ),
@@ -202,13 +239,19 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: selected
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surface,
+        color: selected ? theme.colorScheme.primary : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: selected ? null : Border.all(color: _kBorderLight),
+        border: selected
+            ? null
+            : Border.all(
+                color: isDark
+                    ? theme.colorScheme.outlineVariant
+                    : app_theme.AppSearchBarStyle.borderLight,
+              ),
         boxShadow: selected
             ? [
                 BoxShadow(

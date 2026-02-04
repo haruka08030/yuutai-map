@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
@@ -40,16 +41,12 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
         await authRepository.updateUserEmail(newEmail: _emailController.text);
         ref.invalidate(authRepositoryProvider); // Refresh auth state
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('メールアドレスを更新しました。確認メールをチェックしてください。')),
-        );
+        showSuccessSnackBar(context, 'メールアドレスを更新しました。確認メールをチェックしてください。');
         context.pop(); // Go back to the previous page
       } catch (e) {
         debugPrint('Failed to update email: $e');
         if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('更新に失敗しました: ${e.toString()}')));
+        showErrorSnackBar(context, e);
       } finally {
         setState(() {
           _isLoading = false;
@@ -63,10 +60,11 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('メールアドレスの編集'), centerTitle: true),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -82,6 +80,7 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
                   decoration: InputDecoration(
                     hintText: 'name@example.com',
                     filled: true,

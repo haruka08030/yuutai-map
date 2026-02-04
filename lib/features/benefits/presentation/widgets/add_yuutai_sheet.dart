@@ -14,13 +14,12 @@ bool _hasReminderSet(UsersYuutaiEditState state) {
   return anyPredefined || hasCustom;
 }
 
-/// 期限表示: 当年は M/d、翌年以降は yyyy/M/d
 String _formatExpiryLabel(DateTime date) {
   final now = DateTime.now();
   if (date.year == now.year) {
-    return DateFormat('M/d', 'ja').format(date);
+    return DateFormat('MM/dd', 'ja').format(date);
   }
-  return DateFormat('yyyy/M/d', 'ja').format(date);
+  return DateFormat('yyyy/MM/dd', 'ja').format(date);
 }
 
 class YuutaiEditSheet extends HookConsumerWidget {

@@ -11,6 +11,12 @@ class AppSearchBarStyle {
   /// 角丸の半径（全画面共通）
   static const double borderRadius = 16;
 
+  /// ライトモード時の検索バー枠色（一覧・マップ共通）
+  static const Color borderLight = Color(0x7FE2E7EF);
+
+  /// ライトモード時の検索バー影色（一覧・マップ共通）
+  static const Color shadowLight = Color(0x0C000000);
+
   /// ヒントテキストのフォントサイズ
   static const double hintFontSize = 14;
 
@@ -41,6 +47,24 @@ class AppSearchBarStyle {
   /// 角丸の BorderRadius
   static BorderRadius get borderRadiusValue =>
       BorderRadius.circular(borderRadius);
+
+  /// 検索バーコンテナの装飾（一覧・マップで共通。ライトは白+枠、ダークはテーマ色）
+  static BoxDecoration containerDecoration(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) {
+      final scheme = Theme.of(context).colorScheme;
+      return BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: borderRadiusValue,
+        border: Border.all(color: scheme.outlineVariant),
+      );
+    }
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: borderRadiusValue,
+      border: Border.all(color: borderLight),
+    );
+  }
 
   /// 検索用 TextField の共通 InputDecoration（prefixIcon・hintStyle・padding を統一）
   static InputDecoration inputDecoration({

@@ -6,7 +6,7 @@ import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/auth_dialogs.dart';
 
@@ -33,7 +33,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _signInWithEmail() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
       try {
         await ref.read(authRepositoryProvider).signInWithEmailPassword(
               email: _emailController.text.trim(),
@@ -42,14 +41,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         // The AuthGate will handle navigation if successful
       } on AuthException catch (e) {
         if (!mounted) return;
-        scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text(AppException.from(e).message)),
-        );
+        showErrorSnackBar(context, e);
       } catch (e) {
         if (!mounted) return;
-        scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text(AppException.from(e).message)),
-        );
+        showErrorSnackBar(context, e);
       } finally {
         if (mounted) {
           setState(() => _isLoading = false);
@@ -60,19 +55,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
     } on AuthException catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -82,19 +72,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _signInWithApple() async {
     setState(() => _isLoading = true);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithApple();
     } on AuthException catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -117,6 +102,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420.0),
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(
                 horizontal: 32.0,
                 vertical: 48.0,
@@ -161,6 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'メールアドレスを入力してください';
@@ -179,6 +166,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         prefixIcon: Icon(Icons.lock_outline),
                       ),
                       obscureText: true,
+                      autofillHints: const [AutofillHints.password],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'パスワードを入力してください';

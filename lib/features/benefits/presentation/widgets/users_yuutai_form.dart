@@ -69,6 +69,13 @@ class UsersYuutaiForm extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => notifier.selectFolder(context),
           ),
+
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const SizedBox.shrink(),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => notifier.showReminderPicker(context),
+          ),
         ],
       ),
     );

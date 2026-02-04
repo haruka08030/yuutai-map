@@ -1,23 +1,25 @@
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
-import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/core/widgets/bottom_sheet_drag_handle.dart';
+import 'package:flutter_stock/core/widgets/section_label.dart';
+import 'package:flutter_stock/core/widgets/segmented_control.dart';
+import 'package:flutter_stock/core/widgets/select_menu_button.dart';
+import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
+import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
+import 'package:flutter_stock/features/map/domain/map_filter_params.dart';
+import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 
 class MapFilterBottomSheet extends ConsumerStatefulWidget {
-  final MapState state;
-  final Function({
-    required bool showAllStores,
-    required Set<String> selectedCategories,
-    String? folderId,
-  }) onApply;
-
   const MapFilterBottomSheet({
     super.key,
     required this.state,
     required this.onApply,
   });
+
+  final MapState state;
+  final void Function(FilterParams params) onApply;
 
   @override
   ConsumerState<MapFilterBottomSheet> createState() =>
@@ -26,36 +28,55 @@ class MapFilterBottomSheet extends ConsumerStatefulWidget {
   static Future<void> show({
     required BuildContext context,
     required MapState state,
-    required Function({
-      required bool showAllStores,
-      required Set<String> selectedCategories,
-      String? folderId,
-    }) onApply,
+    required void Function(FilterParams params) onApply,
   }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Allow custom background in builder
+      backgroundColor: Colors.transparent,
       builder: (context) =>
           MapFilterBottomSheet(state: state, onApply: onApply),
     );
   }
 }
 
+/// showMenu は value: null の項目選択時も null を返すため、「すべて」は sentinel で表現
+const String _kAll = '';
+const String _kAllFolder = '__all__';
+
 class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
-  late bool _tempShowAll;
-  late String? _tempSelectedCategory;
-  String? _tempFolderId;
+  late bool _showAll;
+  late String _category;
+  late String _folderId;
+  late String _region;
+  late String _prefecture;
 
   @override
   void initState() {
     super.initState();
-    _tempShowAll = widget.state.showAllStores;
-    _tempSelectedCategory = widget.state.selectedCategories.length <= 1
-        ? widget.state.selectedCategories.firstOrNull
-        : null;
-    _tempFolderId = widget.state.folderId;
+    _showAll = widget.state.showAllStores;
+    _category =
+        widget.state.categories.isEmpty ? _kAll : widget.state.categories.first;
+    _folderId = widget.state.folderId ?? _kAllFolder;
+    _region = widget.state.region ?? _kAll;
+    _prefecture = widget.state.prefecture ?? _kAll;
   }
+
+  List<String> get _prefectureOptions {
+    if (_region != _kAll &&
+        JapaneseRegions.regionToPrefectures.containsKey(_region)) {
+      return JapaneseRegions.regionToPrefectures[_region]!;
+    }
+    return JapaneseRegions.prefectureNames;
+  }
+
+  FilterParams get _currentParams => (
+        showAllStores: _showAll,
+        categories: _category == _kAll ? <String>{} : {_category},
+        folderId: _folderId == _kAllFolder ? null : _folderId,
+        region: _region == _kAll ? null : _region,
+        prefecture: _prefecture == _kAll ? null : _prefecture,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -68,192 +89,195 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
       ),
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const BottomSheetDragHandle(),
+              const SizedBox(height: 24),
+              _buildStoreModeSection(),
+              _buildLocationSection(),
+              _buildCategorySection(),
+              _buildFolderSection(foldersAsync),
+              const SizedBox(height: 40),
+              _buildApplyButton(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStoreModeSection() {
+    if (widget.state.isGuest) return const SizedBox.shrink();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: SegmentedControl(
+            labels: const ['優待あり', '全店舗'],
+            selectedIndex: _showAll ? 1 : 0,
+            onChanged: (index) => setState(() => _showAll = index == 1),
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionLabel(label: '場所'),
+        const SizedBox(height: 12),
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppTheme.dividerColor(context),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'フィルター',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: SelectMenuButton<String>(
+                value: _region,
+                hint: 'すべての地方',
+                items: [
+                  const SelectMenuItem(value: _kAll, label: 'すべての地方'),
+                  ...JapaneseRegions.regionNames.map(
+                    (region) => SelectMenuItem(value: region, label: region),
                   ),
-            ),
-            const SizedBox(height: 24),
-            if (!widget.state.isGuest) ...[
-              Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.dividerColor(context),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ToggleButtons(
-                    isSelected: [!_tempShowAll, _tempShowAll],
-                    onPressed: (index) {
-                      setState(() {
-                        _tempShowAll = index == 1;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    borderColor: Colors.transparent,
-                    selectedBorderColor: Colors.transparent,
-                    fillColor: Theme.of(context).colorScheme.primary,
-                    selectedColor: Theme.of(context).colorScheme.onPrimary,
-                    color: AppTheme.secondaryTextColor(context),
-                    constraints: BoxConstraints(
-                      minHeight: 40,
-                      minWidth:
-                          (MediaQuery.of(context).size.width - 48 - 4) / 2,
-                    ),
-                    children: const [Text('優待あり'), Text('全店舗')],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-            if (widget.state.isGuest) ...[
-              Text(
-                'フォルダで絞り込み',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.dividerColor(context)),
-                ),
-                child: Text(
-                  'ログインするとフォルダで絞り込みができます',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 24),
-            ] else if (!_tempShowAll) ...[
-              Text(
-                'フォルダで絞り込み',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 12),
-              foldersAsync.when(
-                data: (folders) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.dividerColor(context)),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String?>(
-                      value: _tempFolderId,
-                      isExpanded: true,
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                      items: [
-                        const DropdownMenuItem(
-                          value: null,
-                          child: Text('すべてのフォルダ'),
-                        ),
-                        ...folders.map(
-                          (f) => DropdownMenuItem(
-                            value: f.id,
-                            child: Text(f.name),
-                          ),
-                        ),
-                      ],
-                      onChanged: (value) =>
-                          setState(() => _tempFolderId = value),
-                    ),
-                  ),
-                ),
-                loading: () => const LinearProgressIndicator(),
-                error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
-              ),
-              const SizedBox(height: 24),
-            ],
-            Text(
-              'カテゴリ',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.dividerColor(context)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String?>(
-                  value: _tempSelectedCategory,
-                  isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                  items: [
-                    const DropdownMenuItem(
-                      value: null,
-                      child: Text('すべてのカテゴリ'),
-                    ),
-                    ...widget.state.availableCategories.map(
-                      (category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      ),
-                    ),
-                  ],
-                  onChanged: (value) =>
-                      setState(() => _tempSelectedCategory = value),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onApply(
-                    showAllStores: _tempShowAll,
-                    selectedCategories: _tempSelectedCategory != null
-                        ? {_tempSelectedCategory!}
-                        : {},
-                    folderId: _tempFolderId,
-                  );
-                  context.pop();
+                ],
+                onSelected: (value) {
+                  setState(() {
+                    _region = value;
+                    if (value != _kAll &&
+                        (!JapaneseRegions.regionToPrefectures
+                                .containsKey(value) ||
+                            !JapaneseRegions.regionToPrefectures[value]!
+                                .contains(_prefecture))) {
+                      _prefecture = _kAll;
+                    }
+                  });
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  '適用する',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: SelectMenuButton<String>(
+                value: _prefecture,
+                hint: 'すべての都道府県',
+                items: [
+                  const SelectMenuItem(value: _kAll, label: 'すべての都道府県'),
+                  ..._prefectureOptions.map(
+                    (pref) => SelectMenuItem(value: pref, label: pref),
+                  ),
+                ],
+                onSelected: (value) => setState(() => _prefecture = value),
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildCategorySection() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionLabel(label: 'カテゴリ'),
+        const SizedBox(height: 12),
+        SelectMenuButton<String>(
+          value: _category,
+          hint: 'すべてのカテゴリ',
+          items: [
+            const SelectMenuItem(value: _kAll, label: 'すべてのカテゴリ'),
+            ...widget.state.availableCategories.map(
+              (category) => SelectMenuItem(value: category, label: category),
+            ),
+          ],
+          onSelected: (value) => setState(() => _category = value),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildFolderSection(AsyncValue foldersAsync) {
+    if (widget.state.isGuest) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionLabel(label: 'フォルダ'),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppTheme.dividerColor(context)),
+            ),
+            child: Text(
+              'ログインするとフォルダで絞り込みができます',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+      );
+    }
+    if (_showAll) return const SizedBox.shrink();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionLabel(label: 'フォルダで絞り込み'),
+        const SizedBox(height: 12),
+        foldersAsync.when(
+          data: (folders) => SelectMenuButton<String>(
+            value: _folderId,
+            hint: 'すべてのフォルダ',
+            items: [
+              const SelectMenuItem(value: _kAllFolder, label: 'すべてのフォルダ'),
+              ...folders
+                  .where((f) => f.id != null && f.id!.isNotEmpty)
+                  .map((f) => SelectMenuItem(value: f.id!, label: f.name)),
+            ],
+            onSelected: (value) => setState(() => _folderId = value),
+          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => const Text('フォルダの読み込みに失敗しました'),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildApplyButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          widget.onApply(_currentParams);
+          context.pop();
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        child: const Text(
+          '適用する',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );

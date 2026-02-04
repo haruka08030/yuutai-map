@@ -21,6 +21,15 @@ String formatExpireDate(DateTime date) {
   return DateFormat('yyyy/MM/dd').format(date);
 }
 
+/// 一覧カードの期限チップ用（日本語）
+String formatExpireDateJa(DateTime date) {
+  final now = DateTime.now();
+  if (date.year == now.year) {
+    return DateFormat('M月d日', 'ja').format(date);
+  }
+  return DateFormat('yyyy年M月d日', 'ja').format(date);
+}
+
 int calculateDaysRemaining(DateTime date) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);

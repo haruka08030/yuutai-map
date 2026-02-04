@@ -6,7 +6,7 @@ import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/password_strength_indicator.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/auth/presentation/widgets/login_form_widgets.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
@@ -42,23 +42,13 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               password: _passwordController.text.trim(),
             );
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('確認メールを送信しました。メールを確認してください。')),
-          );
+          showSuccessSnackBar(context, '確認メールを送信しました。メールを確認してください。');
           Navigator.of(context).pop(); // Go back to login page
         }
       } on AuthException catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
-        }
+        if (mounted) showErrorSnackBar(context, e);
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
-        }
+        if (mounted) showErrorSnackBar(context, e);
       } finally {
         if (mounted) {
           setState(() => _isLoading = false);
@@ -72,17 +62,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
     } on AuthException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
-      }
+      if (mounted) showErrorSnackBar(context, e);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppException.from(e).message)));
-      }
+      if (mounted) showErrorSnackBar(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -92,19 +74,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   Future<void> _signInWithApple() async {
     setState(() => _isLoading = true);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(authRepositoryProvider).signInWithApple();
     } on AuthException catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -120,6 +97,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420.0),
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(
                 horizontal: 32.0,
                 vertical: 48.0,
@@ -163,6 +141,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         labelText: 'アカウント名',
                         prefixIcon: Icon(Icons.person_outline),
                       ),
+                      autofillHints: const [AutofillHints.username],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'アカウント名を入力してください';
@@ -178,6 +157,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'メールアドレスを入力してください';
@@ -196,6 +176,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         prefixIcon: Icon(Icons.lock_outline),
                       ),
                       obscureText: true,
+                      autofillHints: const [AutofillHints.newPassword],
                       onChanged: (value) {
                         setState(() {
                           _password = value;

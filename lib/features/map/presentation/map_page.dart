@@ -6,6 +6,7 @@ import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
 import 'package:flutter_stock/core/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,8 +17,10 @@ import 'package:flutter_stock/features/map/presentation/widgets/map_filter_botto
 import 'package:flutter_stock/features/map/presentation/widgets/map_guest_register_dialog.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_header.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_status_banner.dart';
+import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_empty_state.dart';
+import 'package:flutter_stock/features/map/presentation/map_style.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
@@ -34,6 +37,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   late ClusterManager<Place> _clusterManager;
   Set<Marker> _markers = {};
   late final MarkerGenerator _markerGenerator;
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   static const Map<String, Color> _categoryColors = {
@@ -52,9 +56,15 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   void initState() {
+    super.initState();
     _markerGenerator = MarkerGenerator();
     _clusterManager = _initClusterManager();
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   ClusterManager<Place> _initClusterManager() {
@@ -122,17 +132,43 @@ class _MapPageState extends ConsumerState<MapPage> {
     await MapFilterBottomSheet.show(
       context: context,
       state: state,
-      onApply: ({
-        required bool showAllStores,
-        required Set<String> selectedCategories,
-        String? folderId,
-      }) {
-        ref.read(mapControllerProvider.notifier).applyFilters(
-              showAllStores: showAllStores,
-              selectedCategories: selectedCategories,
-              folderId: folderId,
-            );
+      onApply: (params) {
+        ref.read(mapControllerProvider.notifier).applyFilters(params);
+        _animateToLocation(
+          prefecture: params.prefecture,
+          region: params.region,
+        );
       },
+    );
+  }
+
+  Future<void> _animateToLocation({
+    String? prefecture,
+    String? region,
+  }) async {
+    List<double>? center;
+    double zoom = 10;
+    if (prefecture != null &&
+        prefecture.isNotEmpty &&
+        JapaneseRegions.prefectureCenters.containsKey(prefecture)) {
+      center = JapaneseRegions.prefectureCenters[prefecture];
+      zoom = 9;
+    } else if (region != null &&
+        region.isNotEmpty &&
+        JapaneseRegions.regionCenters.containsKey(region)) {
+      center = JapaneseRegions.regionCenters[region];
+      zoom = 8;
+    }
+    if (center == null || center.length < 2) return;
+
+    final controller = await _mapController.future;
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(center[0], center[1]),
+          zoom: zoom,
+        ),
+      ),
     );
   }
 
@@ -148,11 +184,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         ),
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('現在地の取得に失敗しました: ${e.toString()}')),
-        );
-      }
+      if (mounted) showErrorSnackBar(context, e);
     }
   }
 
@@ -164,11 +196,14 @@ class _MapPageState extends ConsumerState<MapPage> {
       data: (state) {
         List<Place> filteredPlaces = state.items;
         if (_searchQuery.isNotEmpty) {
+          final query = _searchQuery.trim().toLowerCase();
           filteredPlaces = state.items.where((place) {
-            final query = _searchQuery.toLowerCase();
             final name = place.name.toLowerCase();
             final address = (place.address ?? '').toLowerCase();
-            return name.contains(query) || address.contains(query);
+            final prefecture = (place.prefecture ?? '').toLowerCase();
+            return name.contains(query) ||
+                address.contains(query) ||
+                prefecture.contains(query);
           }).toList();
         }
         _clusterManager.setItems(filteredPlaces);
@@ -176,11 +211,38 @@ class _MapPageState extends ConsumerState<MapPage> {
         final showSearchEmptyOverlay =
             _searchQuery.isNotEmpty && filteredPlaces.isEmpty;
 
+        // フィルター適用エラーはマップを隠さず SnackBar で一度だけ表示
+        final errorMessage = state.filterError;
+        if (errorMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            ref.read(mapControllerProvider.notifier).clearFilterError();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                action: SnackBarAction(
+                  label: '再試行',
+                  onPressed: () {
+                    ref.read(mapControllerProvider.notifier).applyFilters((
+                      showAllStores: state.showAllStores,
+                      categories: state.categories,
+                      folderId: state.folderId,
+                      region: state.region,
+                      prefecture: state.prefecture,
+                    ));
+                  },
+                ),
+              ),
+            );
+          });
+        }
+
         return Scaffold(
           body: Stack(
             children: [
               GoogleMap(
                 mapType: MapType.normal,
+                style: mapStyleForBrightness(Theme.of(context).brightness),
                 initialCameraPosition: CameraPosition(
                   target: LatLng(
                     state.currentPosition.latitude,
@@ -203,13 +265,16 @@ class _MapPageState extends ConsumerState<MapPage> {
               ),
               MapHeader(
                 state: state,
+                searchController: _searchController,
                 onFilterPressed: () => _showFilterSheet(state),
-                onCategoryChanged: (selectedCategories) {
-                  ref.read(mapControllerProvider.notifier).applyFilters(
-                        showAllStores: state.showAllStores,
-                        selectedCategories: selectedCategories,
-                        folderId: state.folderId,
-                      );
+                onCategoryChanged: (categories) {
+                  ref.read(mapControllerProvider.notifier).applyFilters((
+                    showAllStores: state.showAllStores,
+                    categories: categories,
+                    folderId: state.folderId,
+                    region: state.region,
+                    prefecture: state.prefecture,
+                  ));
                 },
                 onSearchChanged: (query) {
                   setState(() {
@@ -218,12 +283,31 @@ class _MapPageState extends ConsumerState<MapPage> {
                 },
               ),
               const MapStatusBanner(),
+              if (state.isApplying)
+                const Positioned.fill(
+                  child: ModalBarrier(
+                    color: Colors.black26,
+                    dismissible: false,
+                  ),
+                ),
+              if (state.isApplying)
+                const Center(
+                  child: AppLoadingIndicator(),
+                ),
               if (showSearchEmptyOverlay)
                 Positioned.fill(
                   child: Container(
                     color: Theme.of(context).colorScheme.surface,
                     child: SafeArea(
-                      child: MapStoreEmptyState(query: _searchQuery),
+                      child: MapStoreEmptyState(
+                        query: _searchQuery,
+                        onClearPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),

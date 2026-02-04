@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
-import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart'; // To get benefit.expiryDate
+import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 
 class ExpiryDateDisplay extends StatelessWidget {
   const ExpiryDateDisplay({
@@ -9,14 +9,26 @@ class ExpiryDateDisplay extends StatelessWidget {
     required this.benefit,
     required this.isUsed,
     this.daysRemaining,
+    this.useChipStyle = false,
   });
 
   final UsersYuutai benefit;
   final bool isUsed;
   final int? daysRemaining;
 
+  /// 一覧カード用: 薄い緑のチップ＋カレンダーアイコン＋日付（日本語）
+  final bool useChipStyle;
+
   @override
   Widget build(BuildContext context) {
+    if (useChipStyle) {
+      return _ExpiryDateChip(
+        date: benefit.expiryDate!,
+        isUsed: isUsed,
+        daysRemaining: daysRemaining,
+      );
+    }
+
     final appColors = Theme.of(context).extension<AppColors>();
     Color color = AppTheme.secondaryTextColor(context);
     IconData? icon;
@@ -57,6 +69,63 @@ class ExpiryDateDisplay extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// 一覧カード用: 薄い緑の角丸チップにカレンダーアイコン＋日付（日本語）
+class _ExpiryDateChip extends StatelessWidget {
+  const _ExpiryDateChip({
+    required this.date,
+    required this.isUsed,
+    this.daysRemaining,
+  });
+
+  final DateTime date;
+  final bool isUsed;
+  final int? daysRemaining;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = Theme.of(context).extension<AppColors>();
+    Color chipBg = AppTheme.benefitChipBackgroundColor(context);
+    Color chipFg = AppTheme.chipForegroundColor(context);
+    if (!isUsed && daysRemaining != null) {
+      if (daysRemaining! <= 7) {
+        chipFg = appColors?.expiringUrgent ?? Colors.red;
+        chipBg =
+            (appColors?.expiringUrgent ?? Colors.red).withValues(alpha: 0.12);
+      } else if (daysRemaining! <= 30) {
+        chipFg = appColors?.expiringSoon ?? Colors.orange;
+        chipBg =
+            (appColors?.expiringSoon ?? Colors.orange).withValues(alpha: 0.12);
+      }
+    }
+    if (isUsed) {
+      chipFg = AppTheme.secondaryTextColor(context);
+      chipBg = Theme.of(context).colorScheme.surfaceContainerHighest;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: chipBg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.calendar_today_rounded, size: 16, color: chipFg),
+          const SizedBox(width: 6),
+          Text(
+            formatExpireDateJa(date),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: chipFg,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

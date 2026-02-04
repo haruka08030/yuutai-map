@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 
 /// 新しいフォルダ作成用のモダンなダイアログ。
@@ -40,18 +41,16 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
     if (name.isEmpty || _isCreating) return;
     setState(() => _isCreating = true);
     final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(folderRepositoryProvider).createFolder(name);
       if (mounted) {
+        ref.invalidate(foldersProvider);
         navigator.pop();
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isCreating = false);
-        messenger.showSnackBar(
-          SnackBar(content: Text('作成に失敗しました: $e')),
-        );
+        showErrorSnackBar(context, e);
       }
     }
   }
@@ -90,22 +89,6 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
                       color: colorScheme.primary,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    '新しいフォルダ',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '優待を整理するフォルダの名前を入力してください',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -115,7 +98,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
               controller: _controller,
               decoration: InputDecoration(
                 labelText: 'フォルダ名',
-                hintText: '例: 食事・旅行',
+                hintText: '例: カフェ・外食',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -144,7 +127,8 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: _isCreating ? null : () => Navigator.of(context).pop(),
+                  onPressed:
+                      _isCreating ? null : () => Navigator.of(context).pop(),
                   child: Text(
                     'キャンセル',
                     style: TextStyle(

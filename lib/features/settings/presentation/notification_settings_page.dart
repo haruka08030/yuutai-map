@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final pendingNotificationsProvider =
     FutureProvider<List<PendingNotificationRequest>>((ref) {
-      final service = ref.watch(notificationServiceProvider);
-      return service.getPendingNotifications();
-    });
+  final service = ref.watch(notificationServiceProvider);
+  return service.getPendingNotifications();
+});
 
 class NotificationSettingsPage extends ConsumerWidget {
   const NotificationSettingsPage({super.key});
@@ -57,13 +59,11 @@ class NotificationSettingsPage extends ConsumerWidget {
                           await ref
                               .read(notificationServiceProvider)
                               .cancelNotification(n.id);
+                          if (!context.mounted) return;
                           ref.invalidate(pendingNotificationsProvider);
+                          showSuccessSnackBar(context, '通知を削除しました');
                         } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('通知の削除に失敗しました: $e')),
-                            );
-                          }
+                          if (context.mounted) showErrorSnackBar(context, e);
                         }
                       },
                     ),
@@ -72,7 +72,12 @@ class NotificationSettingsPage extends ConsumerWidget {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('エラーが発生しました: $err')),
+            error: (err, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(AppException.from(err).message),
+              ),
+            ),
           ),
         ],
       ),
@@ -85,9 +90,9 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold,
-        ),
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }

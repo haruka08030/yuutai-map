@@ -60,6 +60,20 @@ class AuthRepository extends ChangeNotifier {
     );
   }
 
+  /// 現在のユーザーに紐づくログイン方法（メール・Google・Apple 等）を取得
+  Future<List<UserIdentity>> getUserIdentities() async {
+    final res = await _client.auth.getUserIdentities();
+    return res;
+  }
+
+  /// ログイン中のアカウントに Google を連携する（同じメールで登録済みなら統合される）
+  Future<void> linkGoogleIdentity() async {
+    await _client.auth.linkIdentity(
+      OAuthProvider.google,
+      redirectTo: 'io.supabase.flutter_stock://login-callback/',
+    );
+  }
+
   Future<void> signInWithApple() async {
     final rawNonce = _client.auth.generateRawNonce();
     final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
@@ -141,4 +155,12 @@ final isGuestProvider = Provider<bool>((ref) {
   ref.watch(authStateChangesProvider);
   final user = ref.read(authRepositoryProvider).currentUser;
   return user == null;
+});
+
+/// 現在のユーザーの連携済みログイン方法（メール・Google・Apple 等）
+final userIdentitiesProvider = FutureProvider<List<UserIdentity>>((ref) async {
+  ref.watch(authStateChangesProvider);
+  final auth = ref.read(authRepositoryProvider);
+  if (auth.currentUser == null) return [];
+  return auth.getUserIdentities();
 });

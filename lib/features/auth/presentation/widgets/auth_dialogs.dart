@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 
 /// Displays a dialog to reset the user's password.
@@ -46,7 +46,6 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
 
     setState(() => _isLoading = true);
     final email = _emailController.text.trim();
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
     try {
@@ -54,20 +53,14 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
           .read(authRepositoryProvider)
           .resetPasswordForEmail(email: email);
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('パスワードリセット用のメールを送信しました。')),
-      );
+      showSuccessSnackBar(context, 'パスワードリセット用のメールを送信しました。');
       navigator.pop();
     } on AuthException catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } catch (e) {
       if (!mounted) return;
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppException.from(e).message)),
-      );
+      showErrorSnackBar(context, e);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
