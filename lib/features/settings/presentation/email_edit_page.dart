@@ -64,10 +64,11 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('メールアドレスの編集'), centerTitle: true),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -83,6 +84,7 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
                   decoration: InputDecoration(
                     hintText: 'name@example.com',
                     filled: true,

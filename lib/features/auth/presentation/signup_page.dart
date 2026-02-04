@@ -120,6 +120,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420.0),
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(
                 horizontal: 32.0,
                 vertical: 48.0,
@@ -163,6 +164,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         labelText: 'アカウント名',
                         prefixIcon: Icon(Icons.person_outline),
                       ),
+                      autofillHints: const [AutofillHints.username],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'アカウント名を入力してください';
@@ -178,6 +180,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'メールアドレスを入力してください';
@@ -196,6 +199,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         prefixIcon: Icon(Icons.lock_outline),
                       ),
                       obscureText: true,
+                      autofillHints: const [AutofillHints.newPassword],
                       onChanged: (value) {
                         setState(() {
                           _password = value;

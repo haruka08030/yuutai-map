@@ -117,6 +117,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420.0),
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(
                 horizontal: 32.0,
                 vertical: 48.0,
@@ -161,6 +162,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'メールアドレスを入力してください';
@@ -179,6 +181,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         prefixIcon: Icon(Icons.lock_outline),
                       ),
                       obscureText: true,
+                      autofillHints: const [AutofillHints.password],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'パスワードを入力してください';

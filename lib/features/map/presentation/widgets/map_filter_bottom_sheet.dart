@@ -90,6 +90,7 @@ class _MapFilterBottomSheetState extends ConsumerState<MapFilterBottomSheet> {
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       child: SafeArea(
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
