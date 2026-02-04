@@ -6,6 +6,7 @@ import 'package:flutter_stock/core/widgets/app_loading_indicator.dart';
 import 'package:flutter_stock/features/map/presentation/controllers/map_controller.dart';
 import 'package:flutter_stock/core/widgets/app_error_view.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/map/presentation/state/map_state.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:geolocator/geolocator.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_stock/features/map/presentation/widgets/map_status_banne
 import 'package:flutter_stock/features/map/domain/constants/japanese_regions.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_detail_sheet.dart';
 import 'package:flutter_stock/features/map/presentation/widgets/map_store_empty_state.dart';
+import 'package:flutter_stock/features/map/presentation/map_style.dart';
 import 'package:google_maps_cluster_manager_2/google_maps_cluster_manager_2.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'
     hide Cluster, ClusterManager;
@@ -182,11 +184,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         ),
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('現在地の取得に失敗しました: ${e.toString()}')),
-        );
-      }
+      if (mounted) showErrorSnackBar(context, e);
     }
   }
 
@@ -244,6 +242,7 @@ class _MapPageState extends ConsumerState<MapPage> {
             children: [
               GoogleMap(
                 mapType: MapType.normal,
+                style: mapStyleForBrightness(Theme.of(context).brightness),
                 initialCameraPosition: CameraPosition(
                   target: LatLng(
                     state.currentPosition.latitude,

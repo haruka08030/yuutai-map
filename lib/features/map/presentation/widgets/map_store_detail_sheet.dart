@@ -6,6 +6,7 @@ import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dar
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_stock/features/map/presentation/state/place.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 
 const Color _kOpenGreen = Color(0xFF009865);
@@ -369,12 +370,7 @@ class MapStoreDetailSheet extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(16),
                         child: InkWell(
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('共有機能は準備中です'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
+                            showSnackBarMessage(context, '共有機能は準備中です');
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: SizedBox(

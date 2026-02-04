@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/folders/providers/folder_providers.dart';
 
 /// 新しいフォルダ作成用のモダンなダイアログ。
@@ -41,7 +41,6 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
     if (name.isEmpty || _isCreating) return;
     setState(() => _isCreating = true);
     final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(folderRepositoryProvider).createFolder(name);
       if (mounted) {
@@ -51,9 +50,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _isCreating = false);
-        messenger.showSnackBar(
-          SnackBar(content: Text('作成に失敗しました: ${AppException.from(e).message}')),
-        );
+        showErrorSnackBar(context, e);
       }
     }
   }

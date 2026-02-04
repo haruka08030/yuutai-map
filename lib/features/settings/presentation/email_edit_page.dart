@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/utils/validators.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
@@ -41,16 +41,12 @@ class _EmailEditPageState extends ConsumerState<EmailEditPage> {
         await authRepository.updateUserEmail(newEmail: _emailController.text);
         ref.invalidate(authRepositoryProvider); // Refresh auth state
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('メールアドレスを更新しました。確認メールをチェックしてください。')),
-        );
+        showSuccessSnackBar(context, 'メールアドレスを更新しました。確認メールをチェックしてください。');
         context.pop(); // Go back to the previous page
       } catch (e) {
         debugPrint('Failed to update email: $e');
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('更新に失敗しました: ${AppException.from(e).message}')),
-        );
+        showErrorSnackBar(context, e);
       } finally {
         setState(() {
           _isLoading = false;

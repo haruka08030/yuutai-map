@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/widgets/loading_elevated_button.dart';
 import 'package:flutter_stock/features/auth/data/auth_repository.dart';
 
@@ -148,15 +149,11 @@ class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
       );
       ref.invalidate(authRepositoryProvider);
       if (!currentContext.mounted) return;
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        const SnackBar(content: Text('変更を保存しました')),
-      );
+      showSuccessSnackBar(currentContext, '変更を保存しました');
     } catch (e) {
       debugPrint('Failed to update profile: $e');
       if (!currentContext.mounted) return;
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        const SnackBar(content: Text('保存に失敗しました。もう一度お試しください。')),
-      );
+      showErrorSnackBar(currentContext, e);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

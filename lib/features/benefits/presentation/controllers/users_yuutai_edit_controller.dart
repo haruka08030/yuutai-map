@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/benefit_status.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
-import 'package:flutter_stock/core/exceptions/app_exception.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/benefits/domain/entities/company_search_item.dart';
 import 'package:flutter_stock/features/benefits/presentation/company_search_page.dart';
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
@@ -173,14 +173,7 @@ class UsersYuutaiEditController extends Notifier<UsersYuutaiEditState> {
         });
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppException.from(e).message),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      if (context.mounted) showErrorSnackBar(context, e);
     } finally {
       state = state.copyWith(isLoading: false);
     }

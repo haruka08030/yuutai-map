@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_stock/core/exceptions/app_exception.dart';
 import 'package:flutter_stock/core/notifications/notification_service.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/features/settings/data/notification_settings_repository.dart';
 import 'package:flutter_stock/features/benefits/provider/users_yuutai_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -60,17 +61,9 @@ class NotificationSettingsPage extends ConsumerWidget {
                               .cancelNotification(n.id);
                           if (!context.mounted) return;
                           ref.invalidate(pendingNotificationsProvider);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('通知を削除しました')),
-                          );
+                          showSuccessSnackBar(context, '通知を削除しました');
                         } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      '削除に失敗しました: ${AppException.from(e).message}')),
-                            );
-                          }
+                          if (context.mounted) showErrorSnackBar(context, e);
                         }
                       },
                     ),

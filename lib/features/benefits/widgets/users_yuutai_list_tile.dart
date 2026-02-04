@@ -9,6 +9,7 @@ import 'package:flutter_stock/features/benefits/domain/entities/users_yuutai.dar
 import 'package:flutter_stock/features/folders/presentation/folder_selection_page.dart';
 import 'package:flutter_stock/app/theme/app_theme.dart';
 import 'package:flutter_stock/core/utils/date_utils.dart';
+import 'package:flutter_stock/core/utils/snackbar_utils.dart';
 import 'package:flutter_stock/core/widgets/app_dialogs.dart';
 import 'package:flutter_stock/features/benefits/widgets/expiry_date_display.dart';
 
@@ -43,9 +44,7 @@ Future<void> _moveBenefitToFolder(
     scheduleReminders: false,
   );
   if (!context.mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('フォルダに移動しました')),
-  );
+  showSuccessSnackBar(context, 'フォルダに移動しました');
 }
 
 class UsersYuutaiListTile extends ConsumerWidget {
