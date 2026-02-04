@@ -45,6 +45,7 @@ class _CreateFolderDialogState extends ConsumerState<CreateFolderDialog> {
     try {
       await ref.read(folderRepositoryProvider).createFolder(name);
       if (mounted) {
+        ref.invalidate(foldersProvider);
         navigator.pop();
       }
     } catch (e) {
